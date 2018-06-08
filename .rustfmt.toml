@@ -1,0 +1,15 @@
+combine_control_expr = false
+comment_width = 80
+empty_item_single_line = false
+error_on_line_overflow = false
+imports_indent = "Block"
+imports_layout = "HorizontalVertical"
+indent_style = "Block"
+max_width = 120
+normalize_comments = true
+report_fixme = "Always"
+report_todo = "Unnumbered"
+use_field_init_shorthand = true
+use_try_shorthand = true
+wrap_comments = true
+use_small_heuristics = false

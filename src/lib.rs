@@ -1,6 +1,15 @@
+#![allow(dead_code)]
+#![allow(unused_imports)]
+
 extern crate actix_web;
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
+
 use actix_web::{server, App, HttpRequest, Responder};
 use std::cell::Cell;
+
+mod filedatabase;
 
 struct AppState {
     counter: Cell<usize>,
@@ -14,14 +23,17 @@ fn index(req: HttpRequest<AppState>) -> impl Responder {
 }
 
 pub fn create_server() {
-    let app = server::new(|| {
-                              App::with_state(AppState { counter: Cell::new(0) }).resource("/",
-                                                                                     |r| r.f(index))
-                          })
-            .workers(2)
-            .bind("127.0.0.1:9000")
-            .expect("Can not bind to 127.0.0.1:9000s");
+    filedatabase::test();
 
-    println!("Server started on http://127.0.0.1:9000");
-    app.run();
+    // let app = server::new(|| {
+    //                           App::with_state(AppState
+    // { counter: Cell::new(0) }).resource("/",
+    //    |r| r.f(index))
+    //                       })
+    //         .workers(2)
+    //         .bind("127.0.0.1:9000")
+    //         .expect("Can not bind to 127.0.0.1:9000s");
+
+    // println!("Server started on http://127.0.0.1:9000");
+    // app.run();
 }
