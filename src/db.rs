@@ -104,7 +104,7 @@ pub(crate) fn test_db() -> Result<(), Error> {
 
     println!("{:?}", db);
 
-    if let Some(_) = db.users.get(&0) {
+    if db.users.get(&0).is_some() {
         db.users.remove(&0);
     } else {
         db.users.insert(0, User::new(0, "Foo"));
