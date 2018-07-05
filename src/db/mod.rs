@@ -77,9 +77,8 @@ impl Database {
         let mut file = open_db_file()?;
 
         let mut buf = String::new();
-        file.read_to_string(&mut buf).map_err(|_| DatabaseError::LoadError {
-            reason: String::from("cannot read file to string"),
-        })?;
+
+        file.read_to_string(&mut buf).or_else(|_| Ok(0))?;
 
         if buf.len() > 1 {
             let parsed: Database = ron::de::from_str(&buf.as_ref()).or_else(|_| Ok(Database::default()))?;
@@ -106,7 +105,9 @@ pub(crate) fn test_db() -> Result<(), Error> {
     db.tokens.insert(0, String::from("bar"));
     db.tokens.insert(1, String::from("baz"));
 
-    db.tokens.reindex();
+    println!("{:?}", db);
+
+    db.tokens.remove_user_tokens(0);
 
     println!("{:?}", db);
 
