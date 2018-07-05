@@ -91,11 +91,16 @@ impl Database {
         file.read_to_string(&mut buf).map_err(|_| DatabaseError::LoadError {
             reason: String::from("cannot read file to string"),
         })?;
-        let parsed: Database = ron::de::from_str(&buf.as_ref()).map_err(|_| DatabaseError::LoadError {
-            reason: String::from("invalid database file"),
-        })?;
 
-        Ok(parsed)
+        if buf.len() > 1 {
+            let parsed: Database = ron::de::from_str(&buf.as_ref()).map_err(|_| DatabaseError::LoadError {
+                reason: String::from("invalid database file"),
+            })?;
+
+            Ok(parsed)
+        } else {
+            Ok(Database::new())
+        }
     }
 }
 
