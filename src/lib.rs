@@ -26,12 +26,15 @@ fn index(req: HttpRequest<AppState>) -> impl Responder {
 }
 
 pub fn create_server() {
-    // db::test_db().unwrap();
-    let app = server::new(|| App::with_state(AppState { counter: Cell::new(0)
-    }).resource("/", |r| r.f(index)))     .workers(2)
-        .bind("127.0.0.1:9000")
-        .expect("Can not bind to 127.0.0.1:9000");
+    db::test_db().unwrap();
+    // let app = server::new(|| {
+    //     App::with_state(AppState {
+    //         counter: Cell::new(0),
+    //     }).resource("/", |r| r.f(index))
+    // }).workers(2)
+    //     .bind("127.0.0.1:9000")
+    //     .expect("Can not bind to 127.0.0.1:9000");
 
-    println!("Server started on http://127.0.0.1:9000");
-    app.run();
+    // println!("Server started on http://127.0.0.1:9000");
+    // app.run();
 }

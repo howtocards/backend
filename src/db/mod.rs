@@ -3,6 +3,9 @@ use ron;
 use std::collections::BTreeMap;
 use std::fs::{self, File};
 
+mod token;
+mod user;
+
 #[derive(Debug, Fail)]
 pub enum DatabaseError {
     #[fail(display = "can't save database. reason: {}", reason)]
@@ -16,36 +19,9 @@ pub enum DatabaseError {
     },
 }
 
-#[derive(Serialize, Deserialize, Eq, PartialEq, Debug)]
-pub struct User {
-    id: u32,
-    email: String,
-    password: String,
-}
-
-impl Default for User {
-    fn default() -> User {
-        User {
-            id: 0,
-            email: String::new(),
-            password: String::new(),
-        }
-    }
-}
-
-impl User {
-    fn new<E: Into<String>>(id: u32, email: E) -> User {
-        User {
-            id,
-            email: email.into(),
-            ..Default::default()
-        }
-    }
-}
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Database {
-    users: BTreeMap<u32, User>,
+    pub users: BTreeMap<u32, user::User>,
 }
 
 static FILE_PATH: &'static str = "/tmp/howtocards.db.ron";
@@ -69,7 +45,7 @@ impl Database {
         }
     }
 
-    fn save(&self) -> Result<(), DatabaseError> {
+    pub fn save(&self) -> Result<(), DatabaseError> {
         open_db_file()?;
         let stringified = ron::ser::to_string(&self).map_err(|_| DatabaseError::SaveError {
             reason: String::from("cannot serialize db"),
@@ -82,7 +58,7 @@ impl Database {
         Ok(())
     }
 
-    fn load() -> Result<Database, DatabaseError> {
+    pub fn load() -> Result<Database, DatabaseError> {
         use std::io::Read;
 
         let mut file = open_db_file()?;
@@ -112,7 +88,7 @@ pub(crate) fn test_db() -> Result<(), Error> {
     if db.users.get(&0).is_some() {
         db.users.remove(&0);
     } else {
-        db.users.insert(0, User::new(0, "Foo"));
+        db.users.insert(0, user::User::new(0, "Foo"));
     }
 
     println!("{:?}", db);
