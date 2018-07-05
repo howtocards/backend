@@ -46,7 +46,29 @@ impl Tokens {
         Tokens { ..Default::default() }
     }
 
+    /// Insert single token for user
     pub fn insert(&mut self, user_id: u32, token: String) {
         self.tokens.insert(token, user_id);
+        self.reindex();
+    }
+
+    /// Remove single token without knowledge about user
+    pub fn remove_one(&mut self, token: &String) {
+        self.tokens.remove(token);
+        self.reindex();
+    }
+
+    /// Remove all tokens for user
+    pub fn remove_user_tokens(&mut self, user_id: u32) {
+        if self.by_user_id.contains_key(&user_id) {
+            {
+                let tokens = self.by_user_id.get(&user_id).unwrap();
+
+                for token in tokens.iter() {
+                    self.tokens.remove(token);
+                }
+            }
+            self.reindex();
+        }
     }
 }
