@@ -9,7 +9,7 @@ pub struct Tokens {
 
     /// index save token by user id
     /// (user_id, Set{token})
-    #[serde(skip_serializing)]
+    #[serde(skip)]
     by_user_id: BTreeMap<u32, BTreeSet<String>>,
 }
 

@@ -81,7 +81,8 @@ impl Database {
         file.read_to_string(&mut buf).or_else(|_| Ok(0))?;
 
         if buf.len() > 1 {
-            let parsed: Database = ron::de::from_str(&buf.as_ref()).or_else(|_| Ok(Database::default()))?;
+            let parsed: Database = ron::de::from_str(&buf.as_ref()).unwrap();
+            // .or_else(|_| Ok(Database::default()))?;
 
             Ok(parsed)
         } else {
