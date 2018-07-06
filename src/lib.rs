@@ -8,7 +8,7 @@ extern crate failure;
 extern crate ron;
 extern crate rustbreak;
 
-use actix_web::{server, App, HttpRequest, Responder};
+use actix_web::{server, App, HttpRequest, Responder, Json, http};
 use failure::Fail;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
@@ -26,7 +26,7 @@ fn index(req: HttpRequest<AppState>) -> impl Responder {
     let count = db.tokens.len();
     let token = format!("tok{}", count);
     db.tokens.insert(count, String::from(token));
-    db.save();
+    let _ = db.save();
 
     println!("after: {:?}", db.to_string());
 
@@ -35,6 +35,16 @@ fn index(req: HttpRequest<AppState>) -> impl Responder {
     // req.state().counter.set(count);
     // format!("Request number: {}", count)
     "Ok"
+}
+
+#[derive(Deserialize)]
+struct NewAccount {
+    email: String,
+    password: String,
+}
+
+fn create_account(account: Json<NewAccount>) -> impl Responder {
+    format!("Form: email: {}, password: {}", account.email, account.password)
 }
 
 pub fn create_server() -> Result<(), failure::Error> {
@@ -47,6 +57,9 @@ pub fn create_server() -> Result<(), failure::Error> {
         App::with_state(AppState {
             db,
         }).resource("/", |r| r.f(index))
+        .resource("/account", |r| {
+            r.method(http::Method::POST).with(create_account)
+        })
     }).workers(2)
         .bind("127.0.0.1:9000")
         .expect("Can not bind to 127.0.0.1:9000");
