@@ -43,7 +43,9 @@ impl Indexable for Tokens {
 
 impl Tokens {
     fn new() -> Tokens {
-        Tokens { ..Default::default() }
+        Tokens {
+            ..Default::default()
+        }
     }
 
     /// Insert single token for user
@@ -70,5 +72,9 @@ impl Tokens {
             }
             self.reindex();
         }
+    }
+
+    pub fn len(&self) -> u32 {
+        self.tokens.len() as u32
     }
 }

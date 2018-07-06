@@ -24,6 +24,20 @@ pub enum DatabaseError {
     },
 }
 
+static FILE_PATH: &'static str = "/tmp/howtocards.db.ron";
+
+fn open_db_file() -> Result<File, DatabaseError> {
+    if let Ok(file) = File::open(FILE_PATH) {
+        Ok(file)
+    } else if let Ok(file) = File::create(FILE_PATH) {
+        Ok(file)
+    } else {
+        Err(DatabaseError::SaveError {
+            reason: String::from("cannot open file"),
+        })
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Database {
     pub users: BTreeMap<u32, User>,
@@ -36,20 +50,6 @@ impl Default for Database {
             users: Default::default(),
             tokens: Default::default(),
         }
-    }
-}
-
-static FILE_PATH: &'static str = "/tmp/howtocards.db.ron";
-
-fn open_db_file() -> Result<File, DatabaseError> {
-    if let Ok(file) = File::open(FILE_PATH) {
-        Ok(file)
-    } else if let Ok(file) = File::create(FILE_PATH) {
-        Ok(file)
-    } else {
-        Err(DatabaseError::SaveError {
-            reason: String::from("cannot open file"),
-        })
     }
 }
 
@@ -87,6 +87,10 @@ impl Database {
         } else {
             Ok(Database::new())
         }
+    }
+
+    pub fn to_string(&self) -> String {
+        ron::ser::to_string(&self).unwrap_or_else(|_| String::from("<FAILED>"))
     }
 }
 

@@ -1,5 +1,5 @@
-extern crate howtocards_backend;
 extern crate failure;
+extern crate howtocards_backend;
 
 fn main() -> Result<(), failure::Error> {
     howtocards_backend::create_server()?;

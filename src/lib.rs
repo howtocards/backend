@@ -10,15 +10,26 @@ extern crate rustbreak;
 
 use actix_web::{server, App, HttpRequest, Responder};
 use failure::Fail;
-use std::sync::{Mutex, Arc};
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
-mod db;
 mod app_state;
+mod db;
 
 use app_state::AppState;
 
 fn index(req: HttpRequest<AppState>) -> impl Responder {
+    let mut db = req.state().db.lock().unwrap();
+
+    println!("before: {:?}", db.to_string());
+
+    let count = db.tokens.len();
+    let token = format!("tok{}", count);
+    db.tokens.insert(count, String::from(token));
+    db.save();
+
+    println!("after: {:?}", db.to_string());
+
     // let count = req.state().counter.get() + 1;
 
     // req.state().counter.set(count);
@@ -33,7 +44,9 @@ pub fn create_server() -> Result<(), failure::Error> {
 
     let app = server::new(move || {
         let db = Arc::clone(&database);
-        App::with_state(AppState { db }).resource("/", |r| r.f(index))
+        App::with_state(AppState {
+            db,
+        }).resource("/", |r| r.f(index))
     }).workers(2)
         .bind("127.0.0.1:9000")
         .expect("Can not bind to 127.0.0.1:9000");
