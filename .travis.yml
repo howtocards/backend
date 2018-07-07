@@ -1,0 +1,25 @@
+language: rust
+rust:
+  - stable
+  - beta
+  - nightly
+
+matrix:
+  allow_failures:
+    - rust: nightly
+  fast_finish: true
+
+cache: cargo
+
+deploy:
+  provider: releases
+  api_key:
+    secure: GdRtivT9PCEPgl4Yn1u+eEnXSn73t7bWnb/8oXMr53UMKw3tHTgvESXzb42J1U93cMGiAmtFYiOYBDnmXrXK2QMeFBjuzoXu/Gb8zZOvOCkYyA8FLTx17tlC2WBFSm21zSOpSWY6vtlPsnjALbFPvXSu1P09RQI+BZJTXBWU3XEVQY14zqhnOPP3UEUv4PrLKLmM60+/2F09WfpSd0hhjznDfwq8FknZpJbnZIa55bWM0ZQpR9YRCYbhrC7F1o7yEh1EiDRS8WJuNi8Ws6hB4yQwKgXOKQyFSUk5r8777c69gH6YiSRNwar3bzbliWsRpnFqrpbv5KsChS3I7vtdE7aljxS9rgLhGAfL+sXYJJnaHqfXEr4MneoQesbAt30Hhk/qsoNps1939g1SUEC5SMU9ThYgrSGEeNE7EplUhsI5loOJFJhPhGj0S4crylaWJ2jGefZlzR7mCGNRqEWtVBXb7QdKSlooAPKXHF4a9kijHLS8z8cQ3uuH8rvpBd9ffTDhsJZUlCSr8PMf3/hldC2XGFD8gQQV4SBvY6oxHLtyfNWbIGfRKpu1cBbiHc93UFOZ1be7ti2FzRBQ3+X09WfsUMxY44G8hL6xLooPcS9c7yY1L0Ixc3k/GeGYarb03kUmADeZZxUNOLwmBC6kSOrOWDCX28raJQnE5O6ksQY=
+  file:
+    - "target/release/howtocards_backend"
+    - "target/release/howtocards_backend.d"
+    - "target/release/howtocards_backend.rlib"
+  skip_cleanup: true
+  on:
+    repo: howtocards/backend
+    tags: true
