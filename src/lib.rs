@@ -52,16 +52,18 @@ pub fn create_server() -> Result<(), failure::Error> {
     // db::test_db().unwrap();
     let mut database = db::Db::new("/tmp/howtocards.dev_db.ron");
     database.load()?;
+
     let database = Arc::new(Mutex::new(database));
 
-    let app = server::new(move || {
+    let server_creator = move || {
         let db = Arc::clone(&database);
+
         App::with_state(AppState::new(db))
             .resource("/", |r| r.f(index))
             .resource("/account", |r| r.method(http::Method::POST).with(create_account))
-    }).workers(2)
-        .bind("127.0.0.1:9000")
-        .expect("Can not bind to 127.0.0.1:9000");
+    };
+
+    let app = server::new(server_creator).workers(2).bind("127.0.0.1:9000").expect("Can not bind to 127.0.0.1:9000");
 
     println!("Server started on http://127.0.0.1:9000");
     app.run();
