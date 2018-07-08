@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 #[derive(Serialize, Deserialize, Eq, PartialEq, Debug)]
 pub struct User {
     pub id: u32,
@@ -24,3 +26,5 @@ impl User {
         }
     }
 }
+
+pub type Users = BTreeMap<u32, User>;

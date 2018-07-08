@@ -8,7 +8,8 @@ extern crate failure;
 extern crate ron;
 extern crate rustbreak;
 
-use actix_web::{server, App, HttpRequest, Responder, Json, http};
+use actix_web::{http, server, App, HttpRequest, Json, Responder};
+use db::Database;
 use failure::Fail;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
@@ -23,9 +24,9 @@ fn index(req: HttpRequest<AppState>) -> impl Responder {
 
     println!("before: {:?}", db.to_string());
 
-    let count = db.tokens.len();
+    let count = db.tokens().len();
     let token = format!("tok{}", count);
-    db.tokens.insert(count, String::from(token));
+    db.tokens_mut().insert(count, String::from(token));
     let _ = db.save();
 
     println!("after: {:?}", db.to_string());
@@ -49,17 +50,15 @@ fn create_account(account: Json<NewAccount>) -> impl Responder {
 
 pub fn create_server() -> Result<(), failure::Error> {
     // db::test_db().unwrap();
-    let database = db::Database::load()?;
+    let mut database = db::Db::new("/tmp/howtocards.dev_db.ron");
+    database.load()?;
     let database = Arc::new(Mutex::new(database));
 
     let app = server::new(move || {
         let db = Arc::clone(&database);
-        App::with_state(AppState {
-            db,
-        }).resource("/", |r| r.f(index))
-        .resource("/account", |r| {
-            r.method(http::Method::POST).with(create_account)
-        })
+        App::with_state(AppState::new(db))
+            .resource("/", |r| r.f(index))
+            .resource("/account", |r| r.method(http::Method::POST).with(create_account))
     }).workers(2)
         .bind("127.0.0.1:9000")
         .expect("Can not bind to 127.0.0.1:9000");
