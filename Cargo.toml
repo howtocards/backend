@@ -3,6 +3,14 @@ name = "howtocards_backend"
 version = "0.1.0"
 authors = ["Sergey Sova <mail@sergeysova.com>"]
 
+[[bin]]
+name = "howtocards_server"
+path = "./src/main.rs"
+
+[lib]
+name = "howtocards"
+crate-type = ["dylib", "rlib", "staticlib"]
+
 [dependencies]
 actix-web = "0.6"
 serde = "1.0.66"
