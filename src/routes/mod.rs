@@ -1,6 +1,7 @@
 use actix_web::{http, App, HttpRequest, Responder};
 
-pub mod account;
+mod account;
+
 use app_state::AppState;
 use db::Database;
 
@@ -24,8 +25,5 @@ fn index(req: HttpRequest<AppState>) -> impl Responder {
 }
 
 pub fn with(app: App<AppState>) -> App<AppState> {
-    app.resource("/", |r| r.f(index))
-        .resource("/account", |r| r.method(http::Method::POST).with(account::create_account))
+    app.resource("/", |r| r.f(index)).resource("/account", |r| r.method(http::Method::POST).with(account::create))
 }
-
-

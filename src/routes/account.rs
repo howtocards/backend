@@ -9,7 +9,7 @@ pub struct NewAccount {
     password: String,
 }
 
-pub fn create_account(account: Json<NewAccount>) -> impl Responder {
+pub fn create(account: Json<NewAccount>) -> impl Responder {
     println!("Form: email: {}, password: {}", account.email, account.password);
 
     let hashed = hasher::hash_password(&account.password, SALT);

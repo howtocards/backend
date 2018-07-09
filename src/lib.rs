@@ -9,7 +9,7 @@ extern crate ron;
 extern crate rustbreak;
 extern crate sha2;
 
-use actix_web::{http, server, App, HttpRequest, Json, Responder};
+use actix_web::{http, middleware, server, App, HttpRequest, Json, Responder};
 use db::Database;
 use failure::Fail;
 use std::collections::HashMap;
@@ -28,7 +28,22 @@ pub fn create_server() -> Result<(), failure::Error> {
 
     let database = Arc::new(Mutex::new(database));
 
-    let server_creator = move || routes::with(App::with_state(AppState::new(Arc::clone(&database))));
+    let server_creator = move || {
+        let db = Arc::clone(&database);
+        let state = AppState::new(db);
+        let app = App::with_state(state).middleware(
+            middleware::cors::Cors::build()
+                // .allowed_origin("http://127.0.0.1:9000/")
+                // .send_wildcard()
+                .supports_credentials()
+                .allowed_methods(vec!["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"])
+                .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+                .allowed_headers(vec![http::header::CONTENT_TYPE])
+                .max_age(3600)
+                .finish(),
+        );
+        routes::with(app)
+    };
 
     let app = server::new(server_creator).workers(2).bind("127.0.0.1:9000").expect("Can not bind to 127.0.0.1:9000");
 
