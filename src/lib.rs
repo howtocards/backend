@@ -7,6 +7,7 @@ extern crate serde_derive;
 extern crate failure;
 extern crate ron;
 extern crate rustbreak;
+extern crate sha2;
 
 use actix_web::{http, server, App, HttpRequest, Json, Responder};
 use db::Database;
@@ -16,6 +17,7 @@ use std::sync::{Arc, Mutex};
 
 mod app_state;
 mod db;
+mod hash;
 
 use app_state::AppState;
 
@@ -48,7 +50,7 @@ fn create_account(account: Json<NewAccount>) -> impl Responder {
     format!("Form: email: {}, password: {}", account.email, account.password)
 }
 
-pub fn create_server() -> Result<(), failure::Error> {
+pub fn create_server_() -> Result<(), failure::Error> {
     // db::test_db().unwrap();
     let mut database = db::Db::new("/tmp/howtocards.dev_db.ron");
     database.load()?;
@@ -67,6 +69,14 @@ pub fn create_server() -> Result<(), failure::Error> {
 
     println!("Server started on http://127.0.0.1:9000");
     app.run();
+
+    Ok(())
+}
+
+pub fn create_server() -> Result<(), failure::Error> {
+    let r = hash::hash_string("Example");
+
+    println!("{}", r);
 
     Ok(())
 }
