@@ -1,5 +1,4 @@
-use super::Tokens;
-use super::Users;
+use super::{Tokens, Users};
 use std::collections::BTreeMap;
 
 #[derive(Serialize, Deserialize, Debug)]

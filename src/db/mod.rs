@@ -1,17 +1,20 @@
 use failure::Error;
 use ron;
-use std::collections::BTreeMap;
-use std::fs::{self, File};
+use std::{
+    collections::BTreeMap,
+    fs::{self, File},
+};
 
 mod indexable;
 mod tables;
 mod token;
 mod user;
 
-use self::indexable::Indexable;
-use self::tables::Tables;
-pub use self::token::Tokens;
-pub use self::user::{User, Users};
+use self::{indexable::Indexable, tables::Tables};
+pub use self::{
+    token::Tokens,
+    user::{User, Users},
+};
 
 pub trait Database {
     fn users(&self) -> &Users;
@@ -24,14 +27,10 @@ pub trait Database {
 #[derive(Debug, Fail)]
 pub enum DatabaseError {
     #[fail(display = "can't save database. reason: {}", reason)]
-    SaveError {
-        reason: String,
-    },
+    SaveError { reason: String },
 
     #[fail(display = "can't load database. reason: {}", reason)]
-    LoadError {
-        reason: String,
-    },
+    LoadError { reason: String },
 }
 
 #[derive(Debug)]
@@ -91,12 +90,16 @@ impl Db {
 
     pub fn save(&self) -> Result<(), DatabaseError> {
         self.open_db_file()?;
-        let stringified = ron::ser::to_string(&self.tables).map_err(|_| DatabaseError::SaveError {
-            reason: String::from("cannot serialize db"),
+        let stringified = ron::ser::to_string(&self.tables).map_err(|_| {
+            DatabaseError::SaveError {
+                reason: String::from("cannot serialize db"),
+            }
         })?;
 
-        fs::write(&self.file_path, stringified).map_err(|_| DatabaseError::SaveError {
-            reason: String::from("cannot write to a file"),
+        fs::write(&self.file_path, stringified).map_err(|_| {
+            DatabaseError::SaveError {
+                reason: String::from("cannot write to a file"),
+            }
         })?;
 
         Ok(())

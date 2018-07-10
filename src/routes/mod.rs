@@ -25,5 +25,6 @@ fn index(req: HttpRequest<AppState>) -> impl Responder {
 }
 
 pub fn with(app: App<AppState>) -> App<AppState> {
-    app.resource("/", |r| r.f(index)).resource("/account", |r| r.method(http::Method::POST).with(account::create))
+    app.resource("/", |r| r.f(index))
+        .resource("/account", |r| r.method(http::Method::POST).with(account::create))
 }

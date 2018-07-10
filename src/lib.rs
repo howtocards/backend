@@ -16,8 +16,10 @@ use notify_rust::Notification;
 use actix_web::{http, middleware, server, App, HttpRequest, Json, Responder};
 use db::Database;
 use failure::Fail;
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 mod app_state;
 mod db;
@@ -49,7 +51,10 @@ pub fn create_server() -> Result<(), failure::Error> {
         routes::with(app)
     };
 
-    let app = server::new(server_creator).workers(2).bind("127.0.0.1:9000").expect("Can not bind to 127.0.0.1:9000");
+    let app = server::new(server_creator)
+        .workers(2)
+        .bind("127.0.0.1:9000")
+        .expect("Can not bind to 127.0.0.1:9000");
 
     Notification::new()
         .summary("HowToCards")

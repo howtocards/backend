@@ -43,9 +43,7 @@ impl Indexable for Tokens {
 
 impl Tokens {
     fn new() -> Tokens {
-        Tokens {
-            ..Default::default()
-        }
+        Tokens { ..Default::default() }
     }
 
     /// Insert single token for user

@@ -1,6 +1,5 @@
 use sha2::{Digest, Sha256};
-use std::fmt::Display;
-use std::str::from_utf8;
+use std::{fmt::Display, str::from_utf8};
 
 pub fn hash_string<S: AsRef<[u8]>>(value: S) -> String {
     let mut hasher = Sha256::default();

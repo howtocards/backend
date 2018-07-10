@@ -8,8 +8,6 @@ pub struct AppState {
 
 impl AppState {
     pub fn new(db: Arc<Mutex<Db>>) -> AppState {
-        AppState {
-            db,
-        }
+        AppState { db }
     }
 }
