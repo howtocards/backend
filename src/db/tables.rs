@@ -1,4 +1,5 @@
 use super::{Tokens, Users};
+use db::Indexable;
 use std::collections::BTreeMap;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -13,5 +14,12 @@ impl Default for Tables {
             users: Default::default(),
             tokens: Default::default(),
         }
+    }
+}
+
+impl Indexable for Tables {
+    fn reindex(&mut self) {
+        self.users.reindex();
+        self.tokens.reindex();
     }
 }

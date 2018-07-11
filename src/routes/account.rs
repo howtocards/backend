@@ -1,5 +1,8 @@
-use actix_web::{Json, Responder};
+use actix_web::{HttpRequest, HttpResponse, Json, Responder, dev::HttpResponseBuilder};
 use hasher;
+
+use app_state::AppState;
+use db::{Database, User};
 
 const SALT: &'static str = "SALT";
 
@@ -9,12 +12,24 @@ pub struct NewAccount {
     password: String,
 }
 
-pub fn create(account: Json<NewAccount>) -> impl Responder {
+pub fn create((account, req): (Json<NewAccount>, HttpRequest<AppState>)) -> impl Responder {
     println!("Form: email: {}, password: {}", account.email, account.password);
+    let mut db = req.state().db.lock().unwrap();
 
-    let hashed = hasher::hash_password(&account.password, SALT);
-
-    println!("Hash: {}", hashed);
-
-    "Ok"
+    if db.users().has_email(&account.email) {
+        println!("Exists: {}", account.email);
+        HttpResponse::BadRequest()
+    } else {
+        let hashed_password = hasher::hash_password(&account.password, SALT);
+        let new_user = User {
+            email: account.email.to_string(),
+            password: hashed_password,
+            ..Default::default()
+        };
+        db.users_mut().create(new_user)
+            .or(Some(Default::default()))
+            .and_then(|_| db.save().ok())
+            .map(|_| HttpResponse::Ok())
+            .unwrap_or(HttpResponse::BadRequest())
+    }
 }

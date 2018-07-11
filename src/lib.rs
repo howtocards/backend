@@ -8,6 +8,7 @@ extern crate failure;
 extern crate ron;
 extern crate rustbreak;
 extern crate sha2;
+extern crate uuid;
 
 extern crate notify_rust;
 

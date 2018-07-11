@@ -11,10 +11,8 @@ mod token;
 mod user;
 
 use self::{indexable::Indexable, tables::Tables};
-pub use self::{
-    token::Tokens,
-    user::{User, Users},
-};
+pub use self::user::{User, Users};
+pub use self::token::Tokens;
 
 pub trait Database {
     fn users(&self) -> &Users;
@@ -65,6 +63,12 @@ impl Database for Db {
 
     fn tokens_mut(&mut self) -> &mut Tokens {
         &mut self.tables.tokens
+    }
+}
+
+impl Indexable for Db {
+    fn reindex(&mut self) {
+        self.tables.reindex();
     }
 }
 
@@ -120,6 +124,7 @@ impl Db {
 
             self.tables = parsed;
 
+            self.reindex();
             Ok(())
         } else {
             Ok(())
@@ -138,10 +143,10 @@ pub(crate) fn test_db() -> Result<(), Error> {
 
     println!("{:?}", db);
 
-    if db.users().get(&0).is_some() {
-        db.users_mut().remove(&0);
+    if db.users().get(0).is_some() {
+        db.users_mut().remove(0);
     } else {
-        db.users_mut().insert(0, user::User::new(0, "Foo"));
+        db.users_mut().update(0, user::User::new(0, "Foo"));
     }
 
     db.tokens_mut().insert(0, String::from("foo"));

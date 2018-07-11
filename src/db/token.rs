@@ -1,5 +1,6 @@
 use db::indexable::Indexable;
 use std::collections::{BTreeMap, BTreeSet};
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Tokens {
@@ -74,5 +75,17 @@ impl Tokens {
 
     pub fn len(&self) -> u32 {
         self.tokens.len() as u32
+    }
+}
+
+pub fn create_token() -> String {
+    format!("{}{}", Uuid::new_v4(), Uuid::new_v4())
+}
+
+mod test {
+    use super::*;
+    #[test]
+    fn create_token_returns_different_tokens() {
+        assert_ne!(create_token(), create_token());
     }
 }
