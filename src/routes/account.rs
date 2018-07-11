@@ -13,11 +13,9 @@ pub struct NewAccount {
 }
 
 pub fn create((account, req): (Json<NewAccount>, HttpRequest<AppState>)) -> impl Responder {
-    println!("Form: email: {}, password: {}", account.email, account.password);
     let mut db = req.state().db.lock().unwrap();
 
     if db.users().has_email(&account.email) {
-        println!("Exists: {}", account.email);
         HttpResponse::BadRequest()
     } else {
         let hashed_password = hasher::hash_password(&account.password, SALT);

@@ -92,7 +92,6 @@ impl Users {
         clone.id = self.next_seq_id();
 
         let result = self.users.insert(clone.id, clone);
-        println!("result: {:?}", result);
         self.reindex();
         result
     }
