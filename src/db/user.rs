@@ -35,7 +35,7 @@ pub struct Users {
     users: BTreeMap<u32, User>,
     last_id: u32,
 
-    /// (email, user)
+    /// (email, user_id)
     #[serde(skip)]
     users_by_email: BTreeMap<String, u32>,
 }
@@ -98,5 +98,9 @@ impl Users {
 
     pub fn has_email(&self, email: &String) -> bool {
         self.users_by_email.contains_key(email)
+    }
+
+    pub fn get_by_email(&self, email: &String) -> Option<&User> {
+        self.users_by_email.get(email).and_then(|id| self.users.get(id))
     }
 }

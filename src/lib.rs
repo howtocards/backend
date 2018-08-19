@@ -23,6 +23,7 @@ use std::{
 };
 
 mod app_state;
+mod consts;
 mod db;
 mod hasher;
 mod routes;

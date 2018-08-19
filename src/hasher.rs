@@ -17,6 +17,14 @@ where
     hash_string(format!("{}${}", password, salt))
 }
 
+pub fn validate_password<P, S>(hash: &String, salt: S, password: P) -> bool
+where
+    P: Display,
+    S: Display,
+{
+    hash_password(password, salt).eq(hash)
+}
+
 mod test {
     use super::*;
 

@@ -7,12 +7,12 @@ use std::{
 
 mod indexable;
 mod tables;
-mod token;
+pub mod token;
 mod user;
 
-use self::{indexable::Indexable, tables::Tables};
-pub use self::user::{User, Users};
 pub use self::token::Tokens;
+pub use self::user::{User, Users};
+use self::{indexable::Indexable, tables::Tables};
 
 pub trait Database {
     fn users(&self) -> &Users;
@@ -94,16 +94,12 @@ impl Db {
 
     pub fn save(&self) -> Result<(), DatabaseError> {
         self.open_db_file()?;
-        let stringified = ron::ser::to_string(&self.tables).map_err(|_| {
-            DatabaseError::SaveError {
-                reason: String::from("cannot serialize db"),
-            }
+        let stringified = ron::ser::to_string(&self.tables).map_err(|_| DatabaseError::SaveError {
+            reason: String::from("cannot serialize db"),
         })?;
 
-        fs::write(&self.file_path, stringified).map_err(|_| {
-            DatabaseError::SaveError {
-                reason: String::from("cannot write to a file"),
-            }
+        fs::write(&self.file_path, stringified).map_err(|_| DatabaseError::SaveError {
+            reason: String::from("cannot write to a file"),
         })?;
 
         Ok(())

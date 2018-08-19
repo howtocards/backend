@@ -1,14 +1,13 @@
 use actix_web::{http, App, HttpRequest, Responder};
 
 mod account;
+mod account_session;
 
 use app_state::AppState;
 use db::Database;
 
 fn index(req: HttpRequest<AppState>) -> impl Responder {
     let mut db = req.state().db.lock().unwrap();
-
-    println!("before: {:?}", db.to_string());
 
     let count = db.tokens().len();
     let token = format!("tok{}", count);
@@ -27,4 +26,7 @@ fn index(req: HttpRequest<AppState>) -> impl Responder {
 pub fn with(app: App<AppState>) -> App<AppState> {
     app.resource("/", |r| r.f(index))
         .resource("/account", |r| r.method(http::Method::POST).with(account::create))
+        .resource("/account/session", |r| {
+            r.method(http::Method::POST).with(account_session::create)
+        })
 }

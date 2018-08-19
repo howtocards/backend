@@ -1,19 +1,20 @@
-use actix_web::{HttpRequest, HttpResponse, Json, Responder, dev::HttpResponseBuilder};
+use actix_web::{dev::HttpResponseBuilder, HttpResponse, Json, Responder};
 use hasher;
 
-use app_state::AppState;
+use app_state::Req;
+use consts::SALT;
 use db::{Database, User};
 
-const SALT: &'static str = "SALT";
-
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct NewAccount {
     email: String,
     password: String,
 }
 
-pub fn create((account, req): (Json<NewAccount>, HttpRequest<AppState>)) -> impl Responder {
+pub fn create((account, req): (Json<NewAccount>, Req)) -> impl Responder {
     let mut db = req.state().db.lock().unwrap();
+
+    println!("Create account: {:?}", &account);
 
     if db.users().has_email(&account.email) {
         HttpResponse::BadRequest()
@@ -24,7 +25,8 @@ pub fn create((account, req): (Json<NewAccount>, HttpRequest<AppState>)) -> impl
             password: hashed_password,
             ..Default::default()
         };
-        db.users_mut().create(new_user)
+        db.users_mut()
+            .create(new_user)
             .or(Some(Default::default()))
             .and_then(|_| db.save().ok())
             .map(|_| HttpResponse::Ok())

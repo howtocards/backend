@@ -1,3 +1,4 @@
+use actix_web::HttpRequest;
 use std::sync::{Arc, Mutex};
 
 use db::Db;
@@ -11,3 +12,5 @@ impl AppState {
         AppState { db }
     }
 }
+
+pub type Req = HttpRequest<AppState>;
