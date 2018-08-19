@@ -5,6 +5,7 @@ extern crate serde;
 extern crate serde_derive;
 #[macro_use]
 extern crate failure;
+extern crate futures;
 extern crate ron;
 extern crate rustbreak;
 extern crate sha2;
@@ -14,6 +15,7 @@ extern crate notify_rust;
 
 use notify_rust::Notification;
 
+use actix_web::middleware::session::{CookieSessionBackend, RequestSession, SessionStorage};
 use actix_web::{http, middleware, server, App, HttpRequest, Json, Responder};
 use db::Database;
 use failure::Fail;

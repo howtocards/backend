@@ -24,12 +24,7 @@ pub enum CreateSessionError {
 
 impl error::ResponseError for CreateSessionError {
     fn error_response(&self) -> HttpResponse {
-        HttpResponse::BadRequest().json(ErrorAnswer::new(
-            match *self {
-                CreateSessionError::EmailNotFound => "email_not_found",
-                CreateSessionError::InvalidPassword => "invalid_password",
-            }.to_string(),
-        ))
+        HttpResponse::BadRequest().json(ErrorAnswer::new(format!("{}", self)))
     }
 }
 
@@ -51,6 +46,7 @@ pub fn create_session(
     if valid_password {
         let token = create_token();
         db.tokens_mut().insert(user_id, token.clone());
+        let _ = db.save();
         Ok(token)
     } else {
         Err(CreateSessionError::InvalidPassword)
@@ -61,4 +57,8 @@ pub fn create((session_data, req): (Json<NewSession>, Req)) -> impl Responder {
     let mut db = req.state().db.lock().unwrap();
 
     create_session(session_data, &req, &mut db).map(|token| HttpResponse::Ok().json(SuccessAnswer::new(token)))
+}
+
+pub fn get(req: Req) -> impl Responder {
+    "Test"
 }

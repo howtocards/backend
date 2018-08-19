@@ -27,6 +27,7 @@ pub fn with(app: App<AppState>) -> App<AppState> {
     app.resource("/", |r| r.f(index))
         .resource("/account", |r| r.method(http::Method::POST).with(account::create))
         .resource("/account/session", |r| {
-            r.method(http::Method::POST).with(account_session::create)
+            r.method(http::Method::POST).with(account_session::create);
+            r.method(http::Method::GET).with(account_session::get)
         })
 }

@@ -1,4 +1,3 @@
-
 #[derive(Serialize)]
 pub struct ErrorAnswer {
     ok: bool,
