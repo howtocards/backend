@@ -26,6 +26,7 @@ mod app_state;
 mod consts;
 mod db;
 mod hasher;
+mod layer;
 mod routes;
 
 use app_state::AppState;

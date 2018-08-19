@@ -2,33 +2,10 @@ use actix_web::{error, http, HttpResponse, Json, Responder};
 use app_state::Req;
 use db::{token::create_token, Database, Db, User};
 use hasher;
+use layer::{ErrorAnswer, SuccessAnswer};
 use std::sync::MutexGuard;
 
 use consts::SALT;
-
-#[derive(Serialize)]
-pub struct ErrorAnswer {
-    ok: bool,
-    error: String,
-}
-
-impl ErrorAnswer {
-    pub fn new(error: String) -> Self {
-        ErrorAnswer { ok: false, error }
-    }
-}
-
-#[derive(Serialize)]
-pub struct SuccessAnswer<T> {
-    ok: bool,
-    result: T,
-}
-
-impl<T> SuccessAnswer<T> {
-    pub fn new(result: T) -> Self {
-        SuccessAnswer { ok: true, result }
-    }
-}
 
 #[derive(Deserialize, Debug)]
 pub struct NewSession {
