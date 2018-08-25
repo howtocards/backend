@@ -15,7 +15,7 @@ extern crate notify_rust;
 
 use notify_rust::Notification;
 
-use actix_web::middleware::session::{CookieSessionBackend, RequestSession, SessionStorage};
+use actix_web::middleware::identity::IdentityService;
 use actix_web::{http, middleware, server, App, HttpRequest, Json, Responder};
 use db::Database;
 use failure::Fail;
@@ -30,6 +30,7 @@ mod db;
 mod hasher;
 mod layer;
 mod routes;
+mod session;
 
 use app_state::AppState;
 
@@ -42,8 +43,9 @@ pub fn create_server() -> Result<(), failure::Error> {
     let server_creator = move || {
         let db = Arc::clone(&database);
         let state = AppState::new(db);
-        let app = App::with_state(state).middleware(
-            middleware::cors::Cors::build()
+        let app = App::with_state(state)
+            .middleware(
+                middleware::cors::Cors::build()
                 // .allowed_origin("http://127.0.0.1:9000/")
                 // .send_wildcard()
                 .supports_credentials()
@@ -52,7 +54,8 @@ pub fn create_server() -> Result<(), failure::Error> {
                 .allowed_headers(vec![http::header::CONTENT_TYPE])
                 .max_age(3600)
                 .finish(),
-        );
+            )
+            .middleware(IdentityService::new(session::TokenIdentityPolicy::new("bearer".into())));
         routes::with(app)
     };
 
