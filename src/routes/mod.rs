@@ -1,5 +1,7 @@
-use actix_web::{http, App, HttpRequest, Responder, Error};
+use actix_web::{http, App, HttpRequest, HttpResponse, Responder, Error, FromRequest, ResponseError};
 use actix_web::middleware::identity::RequestIdentity;
+use actix_web::error::ErrorBadRequest;
+use failure::Fail;
 
 mod account;
 mod account_session;
@@ -24,7 +26,64 @@ fn index(req: Req) -> impl Responder {
     "Ok"
 }
 
-fn id(req: Req) -> Result<String, Error> {
+#[derive(Serialize, Deserialize, Default, Debug)]
+struct ApiErrorResponse {
+    error: String
+}
+
+impl ApiErrorResponse {
+    pub fn from_fail(fail: &impl Fail) -> Self {
+        let mut list = vec![];
+
+        for cause in Fail::iter_chain(fail) {
+            let msg = cause.to_string();
+            if !list.contains(&msg) {
+                list.push(msg);
+            }
+        }
+
+        ApiErrorResponse {
+            error: list.remove(0)
+        }
+    }
+}
+
+
+#[derive(Fail, Debug)]
+enum AuthError {
+    #[fail(display = "invalid_token")]
+    InvalidToken,
+
+    #[fail(display = "missing_header")]
+    MissingHeader,
+}
+
+impl ResponseError for AuthError {
+    fn error_response(&self) -> HttpResponse {
+        HttpResponse::Unauthorized().json(&ApiErrorResponse::from_fail(self))
+    }
+}
+
+#[derive(Debug, Deserialize)]
+struct Auth {
+    token: String,
+}
+
+impl<S> FromRequest<S> for Auth {
+    type Config = ();
+    type Result = Result<Auth, AuthError>;
+
+    fn from_request(req: &HttpRequest<S>, _cfg: &Self::Config) -> Self::Result {
+        if let Some(id) = req.identity() {
+            Ok(Auth { token: id.to_string() })
+        }
+        else {
+            Err(AuthError::InvalidToken)
+        }
+    }
+}
+
+fn id((req, auth): (Req, Auth)) -> Result<String, Error> {
     // access request identity
     if let Some(id) = req.identity() {
         Ok(format!("Welcome! {}", id))
@@ -36,7 +95,7 @@ fn id(req: Req) -> Result<String, Error> {
 
 pub fn with(app: App<AppState>) -> App<AppState> {
     app.resource("/", |r| r.f(index))
-        .resource("/id", |r| r.f(id))
+        .resource("/id", |r| r.method(http::Method::GET).with(id))
         .resource("/account", |r| r.method(http::Method::POST).with(account::create))
         .resource("/account/session", |r| {
             r.method(http::Method::POST).with(account_session::create);
