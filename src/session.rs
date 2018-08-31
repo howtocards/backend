@@ -79,7 +79,7 @@ impl Identity for TokenIdentity {
         self.identity = None;
     }
 
-    fn write(&mut self, mut resp: HttpResponse) -> Result<Response, Error> {
+    fn write(&mut self, resp: HttpResponse) -> Result<Response, Error> {
         Ok(Response::Done(resp))
     }
 }

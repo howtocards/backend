@@ -1,13 +1,13 @@
-use actix_web::{http, App, HttpRequest, HttpResponse, Responder, Error, FromRequest, ResponseError};
-use actix_web::middleware::identity::RequestIdentity;
 use actix_web::error::ErrorBadRequest;
+use actix_web::middleware::identity::RequestIdentity;
+use actix_web::{http, App, Error, FromRequest, HttpRequest, HttpResponse, Responder, ResponseError};
 use failure::Fail;
 
 mod account;
 mod account_session;
 
-use app_state::{Req, AppState};
-use db::Database;
+use app_state::{AppState, Req};
+use db::{Database, User};
 
 fn index(req: Req) -> impl Responder {
     let mut db = req.state().db.lock().unwrap();
@@ -28,7 +28,8 @@ fn index(req: Req) -> impl Responder {
 
 #[derive(Serialize, Deserialize, Default, Debug)]
 struct ApiErrorResponse {
-    error: String
+    error: String,
+    ok: bool,
 }
 
 impl ApiErrorResponse {
@@ -42,17 +43,17 @@ impl ApiErrorResponse {
             }
         }
 
-        ApiErrorResponse {
-            error: list.remove(0)
-        }
+        ApiErrorResponse { ok: false, error: list.remove(0) }
     }
 }
 
-
 #[derive(Fail, Debug)]
-enum AuthError {
+pub enum AuthError {
     #[fail(display = "invalid_token")]
     InvalidToken,
+
+    #[fail(display = "unknown_token")]
+    UnknownToken,
 
     #[fail(display = "missing_header")]
     MissingHeader,
@@ -64,38 +65,58 @@ impl ResponseError for AuthError {
     }
 }
 
-#[derive(Debug, Deserialize)]
-struct Auth {
-    token: String,
+#[derive(Debug)]
+pub struct Auth {
+    user: User,
 }
 
-impl<S> FromRequest<S> for Auth {
+impl FromRequest<AppState> for Auth {
     type Config = ();
     type Result = Result<Auth, AuthError>;
 
-    fn from_request(req: &HttpRequest<S>, _cfg: &Self::Config) -> Self::Result {
-        if let Some(id) = req.identity() {
-            Ok(Auth { token: id.to_string() })
-        }
-        else {
-            Err(AuthError::InvalidToken)
-        }
+    fn from_request(req: &HttpRequest<AppState>, _cfg: &Self::Config) -> Self::Result {
+        let id = req.identity().ok_or(AuthError::InvalidToken)?.to_string();
+        let db = req.state().db.lock().map_err(|_| AuthError::InvalidToken)?;
+
+        let (_, user_id) = db.tokens().find(&id).ok_or(AuthError::UnknownToken)?;
+        let user = db.users().get(user_id).ok_or(AuthError::UnknownToken)?;
+
+        Ok(Auth { user: user.clone() })
     }
 }
 
-fn id((req, auth): (Req, Auth)) -> Result<String, Error> {
-    // access request identity
-    if let Some(id) = req.identity() {
-        Ok(format!("Welcome! {}", id))
+#[derive(Debug)]
+pub struct AuthOptional {
+    user: Option<User>,
+}
+
+impl FromRequest<AppState> for AuthOptional {
+    type Config = ();
+    type Result = Result<AuthOptional, AuthError>;
+
+    fn from_request(req: &HttpRequest<AppState>, cfg: &Self::Config) -> Self::Result {
+        Ok(AuthOptional {
+            user: Auth::from_request(req, cfg).ok().map(|auth| auth.user)
+        })
+    }
+}
+
+fn id(auth: Auth) -> Result<String, Error> {
+    Ok(format!("Welcome: {}", auth.user.email))
+}
+
+fn id_opt(auth: AuthOptional) -> Result<String, Error> {
+    Ok(if let Some(user) = auth.user {
+        format!("Welcome: {}", user.email)
     } else {
-        Ok("Welcome Anonymous!".to_owned())
-    }
+        format!("Hi! Anon!")
+    })
 }
-
 
 pub fn with(app: App<AppState>) -> App<AppState> {
     app.resource("/", |r| r.f(index))
         .resource("/id", |r| r.method(http::Method::GET).with(id))
+        .resource("/id/opt", |r| r.method(http::Method::GET).with(id_opt))
         .resource("/account", |r| r.method(http::Method::POST).with(account::create))
         .resource("/account/session", |r| {
             r.method(http::Method::POST).with(account_session::create);

@@ -73,6 +73,10 @@ impl Tokens {
         }
     }
 
+    pub fn find(&self, token: &String) -> Option<(String, u32)> {
+        self.tokens.get(token).and_then(|id| Some((token.clone(), *id)))
+    }
+
     pub fn len(&self) -> u32 {
         self.tokens.len() as u32
     }

@@ -1,7 +1,7 @@
 use db::Indexable;
 use std::collections::BTreeMap;
 
-#[derive(Serialize, Deserialize, Eq, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone)]
 pub struct User {
     pub id: u32,
     pub email: String,
