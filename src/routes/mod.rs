@@ -18,12 +18,12 @@ enum IndexErrorResponse {
 
 impl ResponseError for IndexErrorResponse {
     fn error_response(&self) -> HttpResponse {
-        HttpResponse::Unauthorized().text("")
+        HttpResponse::Unauthorized().finish()
     }
 }
 
 fn index(req: Req) -> Result<String, Error> {
-    let db = req.state().db.lock().map_err(|_| IndexErrorResponse::Unknown)?;
+    let mut db = req.state().db.lock().map_err(|_| IndexErrorResponse::Unknown)?;
     let count = db.tokens().len();
     let token = format!("tok{}", count);
     db.tokens_mut().insert(count, String::from(token));
