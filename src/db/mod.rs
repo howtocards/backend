@@ -13,6 +13,7 @@ mod user;
 pub use self::token::Tokens;
 pub use self::user::{User, Users};
 use self::{indexable::Indexable, tables::Tables};
+use app_state::AppState;
 
 pub trait Database {
     fn users(&self) -> &Users;

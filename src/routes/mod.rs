@@ -8,11 +8,22 @@ mod account_session;
 
 use app_state::{AppState, Req};
 use auth::{Auth, AuthOptional};
-use db::{Database, User};
+use db::{Database, Db, User};
 
-fn index(req: Req) -> impl Responder {
-    let mut db = req.state().db.lock().unwrap();
+#[derive(Fail, Debug)]
+enum IndexErrorResponse {
+    #[fail(display = "unknown error")]
+    Unknown,
+}
 
+impl ResponseError for IndexErrorResponse {
+    fn error_response(&self) -> HttpResponse {
+        HttpResponse::Unauthorized().text("")
+    }
+}
+
+fn index(req: Req) -> Result<String, Error> {
+    let db = req.state().db.lock().map_err(|_| IndexErrorResponse::Unknown)?;
     let count = db.tokens().len();
     let token = format!("tok{}", count);
     db.tokens_mut().insert(count, String::from(token));
@@ -24,7 +35,7 @@ fn index(req: Req) -> impl Responder {
 
     // req.state().counter.set(count);
     // format!("Request number: {}", count)
-    "Ok"
+    Ok("Ok".to_string())
 }
 
 fn id(auth: Auth) -> Result<String, Error> {
