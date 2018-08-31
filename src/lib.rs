@@ -25,12 +25,13 @@ use std::{
 };
 
 mod app_state;
+mod auth;
+mod auth_token;
 mod consts;
 mod db;
 mod hasher;
 mod layer;
 mod routes;
-mod session;
 
 use app_state::AppState;
 
@@ -55,7 +56,9 @@ pub fn create_server() -> Result<(), failure::Error> {
                 .max_age(3600)
                 .finish(),
             )
-            .middleware(IdentityService::new(session::TokenIdentityPolicy::new("bearer".into())));
+            .middleware(IdentityService::new(auth_token::TokenIdentityPolicy::new(
+                "bearer".into(),
+            )));
         routes::with(app)
     };
 
