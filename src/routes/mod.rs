@@ -38,22 +38,8 @@ fn index(req: Req) -> Result<String, Error> {
     Ok("Ok".to_string())
 }
 
-fn id(auth: Auth) -> Result<String, Error> {
-    Ok(format!("Welcome: {}", auth.user.email))
-}
-
-fn id_opt(auth: AuthOptional) -> Result<String, Error> {
-    Ok(if let Some(user) = auth.user {
-        format!("Welcome: {}", user.email)
-    } else {
-        format!("Hi! Anon!")
-    })
-}
-
 pub fn with(app: App<AppState>) -> App<AppState> {
     app.resource("/", |r| r.f(index))
-        .resource("/id", |r| r.method(http::Method::GET).with(id))
-        .resource("/id/opt", |r| r.method(http::Method::GET).with(id_opt))
         .resource("/account", |r| r.method(http::Method::POST).with(account::create))
         .resource("/account/session", |r| {
             r.method(http::Method::POST).with(account_session::create);

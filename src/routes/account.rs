@@ -6,12 +6,12 @@ use consts::SALT;
 use db::{Database, User};
 
 #[derive(Deserialize, Debug)]
-pub struct NewAccount {
+pub struct AccountNewRequest {
     email: String,
     password: String,
 }
 
-pub fn create((account, req): (Json<NewAccount>, Req)) -> impl Responder {
+pub fn create((account, req): (Json<AccountNewRequest>, Req)) -> impl Responder {
     let mut db = req.state().db.lock().unwrap();
 
     println!("Create account: {:?}", &account);

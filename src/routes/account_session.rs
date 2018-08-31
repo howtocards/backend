@@ -1,9 +1,11 @@
 use actix_web::{error, http, HttpResponse, Json, Responder};
+use std::sync::MutexGuard;
+
 use app_state::Req;
+use auth::{Auth, AuthOptional};
 use db::{token::create_token, Database, Db, User};
 use hasher;
 use layer::{ErrorAnswer, SuccessAnswer};
-use std::sync::MutexGuard;
 
 use consts::SALT;
 
@@ -28,11 +30,15 @@ impl error::ResponseError for CreateSessionError {
     }
 }
 
+#[derive(Serialize)]
+pub struct TokenResponse {
+    token: String,
+}
+
 pub fn create_session(
     session_data: Json<NewSession>,
-    _req: &Req,
-    db: &mut MutexGuard<'_, Db>,
-) -> Result<String, CreateSessionError> {
+    db: &mut MutexGuard<Db>,
+) -> Result<TokenResponse, CreateSessionError> {
     let mut valid_password = false;
     let mut user_id = 0;
 
@@ -47,7 +53,7 @@ pub fn create_session(
         let token = create_token();
         db.tokens_mut().insert(user_id, token.clone());
         let _ = db.save();
-        Ok(token)
+        Ok(TokenResponse { token })
     } else {
         Err(CreateSessionError::InvalidPassword)
     }
@@ -56,9 +62,14 @@ pub fn create_session(
 pub fn create((session_data, req): (Json<NewSession>, Req)) -> impl Responder {
     let mut db = req.state().db.lock().unwrap();
 
-    create_session(session_data, &req, &mut db).map(|token| HttpResponse::Ok().json(SuccessAnswer::new(token)))
+    create_session(session_data, &mut db).map(|token| HttpResponse::Ok().json(SuccessAnswer::new(token)))
 }
 
-pub fn get(req: Req) -> impl Responder {
-    "Test"
+#[derive(Serialize)]
+pub struct SessionGetResponse {
+    email: String,
+}
+
+pub fn get(auth: Auth) -> Json<SessionGetResponse> {
+    Json(SessionGetResponse { email: auth.user.email })
 }
