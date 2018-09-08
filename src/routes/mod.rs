@@ -12,6 +12,7 @@ use app_state::{AppState, Req};
 use auth::{Auth, AuthOptional};
 use db::{Database, Db, User};
 
+#[inline]
 pub fn with_app(app: App<AppState>) -> App<AppState> {
     let mut app = account::with_app(app);
     app = account_session::with_app(app);

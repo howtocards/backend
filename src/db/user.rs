@@ -1,25 +1,17 @@
-use db::Indexable;
-use std::collections::BTreeMap;
+use serde::{Serialize,de::DeserializeOwned};
 
-#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone)]
+use db::Indexable;
+use std::collections::HashMap;
+
+#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone, Default)]
 pub struct User {
     pub id: u32,
     pub email: String,
     pub password: String,
 }
 
-impl Default for User {
-    fn default() -> User {
-        User {
-            id: 0,
-            email: String::new(),
-            password: String::new(),
-        }
-    }
-}
-
 impl User {
-    pub fn new<E: Into<String>>(id: u32, email: E) -> User {
+    pub fn new(id: u32, email: impl Into<String>) -> User {
         User {
             id,
             email: email.into(),
@@ -28,31 +20,22 @@ impl User {
     }
 }
 
-// pub type Users = BTreeMap<u32, User>;
+// pub type Users = HashMap<u32, User>;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Users {
-    users: BTreeMap<u32, User>,
+    /// user.id -> user
+    users: HashMap<u32, User>,
     last_id: u32,
 
-    /// (email, user_id)
+    /// email -> user.id
     #[serde(skip)]
-    users_by_email: BTreeMap<String, u32>,
-}
-
-impl Default for Users {
-    fn default() -> Users {
-        Users {
-            users: Default::default(),
-            last_id: Default::default(),
-            users_by_email: Default::default(),
-        }
-    }
+    users_by_email: HashMap<String, u32>,
 }
 
 impl Indexable for Users {
     fn reindex(&mut self) {
-        self.users_by_email = BTreeMap::new();
+        self.users_by_email = HashMap::new();
 
         for (_, user) in &self.users {
             self.users_by_email.insert(user.email.to_string(), user.id);
@@ -87,7 +70,7 @@ impl Users {
     }
 
     pub fn create(&mut self, user: User) -> Option<User> {
-        let mut clone = User { ..user };
+        let mut clone = user.clone();
 
         clone.id = self.next_seq_id();
 

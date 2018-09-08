@@ -35,6 +35,7 @@ pub fn create((account, req): (Json<AccountNewRequest>, Req)) -> impl Responder 
     }
 }
 
+#[inline]
 pub fn with_app(app: App<AppState>) -> App<AppState> {
     app.resource("/account", |r| {
         r.method(http::Method::POST).with(self::create)

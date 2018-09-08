@@ -75,6 +75,7 @@ pub fn get(auth: Auth) -> Json<SessionGetResponse> {
     })
 }
 
+#[inline]
 pub fn with_app(app: App<AppState>) -> App<AppState> {
     app.resource("/account/session", |r| {
         r.method(http::Method::POST).with(self::create);
