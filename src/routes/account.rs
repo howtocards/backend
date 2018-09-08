@@ -1,9 +1,9 @@
 use actix_web::{dev::HttpResponseBuilder, http, App, HttpResponse, Json, Responder};
-use hasher;
 
 use app_state::{AppState, Req};
 use consts::SALT;
 use db::{Database, User};
+use hasher;
 
 #[derive(Deserialize, Debug)]
 pub struct AccountNewRequest {
@@ -14,6 +14,7 @@ pub struct AccountNewRequest {
 pub fn create((account, req): (Json<AccountNewRequest>, Req)) -> impl Responder {
     let mut db = req.state().db.lock().unwrap();
 
+    #[cfg(debug_assertions)]
     println!("Create account: {:?}", &account);
 
     if db.users().has_email(&account.email) {

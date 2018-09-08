@@ -30,6 +30,7 @@ mod auth_token;
 mod consts;
 mod db;
 mod hasher;
+#[macro_use]
 mod layer;
 mod routes;
 

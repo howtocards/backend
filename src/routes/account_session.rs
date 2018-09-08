@@ -5,7 +5,7 @@ use app_state::{AppState, Req};
 use auth::{Auth, AuthOptional};
 use db::{token::create_token, Database, Db, User};
 use hasher;
-use layer::{ErrorAnswer, SuccessAnswer};
+use layer::SuccessAnswer;
 
 use consts::SALT;
 
@@ -24,11 +24,7 @@ pub enum CreateSessionError {
     InvalidPassword,
 }
 
-impl error::ResponseError for CreateSessionError {
-    fn error_response(&self) -> HttpResponse {
-        HttpResponse::BadRequest().json(ErrorAnswer::new(format!("{}", self)))
-    }
-}
+impl_response_error_for!(CreateSessionError as BadRequest);
 
 #[derive(Serialize)]
 pub struct TokenResponse {

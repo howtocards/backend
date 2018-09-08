@@ -1,3 +1,6 @@
+use actix_web::HttpResponse;
+use serde::Serialize;
+
 #[derive(Serialize)]
 pub struct ErrorAnswer {
     ok: bool,
@@ -20,4 +23,17 @@ impl<T> SuccessAnswer<T> {
     pub fn new(result: T) -> Self {
         SuccessAnswer { ok: true, result }
     }
+}
+
+macro_rules! impl_response_error_for {
+    ($struct:ident as $response_status:ident) => {
+        use actix_web;
+        use layer;
+        impl actix_web::error::ResponseError for $struct {
+            fn error_response(&self) -> actix_web::HttpResponse {
+                actix_web::HttpResponse::$response_status()
+                    .json(layer::ErrorAnswer::new(format!("{}", self)))
+            }
+        }
+    };
 }
