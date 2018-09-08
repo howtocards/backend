@@ -6,7 +6,11 @@ pub fn hash_string<S: AsRef<[u8]>>(value: S) -> String {
 
     hasher.input(value.as_ref());
 
-    hasher.result().iter().map(|b| format!("{:02X}", b)).collect()
+    hasher
+        .result()
+        .iter()
+        .map(|b| format!("{:02X}", b))
+        .collect()
 }
 
 pub fn hash_password<P, S>(password: P, salt: S) -> String

@@ -44,7 +44,9 @@ impl Indexable for Tokens {
 
 impl Tokens {
     fn new() -> Tokens {
-        Tokens { ..Default::default() }
+        Tokens {
+            ..Default::default()
+        }
     }
 
     /// Insert single token for user
@@ -74,7 +76,9 @@ impl Tokens {
     }
 
     pub fn find(&self, token: &String) -> Option<(String, u32)> {
-        self.tokens.get(token).and_then(|id| Some((token.clone(), *id)))
+        self.tokens
+            .get(token)
+            .and_then(|id| Some((token.clone(), *id)))
     }
 
     pub fn len(&self) -> u32 {

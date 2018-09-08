@@ -1,7 +1,7 @@
-use actix_web::{error, http, HttpResponse, Json, Responder};
+use actix_web::{error, http, App, HttpResponse, Json, Responder};
 use std::sync::MutexGuard;
 
-use app_state::Req;
+use app_state::{AppState, Req};
 use auth::{Auth, AuthOptional};
 use db::{token::create_token, Database, Db, User};
 use hasher;
@@ -39,7 +39,9 @@ pub fn create_session(
     session_data: Json<NewSession>,
     db: &mut MutexGuard<Db>,
 ) -> Result<TokenResponse, CreateSessionError> {
+    #[allow(unused_assignments)]
     let mut valid_password = false;
+    #[allow(unused_assignments)]
     let mut user_id = 0;
 
     if let Some(user) = db.users().get_by_email(&session_data.email) {
@@ -62,7 +64,8 @@ pub fn create_session(
 pub fn create((session_data, req): (Json<NewSession>, Req)) -> impl Responder {
     let mut db = req.state().db.lock().unwrap();
 
-    create_session(session_data, &mut db).map(|token| HttpResponse::Ok().json(SuccessAnswer::new(token)))
+    create_session(session_data, &mut db)
+        .map(|token| HttpResponse::Ok().json(SuccessAnswer::new(token)))
 }
 
 #[derive(Serialize)]
@@ -71,5 +74,14 @@ pub struct SessionGetResponse {
 }
 
 pub fn get(auth: Auth) -> Json<SessionGetResponse> {
-    Json(SessionGetResponse { email: auth.user.email })
+    Json(SessionGetResponse {
+        email: auth.user.email,
+    })
+}
+
+pub fn with_app(app: App<AppState>) -> App<AppState> {
+    app.resource("/account/session", |r| {
+        r.method(http::Method::POST).with(self::create);
+        r.method(http::Method::GET).with(self::get)
+    })
 }

@@ -95,9 +95,10 @@ impl Db {
 
     pub fn save(&self) -> Result<(), DatabaseError> {
         self.open_db_file()?;
-        let stringified = ron::ser::to_string(&self.tables).map_err(|_| DatabaseError::SaveError {
-            reason: String::from("cannot serialize db"),
-        })?;
+        let stringified =
+            ron::ser::to_string(&self.tables).map_err(|_| DatabaseError::SaveError {
+                reason: String::from("cannot serialize db"),
+            })?;
 
         fs::write(&self.file_path, stringified).map_err(|_| DatabaseError::SaveError {
             reason: String::from("cannot write to a file"),

@@ -1,6 +1,8 @@
 use actix_web::error::ErrorBadRequest;
 use actix_web::middleware::identity::RequestIdentity;
-use actix_web::{http, App, Error, FromRequest, HttpRequest, HttpResponse, Responder, ResponseError};
+use actix_web::{
+    http, App, Error, FromRequest, HttpRequest, HttpResponse, Responder, ResponseError,
+};
 use failure::Fail;
 
 use app_state::{AppState, Req};

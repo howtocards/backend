@@ -101,6 +101,8 @@ impl Users {
     }
 
     pub fn get_by_email(&self, email: &String) -> Option<&User> {
-        self.users_by_email.get(email).and_then(|id| self.users.get(id))
+        self.users_by_email
+            .get(email)
+            .and_then(|id| self.users.get(id))
     }
 }

@@ -59,7 +59,7 @@ pub fn create_server() -> Result<(), failure::Error> {
             .middleware(IdentityService::new(auth_token::TokenIdentityPolicy::new(
                 "bearer".into(),
             )));
-        routes::with(app)
+        routes::with_app(app)
     };
 
     let app = server::new(server_creator)

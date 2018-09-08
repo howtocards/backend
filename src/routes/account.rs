@@ -1,7 +1,7 @@
-use actix_web::{dev::HttpResponseBuilder, HttpResponse, Json, Responder};
+use actix_web::{dev::HttpResponseBuilder, http, App, HttpResponse, Json, Responder};
 use hasher;
 
-use app_state::Req;
+use app_state::{AppState, Req};
 use consts::SALT;
 use db::{Database, User};
 
@@ -32,4 +32,10 @@ pub fn create((account, req): (Json<AccountNewRequest>, Req)) -> impl Responder 
             .map(|_| HttpResponse::Ok())
             .unwrap_or(HttpResponse::BadRequest())
     }
+}
+
+pub fn with_app(app: App<AppState>) -> App<AppState> {
+    app.resource("/account", |r| {
+        r.method(http::Method::POST).with(self::create)
+    })
 }
