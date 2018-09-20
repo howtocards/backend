@@ -3,4 +3,4 @@ CREATE TABLE users (
   email VARCHAR NOT NULL,
   password VARCHAR NOT NULL
 );
-CREATE INDEX index_email ON users(email);
+CREATE UNIQUE INDEX index_email ON users(email);
