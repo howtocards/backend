@@ -96,7 +96,7 @@ impl IdentityPolicy<AppState> for TokenIdentityPolicy {
     type Identity = TokenIdentity;
     type Future = FutureResult<TokenIdentity, Error>;
 
-    fn from_request(&self, req: &mut Req) -> Self::Future {
+    fn from_request(&self, req: &Req) -> Self::Future {
         let identity = self.0.load(req);
 
         fut_ok(TokenIdentity {

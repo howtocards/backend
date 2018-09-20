@@ -1,4 +1,4 @@
-use serde::{Serialize,de::DeserializeOwned};
+use serde::{de::DeserializeOwned, Serialize};
 
 use db::Indexable;
 use std::collections::HashMap;

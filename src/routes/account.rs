@@ -1,8 +1,14 @@
-use actix_web::{dev::HttpResponseBuilder, http, App, HttpResponse, Json, Responder};
-
+use super::account_create::*;
+use actix::prelude::*;
+use actix_web::dev::HttpResponseBuilder;
+use actix_web::Error;
+use actix_web::*;
 use app_state::{AppState, Req};
 use consts::SALT;
 use db::{Database, User};
+use diesel::prelude::*;
+use failure::*;
+use futures::prelude::*;
 use hasher;
 
 #[derive(Deserialize, Debug)]
@@ -11,7 +17,21 @@ pub struct AccountNewRequest {
     password: String,
 }
 
-pub fn create((account, req): (Json<AccountNewRequest>, Req)) -> impl Responder {
+pub fn create((account, req): (Json<AccountCreate>, Req)) -> FutureResponse<HttpResponse> {
+    use schema::users::dsl::*;
+
+    req.state()
+        .pg
+        .send(account.0)
+        .from_err()
+        .and_then(|res| match res {
+            Ok(user) => Ok(HttpResponse::Ok().json(user)),
+            Err(_) => Ok(HttpResponse::InternalServerError().into()),
+        })
+        .responder()
+}
+
+pub fn create_((account, req): (Json<AccountNewRequest>, Req)) -> impl Responder {
     let mut db = req.state().db.lock().unwrap();
 
     #[cfg(debug_assertions)]
