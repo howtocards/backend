@@ -6,7 +6,6 @@ use actix_web::{
 use failure::Fail;
 
 mod account;
-mod account_create;
 mod account_session;
 
 use app_state::{AppState, Req};

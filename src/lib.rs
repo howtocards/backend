@@ -35,6 +35,7 @@ mod auth_token;
 mod consts;
 mod db;
 mod hasher;
+mod handlers;
 #[macro_use]
 mod layer;
 mod models;

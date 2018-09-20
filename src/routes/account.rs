@@ -1,14 +1,15 @@
-use super::account_create::*;
 use actix::prelude::*;
 use actix_web::dev::HttpResponseBuilder;
 use actix_web::Error;
 use actix_web::*;
-use app_state::{AppState, Req};
-use consts::SALT;
-use db::{Database, User};
 use diesel::prelude::*;
 use failure::*;
 use futures::prelude::*;
+
+use handlers::account::create::*;
+use app_state::{AppState, Req};
+use consts::SALT;
+use db::{Database, User};
 use hasher;
 
 #[derive(Deserialize, Debug)]
@@ -25,8 +26,8 @@ pub fn create((account, req): (Json<AccountCreate>, Req)) -> FutureResponse<Http
         .send(account.0)
         .from_err()
         .and_then(|res| match res {
-            Ok(user) => Ok(HttpResponse::Ok().json(user)),
-            Err(_) => Ok(HttpResponse::InternalServerError().into()),
+            Ok(_) => Ok(HttpResponse::Ok().into()),
+            Err(_) => Ok(HttpResponse::BadRequest().into()),
         })
         .responder()
 }
