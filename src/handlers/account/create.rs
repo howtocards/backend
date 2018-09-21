@@ -6,9 +6,9 @@ use uuid::Uuid;
 
 use app_state::DbExecutor;
 use app_state::Req;
-use models::*;
-use hasher;
 use consts;
+use hasher;
+use models::*;
 
 #[derive(Deserialize, Debug)]
 pub struct AccountCreate {
@@ -24,9 +24,9 @@ impl Handler<AccountCreate> for DbExecutor {
     type Result = Result<User, Error>;
 
     fn handle(&mut self, msg: AccountCreate, _: &mut Self::Context) -> Self::Result {
+        use diesel::RunQueryDsl;
         use schema::users;
         use schema::users::dsl::*;
-        use diesel::RunQueryDsl;
 
         let new_account = UserNew {
             email: &msg.email,

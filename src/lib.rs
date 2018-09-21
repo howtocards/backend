@@ -34,8 +34,8 @@ mod auth;
 mod auth_token;
 mod consts;
 mod db;
-mod hasher;
 mod handlers;
+mod hasher;
 #[macro_use]
 mod layer;
 mod models;
@@ -56,7 +56,7 @@ pub fn create_server(db_url: String) -> Result<(), failure::Error> {
 
     let system = System::new("htc-server");
 
-    let addr = SyncArbiter::start(4, move  || DbExecutor(establish_connection(db_url.clone())));
+    let addr = SyncArbiter::start(4, move || DbExecutor(establish_connection(db_url.clone())));
 
     let mut database = db::Db::new("/tmp/howtocards.dev_db.ron");
     database.load()?;
