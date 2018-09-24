@@ -4,12 +4,19 @@ use diesel;
 use diesel::prelude::*;
 use uuid::Uuid;
 
-use app_state::DbExecutor;
-use app_state::Req;
-use consts;
-use hasher;
 use models::*;
+use hasher;
+use app_state::{DbExecutor, Req};
 use layer::ErrorAnswer;
+use consts;
+
+#[derive(Debug, Fail, Serialize)]
+pub enum SessionCreateError {
+  #[fail(display = "user_not_found")]
+  UserNotFound,
+}
+
+impl_response_error_for!(SessionCreateError as BadRequest);
 
 pub struct SessionToken(pub String);
 
@@ -21,27 +28,6 @@ pub struct SessionCreate {
 
 impl Message for SessionCreate {
     type Result = Result<SessionToken, SessionCreateError>;
-}
-
-#[derive(Debug, Fail, Serialize)]
-pub enum SessionCreateError {
-  #[fail(display = "user_not_found")]
-  UserNotFound,
-}
-
-impl_response_error_for!(SessionCreateError as BadRequest);
-
-// impl error::ResponseError for SessionCreateError {
-//     fn error_response(&self) -> HttpResponse {
-//         HttpResponse::BadRequest()
-//         .json(ErrorAnswer::new(format!("{}", self)))
-//     }
-// }
-
-impl Into<HttpResponse> for SessionCreateError {
-    fn into(self) -> HttpResponse {
-        self.error_response()
-    }
 }
 
 impl Handler<SessionCreate> for DbExecutor {

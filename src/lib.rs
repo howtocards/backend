@@ -34,13 +34,13 @@ mod auth;
 mod auth_token;
 mod consts;
 mod db;
-mod handlers;
 mod hasher;
 #[macro_use]
 mod layer;
 mod models;
-mod routes;
 mod schema;
+mod routes;
+mod handlers;
 
 use app_state::AppState;
 

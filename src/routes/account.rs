@@ -22,7 +22,7 @@ pub fn create((account, req): (Json<AccountCreate>, Req)) -> FutureResponse<Http
         .from_err()
         .and_then(|res| match res {
             Ok(_) => Ok(HttpResponse::Ok().into()),
-            Err(_) => Ok(HttpResponse::BadRequest().into()),
+            Err(err) => Ok(err.error_response()),
         })
         .responder()
 }
@@ -41,7 +41,7 @@ pub fn login((login_data, req): (Json<SessionCreate>, Req)) -> FutureResponse<Ht
             Ok(session_token) => Ok(HttpResponse::Ok().json(R {
                 token: session_token.0,
             })),
-            Err(err) => Ok(err.into()),
+            Err(err) => Ok(err.error_response()),
         })
         .responder()
 }

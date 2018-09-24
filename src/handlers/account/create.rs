@@ -4,11 +4,19 @@ use diesel;
 use diesel::prelude::*;
 use uuid::Uuid;
 
-use app_state::DbExecutor;
-use app_state::Req;
-use consts;
-use hasher;
 use models::*;
+use hasher;
+use app_state::{DbExecutor, Req};
+use layer::ErrorAnswer;
+use consts;
+
+#[derive(Fail, Debug)]
+pub enum AccountCreateError {
+    #[fail(display = "email_already_exists")]
+    EmailExists,
+}
+
+impl_response_error_for!(AccountCreateError as BadRequest);
 
 #[derive(Deserialize, Debug)]
 pub struct AccountCreate {
@@ -17,11 +25,11 @@ pub struct AccountCreate {
 }
 
 impl Message for AccountCreate {
-    type Result = Result<User, Error>;
+    type Result = Result<User, AccountCreateError>;
 }
 
 impl Handler<AccountCreate> for DbExecutor {
-    type Result = Result<User, Error>;
+    type Result = Result<User, AccountCreateError>;
 
     fn handle(&mut self, msg: AccountCreate, _: &mut Self::Context) -> Self::Result {
         use diesel::RunQueryDsl;
@@ -36,6 +44,6 @@ impl Handler<AccountCreate> for DbExecutor {
         Ok(diesel::insert_into(users)
             .values(&new_account)
             .get_result::<User>(&self.0)
-            .map_err(|_| error::ErrorInternalServerError("Failed"))?)
+            .map_err(|_| AccountCreateError::EmailExists)?)
     }
 }
