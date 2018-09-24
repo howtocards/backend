@@ -37,10 +37,10 @@ mod db;
 mod hasher;
 #[macro_use]
 mod layer;
-mod models;
-mod schema;
-mod routes;
 mod handlers;
+mod models;
+mod routes;
+mod schema;
 
 use app_state::AppState;
 

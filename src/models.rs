@@ -1,5 +1,5 @@
-use schema::users;
 use schema::tokens;
+use schema::users;
 use uuid::Uuid;
 
 #[derive(Queryable, Serialize, Deserialize, Associations, Identifiable, Debug)]
@@ -16,7 +16,7 @@ pub struct UserNew<'a> {
     pub password: &'a str,
 }
 
-#[derive(Queryable, Serialize, Deserialize, Associations, Identifiable)]
+#[derive(Debug, Queryable, Serialize, Insertable, Deserialize, Associations, Identifiable)]
 #[belongs_to(User)]
 #[primary_key(token)]
 pub struct Token {

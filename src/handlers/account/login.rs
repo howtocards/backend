@@ -4,20 +4,24 @@ use diesel;
 use diesel::prelude::*;
 use uuid::Uuid;
 
-use models::*;
-use hasher;
 use app_state::{DbExecutor, Req};
-use layer::ErrorAnswer;
 use consts;
+use hasher;
+use layer::ErrorAnswer;
+use models::*;
 
 #[derive(Debug, Fail, Serialize)]
 pub enum SessionCreateError {
-  #[fail(display = "user_not_found")]
-  UserNotFound,
+    #[fail(display = "user_not_found")]
+    UserNotFound,
+
+    #[fail(display = "cant_create_session")]
+    TokenInsertFail,
 }
 
 impl_response_error_for!(SessionCreateError as BadRequest);
 
+/// Just handle token
 pub struct SessionToken(pub String);
 
 #[derive(Deserialize, Debug)]
@@ -45,13 +49,23 @@ impl Handler<SessionCreate> for DbExecutor {
         };
 
         let user = users::table
-          .filter(users::email.eq(&msg.email))
-          .filter(users::password.eq(new_account.password.clone()))
-          .get_result::<User>(&self.0)
-          .map_err(|_| SessionCreateError::UserNotFound)?;
+            .filter(users::email.eq(&msg.email))
+            .filter(users::password.eq(new_account.password.clone()))
+            .get_result::<User>(&self.0)
+            .map_err(|_| SessionCreateError::UserNotFound)?;
 
-        println!("{:#?}", user);
+        let token_string = format!("{}-{}", Uuid::new_v4(), Uuid::new_v4());
 
-        Ok(SessionToken("example".to_string()))
+        let new_token = Token {
+            token: token_string,
+            user_id: user.id,
+        };
+
+        diesel::insert_into(tokens::table)
+            .values(&new_token)
+            .execute(&self.0)
+            .map_err(|_| SessionCreateError::TokenInsertFail)?;
+
+        Ok(SessionToken(new_token.token))
     }
 }

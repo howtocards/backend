@@ -12,6 +12,7 @@ use db::{Database, User};
 use handlers::account::create::*;
 use handlers::account::login::*;
 use hasher;
+use layer::SuccessAnswer;
 
 pub fn create((account, req): (Json<AccountCreate>, Req)) -> FutureResponse<HttpResponse> {
     use schema::users::dsl::*;
@@ -38,7 +39,7 @@ pub fn login((login_data, req): (Json<SessionCreate>, Req)) -> FutureResponse<Ht
         .send(login_data.0)
         .from_err()
         .and_then(|res| match res {
-            Ok(session_token) => Ok(HttpResponse::Ok().json(R {
+            Ok(session_token) => Ok(answer_success!(Ok, R {
                 token: session_token.0,
             })),
             Err(err) => Ok(err.error_response()),

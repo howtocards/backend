@@ -4,11 +4,11 @@ use diesel;
 use diesel::prelude::*;
 use uuid::Uuid;
 
-use models::*;
-use hasher;
 use app_state::{DbExecutor, Req};
-use layer::ErrorAnswer;
 use consts;
+use hasher;
+use layer::ErrorAnswer;
+use models::*;
 
 #[derive(Fail, Debug)]
 pub enum AccountCreateError {
