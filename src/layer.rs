@@ -28,11 +28,11 @@ impl<T> SuccessAnswer<T> {
 macro_rules! impl_response_error_for {
     ($struct:ident as $response_status:ident) => {
         use actix_web;
-        use layer;
+        use layer as lay;
         impl actix_web::error::ResponseError for $struct {
             fn error_response(&self) -> actix_web::HttpResponse {
                 actix_web::HttpResponse::$response_status()
-                    .json(layer::ErrorAnswer::new(format!("{}", self)))
+                    .json(lay::ErrorAnswer::new(format!("{}", self)))
             }
         }
     };

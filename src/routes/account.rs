@@ -41,7 +41,7 @@ pub fn login((login_data, req): (Json<SessionCreate>, Req)) -> FutureResponse<Ht
             Ok(session_token) => Ok(HttpResponse::Ok().json(R {
                 token: session_token.0,
             })),
-            Err(_) => Ok(HttpResponse::BadRequest().into()),
+            Err(err) => Ok(err.into()),
         })
         .responder()
 }
