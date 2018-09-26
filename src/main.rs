@@ -3,6 +3,8 @@ extern crate dotenv;
 extern crate failure;
 extern crate howtocards;
 
+mod prelude;
+use prelude::*;
 use std::env;
 
 #[derive(Fail, Debug)]
@@ -15,8 +17,8 @@ enum StartErr {
 }
 
 fn run() -> Result<(), failure::Error> {
-    dotenv::dotenv().map_err(|_| StartErr::DotEnvFail)?;
-    let db_url = env::var("DATABASE_URL").map_err(|_| StartErr::DbExpected)?;
+    dotenv::dotenv().or_err(StartErr::DotEnvFail)?;
+    let db_url = env::var("DATABASE_URL").or_err(StartErr::DbExpected)?;
 
     howtocards::create_server(db_url)?;
 

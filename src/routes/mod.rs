@@ -1,3 +1,5 @@
+//! Handle requests and send to handlers
+
 use actix_web::error::ErrorBadRequest;
 use actix_web::middleware::identity::RequestIdentity;
 use actix_web::{
@@ -5,13 +7,14 @@ use actix_web::{
 };
 use failure::Fail;
 
-mod account;
-mod account_session;
+pub mod account;
+pub mod account_session;
 
 use app_state::{AppState, Req};
 use auth::{Auth, AuthOptional};
 use db::{Database, Db, User};
 
+/// Applies routes to app
 #[inline]
 pub fn with_app(app: App<AppState>) -> App<AppState> {
     let mut app = account::with_app(app);

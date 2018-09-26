@@ -1,6 +1,18 @@
+//! Hashing utilites
+
 use sha2::{Digest, Sha256};
 use std::{fmt::Display, str::from_utf8};
 
+/// Hash string with sha256
+///
+/// # Examples
+///
+/// ```
+/// # extern crate howtocards;
+/// use howtocards::hasher::hash_string;
+///
+/// assert_eq!(hash_string("Foo"), "1CBEC737F863E4922CEE63CC2EBBFAAFCD1CFF8B790D8CFD2E6A5D550B648AFA".to_string());
+/// ```
 pub fn hash_string<S: AsRef<[u8]>>(value: S) -> String {
     let mut hasher = Sha256::default();
 
@@ -13,6 +25,7 @@ pub fn hash_string<S: AsRef<[u8]>>(value: S) -> String {
         .collect()
 }
 
+/// Hash password with custom salt
 pub fn hash_password<P, S>(password: P, salt: S) -> String
 where
     P: Display,
@@ -21,6 +34,7 @@ where
     hash_string(format!("{}${}", password, salt))
 }
 
+/// Check hashed password with salt and original password
 pub fn validate_password<P, S>(hash: &String, salt: S, password: P) -> bool
 where
     P: Display,

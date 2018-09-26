@@ -1,3 +1,5 @@
+//! Session create
+
 use actix::prelude::*;
 use actix_web::*;
 use diesel;
@@ -9,12 +11,15 @@ use consts;
 use hasher;
 use layer::ErrorAnswer;
 use models::*;
+use prelude::*;
 
 #[derive(Debug, Fail, Serialize)]
 pub enum SessionCreateError {
+    /// When user id not found in db
     #[fail(display = "user_not_found")]
     UserNotFound,
 
+    /// When happened something terrible like session string already exists
     #[fail(display = "cant_create_session")]
     TokenInsertFail,
 }
@@ -24,6 +29,9 @@ impl_response_error_for!(SessionCreateError as BadRequest);
 /// Just handle token
 pub struct SessionToken(pub String);
 
+/// Session create message
+///
+/// Should be sended to DbExecutor
 #[derive(Deserialize, Debug)]
 pub struct SessionCreate {
     pub email: String,
@@ -52,7 +60,7 @@ impl Handler<SessionCreate> for DbExecutor {
             .filter(users::email.eq(&msg.email))
             .filter(users::password.eq(new_account.password.clone()))
             .get_result::<User>(&self.0)
-            .map_err(|_| SessionCreateError::UserNotFound)?;
+            .or_err(SessionCreateError::UserNotFound)?;
 
         let token_string = format!("{}-{}", Uuid::new_v4(), Uuid::new_v4());
 
@@ -64,7 +72,7 @@ impl Handler<SessionCreate> for DbExecutor {
         diesel::insert_into(tokens::table)
             .values(&new_token)
             .execute(&self.0)
-            .map_err(|_| SessionCreateError::TokenInsertFail)?;
+            .or_err(SessionCreateError::TokenInsertFail)?;
 
         Ok(SessionToken(new_token.token))
     }

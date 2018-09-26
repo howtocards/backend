@@ -1,3 +1,5 @@
+//! /old/account/session
+
 use actix_web::{error, http, App, HttpResponse, Json, Responder};
 use std::sync::MutexGuard;
 
@@ -57,6 +59,7 @@ pub fn create_session(
     }
 }
 
+/// POST /old/account/session
 pub fn create((session_data, req): (Json<NewSession>, Req)) -> impl Responder {
     let mut db = req.state().db.lock().unwrap();
 
@@ -69,6 +72,7 @@ pub struct SessionGetResponse {
     email: String,
 }
 
+/// GET /old/account/session
 pub fn get(auth: Auth) -> Json<SessionGetResponse> {
     Json(SessionGetResponse {
         email: auth.user.email,

@@ -1,3 +1,7 @@
+//! Custom database
+//!
+//! **Module should be removed**
+
 use failure::Error;
 use ron;
 use std::{

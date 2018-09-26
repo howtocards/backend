@@ -1,3 +1,5 @@
+//! Create account
+
 use actix::prelude::*;
 use actix_web::*;
 use diesel;
@@ -9,15 +11,20 @@ use consts;
 use hasher;
 use layer::ErrorAnswer;
 use models::*;
+use prelude::*;
 
 #[derive(Fail, Debug)]
 pub enum AccountCreateError {
+    /// When email already exists in db
     #[fail(display = "email_already_exists")]
     EmailExists,
 }
 
 impl_response_error_for!(AccountCreateError as BadRequest);
 
+/// Account create message
+///
+/// Should be sended to DbExecutor
 #[derive(Deserialize, Debug)]
 pub struct AccountCreate {
     pub email: String,
@@ -44,6 +51,6 @@ impl Handler<AccountCreate> for DbExecutor {
         Ok(diesel::insert_into(users)
             .values(&new_account)
             .get_result::<User>(&self.0)
-            .map_err(|_| AccountCreateError::EmailExists)?)
+            .or_err(AccountCreateError::EmailExists)?)
     }
 }

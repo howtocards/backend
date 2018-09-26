@@ -1,3 +1,5 @@
+//! Diesel models
+
 use schema::tokens;
 use schema::users;
 use uuid::Uuid;

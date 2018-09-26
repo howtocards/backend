@@ -1,3 +1,6 @@
+//! Application library
+#![doc(html_logo_url = "https://avatars0.githubusercontent.com/u/38739163?s=200&v=4")]
+
 #![allow(dead_code, unused_imports)]
 
 extern crate actix;
@@ -29,20 +32,22 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-mod app_state;
-mod auth;
-mod auth_token;
-mod consts;
-mod db;
-mod hasher;
+pub mod app_state;
+pub mod auth;
+pub mod auth_token;
+pub mod consts;
+pub mod db;
+pub mod hasher;
+pub mod prelude;
 #[macro_use]
-mod layer;
-mod handlers;
-mod models;
-mod routes;
-mod schema;
+pub mod layer;
+pub mod handlers;
+pub mod models;
+pub mod routes;
+pub mod schema;
 
 use app_state::AppState;
+use prelude::*;
 
 fn establish_connection(db_url: String) -> PgConnection {
     use diesel::prelude::*;

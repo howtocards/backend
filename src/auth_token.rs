@@ -1,3 +1,5 @@
+//! Authentication token parsing
+
 use actix_web::middleware::identity::{Identity, IdentityPolicy};
 use actix_web::middleware::Response;
 use actix_web::{Error, HttpMessage, HttpRequest, HttpResponse};
