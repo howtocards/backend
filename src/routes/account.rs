@@ -39,9 +39,12 @@ pub fn login((login_data, req): (Json<SessionCreate>, Req)) -> FutureResponse<Ht
         .send(login_data.0)
         .from_err()
         .and_then(|res| match res {
-            Ok(session_token) => Ok(answer_success!(Ok, R {
-                token: session_token.0,
-            })),
+            Ok(session_token) => Ok(answer_success!(
+                Ok,
+                R {
+                    token: session_token.0,
+                }
+            )),
             Err(err) => Ok(err.error_response()),
         })
         .responder()

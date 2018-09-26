@@ -19,7 +19,6 @@ pub struct SuccessAnswer<T> {
     result: T,
 }
 
-
 impl<T> SuccessAnswer<T> {
     pub fn new(result: T) -> Self {
         SuccessAnswer { ok: true, result }
@@ -40,11 +39,10 @@ macro_rules! impl_response_error_for {
 }
 
 macro_rules! answer_success {
-    ($response:ident, $value:expr) => {
-        { use actix_web::HttpResponse;
-            HttpResponse::$response().json(SuccessAnswer::new($value))
-        }
-    }
+    ($response:ident, $value:expr) => {{
+        use actix_web::HttpResponse;
+        HttpResponse::$response().json(SuccessAnswer::new($value))
+    }};
 }
 
 // macro_rules! answer_error {
