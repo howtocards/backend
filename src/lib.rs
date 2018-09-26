@@ -12,15 +12,10 @@ extern crate serde_derive;
 extern crate failure;
 extern crate futures;
 extern crate ron;
-extern crate rustbreak;
 extern crate sha2;
 extern crate uuid;
 #[macro_use]
 extern crate diesel;
-
-extern crate notify_rust;
-
-use notify_rust::Notification;
 
 use actix_web::middleware::identity::IdentityService;
 use actix_web::{http, middleware, server, App, HttpRequest, Json, Responder};
@@ -93,14 +88,6 @@ pub fn create_server(db_url: String) -> Result<(), failure::Error> {
         .workers(2)
         .bind("127.0.0.1:9000")
         .expect("Can not bind to 127.0.0.1:9000");
-
-    Notification::new()
-        .summary("HowToCards")
-        .body("Backend on rust start listening")
-        .appname("howtocards_backend")
-        .timeout(0)
-        .show()
-        .unwrap();
 
     println!("Server started on http://127.0.0.1:9000");
     app.start();
