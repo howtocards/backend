@@ -1,6 +1,6 @@
 [package]
 name = "howtocards"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Sergey Sova <mail@sergeysova.com>"]
 license = "MIT"
 description = "Application library for howtocards service"
