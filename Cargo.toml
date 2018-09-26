@@ -2,6 +2,8 @@
 name = "howtocards_backend"
 version = "0.1.2"
 authors = ["Sergey Sova <mail@sergeysova.com>"]
+license = "MIT"
+description = "Application library for howtocards service"
 
 [[bin]]
 name = "howtocards_server"
