@@ -48,10 +48,10 @@ macro_rules! answer_success {
     }};
 }
 
-// macro_rules! answer_error {
-//     ($response:ident, $value:expr) => {
-//         { use actix_web::HttpResponse;
-//             HttpResponse::$response().json(ErrorAnswer::new($value))
-//         }
-//     }
-// }
+macro_rules! answer_error {
+    ($response:ident, $value:expr) => {{
+        use actix_web::HttpResponse;
+        use layer::ErrorAnswer;
+        HttpResponse::$response().json(ErrorAnswer::new($value))
+    }};
+}

@@ -5,9 +5,9 @@ use futures::*;
 
 use app_state::{AppState, Req};
 use auth::{Auth, AuthOptional};
-use handlers::cards::create::*;
-use handlers::cards::list::*;
 use models::*;
+
+type FutRes = FutureResponse<HttpResponse>;
 
 #[derive(Deserialize)]
 pub struct CardCreateBody {
@@ -16,10 +16,8 @@ pub struct CardCreateBody {
 }
 
 /// POST /cards
-pub fn create(
-    (card_form, auth, req): (Json<CardCreateBody>, Auth, Req),
-) -> FutureResponse<HttpResponse> {
-    use schema::cards::dsl::*;
+pub fn create((card_form, auth, req): (Json<CardCreateBody>, Auth, Req)) -> FutRes {
+    use handlers::cards::create::*;
 
     #[derive(Serialize)]
     struct R {
@@ -42,8 +40,8 @@ pub fn create(
 }
 
 /// GET /cards
-pub fn list((_auth, req): (AuthOptional, Req)) -> FutureResponse<HttpResponse> {
-    use schema::cards::dsl::*;
+pub fn list((_auth, req): (AuthOptional, Req)) -> FutRes {
+    use handlers::cards::list::*;
 
     #[derive(Serialize)]
     pub struct R(Vec<Card>);
@@ -59,10 +57,34 @@ pub fn list((_auth, req): (AuthOptional, Req)) -> FutureResponse<HttpResponse> {
         .responder()
 }
 
+/// GET /cards/{card_id}
+pub fn get_card((_auth, req, info): (AuthOptional, Req, Path<(u32,)>)) -> FutRes {
+    use handlers::cards::get::*;
+
+    #[derive(Serialize)]
+    pub struct R {
+        card: Card,
+    }
+
+    req.state()
+        .pg
+        .send(CardFetch { id: info.0 })
+        .from_err()
+        .and_then(|res| match res {
+            Some(card) => Ok(answer_success!(Ok, R { card })),
+            None => Ok(answer_error!(NotFound, "id_not_found".to_string())),
+        })
+        .responder()
+}
+
 #[inline]
 pub fn with_app(app: App<AppState>) -> App<AppState> {
-    app.resource("/cards", |r| {
-        r.method(http::Method::POST).with(self::create);
-        r.method(http::Method::GET).with(self::list)
+    app
+    .resource("/cards/{card_id}", |r| {
+        r.method(http::Method::GET).with(self::get_card)
     })
+    // .resource("/cards", |r| {
+    //     r.method(http::Method::POST).with(self::create);
+    //     r.method(http::Method::GET).with(self::list)
+    // })
 }
