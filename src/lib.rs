@@ -10,7 +10,6 @@ extern crate serde_derive;
 #[macro_use]
 extern crate failure;
 extern crate futures;
-extern crate ron;
 extern crate sha2;
 extern crate uuid;
 #[macro_use]
@@ -19,7 +18,6 @@ extern crate chrono;
 
 use actix_web::middleware::identity::IdentityService;
 use actix_web::{http, middleware, server, App, HttpRequest, Json, Responder};
-use db::Database;
 use diesel::PgConnection;
 use failure::Fail;
 use std::{
@@ -31,7 +29,6 @@ pub mod app_state;
 pub mod auth;
 pub mod auth_token;
 pub mod consts;
-pub mod db;
 pub mod hasher;
 pub mod prelude;
 #[macro_use]
@@ -58,14 +55,8 @@ pub fn create_server(db_url: String) -> Result<(), failure::Error> {
 
     let addr = SyncArbiter::start(4, move || DbExecutor(establish_connection(db_url.clone())));
 
-    let mut database = db::Db::new("/tmp/howtocards.dev_db.ron");
-    database.load()?;
-
-    let database = Arc::new(Mutex::new(database));
-
     let server_creator = move || {
-        let db = Arc::clone(&database);
-        let state = AppState::new(db, addr.clone());
+        let state = AppState::new(addr.clone());
         let app = App::with_state(state)
             .middleware(
                 middleware::cors::Cors::build()

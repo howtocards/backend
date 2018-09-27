@@ -5,8 +5,6 @@ use actix_web::HttpRequest;
 use diesel::prelude::*;
 use std::sync::{Arc, Mutex};
 
-use db::Db;
-
 /// Actor with connection to postgres
 pub struct DbExecutor(pub PgConnection);
 
@@ -17,17 +15,14 @@ impl Actor for DbExecutor {
 
 /// That state passes to each request
 pub struct AppState {
-    /// Old database reference
-    pub db: Arc<Mutex<Db>>,
-
     /// Postgres connection actor
     pub pg: Addr<DbExecutor>,
 }
 
 impl AppState {
     /// Make new state
-    pub fn new(db: Arc<Mutex<Db>>, pg: Addr<DbExecutor>) -> AppState {
-        AppState { db, pg }
+    pub fn new(pg: Addr<DbExecutor>) -> AppState {
+        AppState { pg }
     }
 }
 

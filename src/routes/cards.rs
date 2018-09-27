@@ -1,7 +1,6 @@
 use actix_web::{dev::HttpResponseBuilder, http, App, HttpResponse, Json, Responder};
 
 use app_state::{AppState, Req};
-use db::{Database, User};
 
 
 

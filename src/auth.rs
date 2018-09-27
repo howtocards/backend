@@ -3,15 +3,16 @@
 use actix_web::error::ErrorBadRequest;
 use actix_web::middleware::identity::RequestIdentity;
 use actix_web::{
-    http, App, Error, FromRequest, HttpRequest, HttpResponse, Responder, ResponseError, FutureResponse,
+    http, App, Error, FromRequest, FutureResponse, HttpRequest, HttpResponse, Responder,
+    ResponseError,
 };
 use failure::*;
 use futures::prelude::*;
 
 use app_state::{AppState, Req};
+use handlers::account::session_fetch::AccountSessionFetch;
 use models::User;
 use prelude::ResultExt;
-use handlers::account::session_fetch::AccountSessionFetch;
 
 /// Describe error that shows to user
 #[derive(Serialize, Deserialize, Default, Debug)]

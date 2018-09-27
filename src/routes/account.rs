@@ -1,6 +1,5 @@
 //! /account
 
-use serde::Serialize;
 use actix::prelude::*;
 use actix_web::dev::HttpResponseBuilder;
 use actix_web::Error;
@@ -8,15 +7,15 @@ use actix_web::*;
 use diesel::prelude::*;
 use failure::*;
 use futures::prelude::*;
+use serde::Serialize;
 
 use app_state::{AppState, Req};
+use auth::Auth;
 use consts::SALT;
-use db::{Database, User};
 use handlers::account::create::*;
 use handlers::account::login::*;
 use hasher;
 use layer::SuccessAnswer;
-use auth::Auth;
 
 /// POST /account
 pub fn create((account, req): (Json<AccountCreate>, Req)) -> FutureResponse<HttpResponse> {
