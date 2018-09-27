@@ -4,8 +4,9 @@ use failure::*;
 use futures::*;
 
 use app_state::{AppState, Req};
-use auth::Auth;
+use auth::{Auth, AuthOptional};
 use handlers::cards::create::*;
+use handlers::cards::list::*;
 use models::*;
 
 #[derive(Deserialize)]
@@ -40,9 +41,28 @@ pub fn create(
         .responder()
 }
 
+/// GET /cards
+pub fn list((_auth, req): (AuthOptional, Req)) -> FutureResponse<HttpResponse> {
+    use schema::cards::dsl::*;
+
+    #[derive(Serialize)]
+    pub struct R(Vec<Card>);
+
+    req.state()
+        .pg
+        .send(CardsListFetch)
+        .from_err()
+        .and_then(|res| match res {
+            Some(list) => Ok(answer_success!(Ok, R(list))),
+            None => Ok(answer_success!(Ok, R(vec![]))),
+        })
+        .responder()
+}
+
 #[inline]
 pub fn with_app(app: App<AppState>) -> App<AppState> {
     app.resource("/cards", |r| {
-        r.method(http::Method::POST).with(self::create)
+        r.method(http::Method::POST).with(self::create);
+        r.method(http::Method::GET).with(self::list)
     })
 }
