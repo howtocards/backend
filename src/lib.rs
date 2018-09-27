@@ -16,6 +16,7 @@ extern crate sha2;
 extern crate uuid;
 #[macro_use]
 extern crate diesel;
+extern crate chrono;
 
 use actix_web::middleware::identity::IdentityService;
 use actix_web::{http, middleware, server, App, HttpRequest, Json, Responder};
