@@ -52,12 +52,12 @@ impl Handler<SessionCreate> for DbExecutor {
         use schema::{tokens, users};
 
         let new_account = UserNew {
-            email: &msg.email,
-            password: &hasher::hash_password(&msg.password, consts::SALT),
+            email: msg.email,
+            password: hasher::hash_password(&msg.password, consts::SALT),
         };
 
         let user = users::table
-            .filter(users::email.eq(&msg.email))
+            .filter(users::email.eq(new_account.email.clone()))
             .filter(users::password.eq(new_account.password.clone()))
             .get_result::<User>(&self.0)
             .or_err(SessionCreateError::UserNotFound)?;

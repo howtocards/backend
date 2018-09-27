@@ -44,8 +44,8 @@ impl Handler<AccountCreate> for DbExecutor {
         use schema::users::dsl::*;
 
         let new_account = UserNew {
-            email: &msg.email,
-            password: &hasher::hash_password(&msg.password, consts::SALT),
+            email: msg.email,
+            password: hasher::hash_password(&msg.password, consts::SALT),
         };
 
         Ok(diesel::insert_into(users)

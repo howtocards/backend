@@ -13,9 +13,9 @@ pub struct User {
 
 #[derive(Deserialize, Insertable, Queryable)]
 #[table_name = "users"]
-pub struct UserNew<'a> {
-    pub email: &'a str,
-    pub password: &'a str,
+pub struct UserNew {
+    pub email: String,
+    pub password: String,
 }
 
 #[derive(Debug, Queryable, Serialize, Insertable, Deserialize, Associations, Identifiable)]
