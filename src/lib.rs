@@ -1,6 +1,5 @@
 //! Application library
 #![doc(html_logo_url = "https://avatars0.githubusercontent.com/u/38739163?s=200&v=4")]
-
 #![allow(dead_code, unused_imports)]
 
 extern crate actix;

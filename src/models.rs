@@ -36,7 +36,7 @@ pub struct Card {
     pub author_id: i32,
     pub title: String,
     pub content: String,
-    pub created_at: NaiveDateTime,
+    pub created_at: Option<NaiveDateTime>,
 }
 
 #[derive(Debug, Deserialize, Insertable, Associations)]

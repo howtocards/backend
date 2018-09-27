@@ -4,7 +4,6 @@ use actix::prelude::*;
 use actix_web::*;
 use diesel;
 use diesel::prelude::*;
-use uuid::Uuid;
 
 use app_state::{DbExecutor, Req};
 use consts;
