@@ -43,6 +43,7 @@ macro_rules! impl_response_error_for {
 macro_rules! answer_success {
     ($response:ident, $value:expr) => {{
         use actix_web::HttpResponse;
+        use layer::SuccessAnswer;
         HttpResponse::$response().json(SuccessAnswer::new($value))
     }};
 }
