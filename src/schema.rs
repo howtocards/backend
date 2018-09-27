@@ -26,4 +26,8 @@ table! {
 joinable!(cards -> users (author_id));
 joinable!(tokens -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(cards, tokens, users,);
+allow_tables_to_appear_in_same_query!(
+    cards,
+    tokens,
+    users,
+);

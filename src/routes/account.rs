@@ -57,13 +57,19 @@ pub fn login((login_data, req): (Json<SessionCreate>, Req)) -> FutureResponse<Ht
 }
 
 /// GET /account/session
-pub fn get_session((auth, _req): (Auth, Req)) -> Json<impl Serialize> {
+pub fn get_session((auth, req): (Auth, Req)) -> Json<impl Serialize> {
+    use actix_web::middleware::identity::RequestIdentity;
+
     #[derive(Serialize)]
     struct R {
         email: String,
+        token: String,
     }
 
-    Json(R { email: auth.user.email.clone() })
+    Json(R {
+        email: auth.user.email.clone(),
+        token: req.identity().unwrap(),
+    })
 }
 
 #[inline]

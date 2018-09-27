@@ -3,13 +3,15 @@
 use actix_web::error::ErrorBadRequest;
 use actix_web::middleware::identity::RequestIdentity;
 use actix_web::{
-    http, App, Error, FromRequest, HttpRequest, HttpResponse, Responder, ResponseError,
+    http, App, Error, FromRequest, HttpRequest, HttpResponse, Responder, ResponseError, FutureResponse,
 };
-use failure::Fail;
+use failure::*;
+use futures::prelude::*;
 
 use app_state::{AppState, Req};
-use db::{Database, User};
-use prelude::*;
+use models::User;
+use prelude::ResultExt;
+use handlers::account::session_fetch::AccountSessionFetch;
 
 /// Describe error that shows to user
 #[derive(Serialize, Deserialize, Default, Debug)]
@@ -87,12 +89,14 @@ impl FromRequest<AppState> for Auth {
 
     fn from_request(req: &HttpRequest<AppState>, _cfg: &Self::Config) -> Self::Result {
         let id = req.identity().ok_or(AuthError::InvalidToken)?.to_string();
-        let db = req.state().db.lock().or_err(AuthError::InvalidToken)?;
 
-        let (_, user_id) = db.tokens().find(&id).ok_or(AuthError::UnknownToken)?;
-        let user = db.users().get(user_id).ok_or(AuthError::UnknownToken)?;
-
-        Ok(Auth { user: user.clone() })
+        req.state()
+            .pg
+            .send(AccountSessionFetch { token: id })
+            .wait()
+            .or_err(AuthError::UnknownToken)
+            .and_then(|user| user.ok_or(AuthError::InvalidToken))
+            .map(|user| Auth { user })
     }
 }
 
