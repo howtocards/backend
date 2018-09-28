@@ -6,7 +6,7 @@ use diesel::prelude::*;
 use std::sync::{Arc, Mutex};
 
 /// Actor with connection to postgres
-pub struct DbExecutor{
+pub struct DbExecutor {
     pub conn: PgConnection,
 }
 

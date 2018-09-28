@@ -54,7 +54,9 @@ pub fn create_server(db_url: String) -> Result<(), failure::Error> {
 
     let system = System::new("htc-server");
 
-    let addr = SyncArbiter::start(4, move || DbExecutor::new(establish_connection(db_url.clone())));
+    let addr = SyncArbiter::start(4, move || {
+        DbExecutor::new(establish_connection(db_url.clone()))
+    });
 
     let server_creator = move || {
         let state = AppState::new(addr.clone());

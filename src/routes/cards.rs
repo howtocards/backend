@@ -87,8 +87,10 @@ pub fn list((_auth, req): (AuthOptional, Req)) -> FutRes {
         .responder()
 }
 
+type CardPath = Path<(u32,)>;
+
 /// GET /cards/{card_id}
-pub fn get((_auth, req, path): (AuthOptional, Req, Path<(u32,)>)) -> FutRes {
+pub fn get((_auth, req, path): (AuthOptional, Req, CardPath)) -> FutRes {
     use handlers::cards::get::*;
 
     #[derive(Serialize)]
@@ -107,13 +109,36 @@ pub fn get((_auth, req, path): (AuthOptional, Req, Path<(u32,)>)) -> FutRes {
         .responder()
 }
 
+/// DELETE /cards/{card_id}
+pub fn delete((auth, req, path): (Auth, Req, CardPath)) -> FutRes {
+    use handlers::cards::delete::*;
+
+    #[derive(Serialize)]
+    pub struct R {
+        card: Card,
+    }
+
+    req.state()
+        .pg
+        .send(CardDelete {
+            requester_id: auth.user.id,
+            card_id: path.0,
+        })
+        .from_err()
+        .and_then(|res| match res {
+            Ok(card) => Ok(answer_success!(Accepted, R { card })),
+            Err(err) => Ok(err.error_response()),
+        })
+        .responder()
+}
+
 #[inline]
 pub fn with_app(app: App<AppState>) -> App<AppState> {
     app.resource("/cards/{card_id}", |r| {
         r.method(http::Method::GET).with(self::get);
         r.method(http::Method::PUT).with(self::edit);
-    })
-    .resource("/cards", |r| {
+        r.method(http::Method::DELETE).with(self::delete);
+    }).resource("/cards", |r| {
         r.method(http::Method::POST).with(self::create);
         r.method(http::Method::GET).with(self::list)
     })
