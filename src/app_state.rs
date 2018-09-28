@@ -6,11 +6,19 @@ use diesel::prelude::*;
 use std::sync::{Arc, Mutex};
 
 /// Actor with connection to postgres
-pub struct DbExecutor(pub PgConnection);
+pub struct DbExecutor{
+    pub conn: PgConnection,
+}
 
 /// Receives database updates
 impl Actor for DbExecutor {
     type Context = SyncContext<Self>;
+}
+
+impl DbExecutor {
+    pub fn new(conn: PgConnection) -> Self {
+        DbExecutor { conn }
+    }
 }
 
 /// That state passes to each request

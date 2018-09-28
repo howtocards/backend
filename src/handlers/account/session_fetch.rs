@@ -30,9 +30,9 @@ impl Handler<AccountSessionFetch> for DbExecutor {
         use schema::tokens::dsl::*;
         use schema::users::dsl::*;
 
-        let found_token: Token = tokens.filter(token.eq(msg.token)).first(&self.0).ok()?;
+        let found_token: Token = tokens.filter(token.eq(msg.token)).first(&self.conn).ok()?;
 
-        let found_user: User = users.find(found_token.user_id).get_result(&self.0).ok()?;
+        let found_user: User = users.find(found_token.user_id).get_result(&self.conn).ok()?;
 
         Some(found_user)
     }

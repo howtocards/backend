@@ -59,7 +59,7 @@ impl Handler<CardEdit> for DbExecutor {
         let target = cards.filter(id.eq(msg.card_id as i32));
 
         let found = target
-            .get_result::<Card>(&self.0)
+            .get_result::<Card>(&self.conn)
             .or_err(CardEditError::NotFound)?;
 
         if found.author_id != msg.requester_id {
@@ -73,7 +73,7 @@ impl Handler<CardEdit> for DbExecutor {
         ));
 
         Ok(update
-            .get_result::<Card>(&self.0)
+            .get_result::<Card>(&self.conn)
             .or_err(CardEditError::IncorrectForm)?)
     }
 }

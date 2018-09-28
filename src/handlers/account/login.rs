@@ -59,7 +59,7 @@ impl Handler<SessionCreate> for DbExecutor {
         let user = users::table
             .filter(users::email.eq(new_account.email.clone()))
             .filter(users::password.eq(new_account.password.clone()))
-            .get_result::<User>(&self.0)
+            .get_result::<User>(&self.conn)
             .or_err(SessionCreateError::UserNotFound)?;
 
         let token_string = format!("{}-{}", Uuid::new_v4(), Uuid::new_v4());
@@ -71,7 +71,7 @@ impl Handler<SessionCreate> for DbExecutor {
 
         diesel::insert_into(tokens::table)
             .values(&new_token)
-            .execute(&self.0)
+            .execute(&self.conn)
             .or_err(SessionCreateError::TokenInsertFail)?;
 
         Ok(SessionToken(new_token.token))

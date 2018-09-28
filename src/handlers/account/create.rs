@@ -49,7 +49,7 @@ impl Handler<AccountCreate> for DbExecutor {
 
         Ok(diesel::insert_into(users)
             .values(&new_account)
-            .get_result::<User>(&self.0)
+            .get_result::<User>(&self.conn)
             .or_err(AccountCreateError::EmailExists)?)
     }
 }

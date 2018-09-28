@@ -26,6 +26,6 @@ impl Handler<CardsListFetch> for DbExecutor {
     fn handle(&mut self, _msg: CardsListFetch, _ctx: &mut Self::Context) -> Self::Result {
         use schema::cards::dsl::*;
 
-        cards.get_results::<Card>(&self.0).ok()
+        cards.get_results::<Card>(&self.conn).ok()
     }
 }

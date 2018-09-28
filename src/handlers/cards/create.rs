@@ -36,7 +36,7 @@ impl Handler<CardNew> for DbExecutor {
 
         Ok(diesel::insert_into(cards)
             .values(&msg)
-            .get_result::<Card>(&self.0)
+            .get_result::<Card>(&self.conn)
             .or_err(CardCreateError::IncorrectForm)?)
     }
 }
