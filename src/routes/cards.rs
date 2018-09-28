@@ -39,6 +39,36 @@ pub fn create((card_form, auth, req): (Json<CardCreateBody>, Auth, Req)) -> FutR
         .responder()
 }
 
+#[derive(Deserialize)]
+pub struct CardEditBody {
+    content: Option<String>,
+    title: Option<String>,
+}
+
+pub fn edit((edit_form, auth, req, path): (Json<CardEditBody>, Auth, Req, Path<(u32,)>)) -> FutRes {
+    use handlers::cards::edit::*;
+
+    #[derive(Serialize)]
+    pub struct R {
+        card: Card,
+    }
+
+    req.state()
+        .pg
+        .send(CardEdit {
+            card_id: path.0,
+            requester_id: auth.user.id,
+            title: edit_form.0.title,
+            content: edit_form.0.content,
+        })
+        .from_err()
+        .and_then(|res| match res {
+            Ok(card) => Ok(answer_success!(Ok, R { card })),
+            Err(err) => Ok(err.error_response()),
+        })
+        .responder()
+}
+
 /// GET /cards
 pub fn list((_auth, req): (AuthOptional, Req)) -> FutRes {
     use handlers::cards::list::*;
@@ -58,7 +88,7 @@ pub fn list((_auth, req): (AuthOptional, Req)) -> FutRes {
 }
 
 /// GET /cards/{card_id}
-pub fn get_card((_auth, req, info): (AuthOptional, Req, Path<(u32,)>)) -> FutRes {
+pub fn get((_auth, req, path): (AuthOptional, Req, Path<(u32,)>)) -> FutRes {
     use handlers::cards::get::*;
 
     #[derive(Serialize)]
@@ -68,7 +98,7 @@ pub fn get_card((_auth, req, info): (AuthOptional, Req, Path<(u32,)>)) -> FutRes
 
     req.state()
         .pg
-        .send(CardFetch { id: info.0 })
+        .send(CardFetch { id: path.0 })
         .from_err()
         .and_then(|res| match res {
             Some(card) => Ok(answer_success!(Ok, R { card })),
@@ -79,12 +109,12 @@ pub fn get_card((_auth, req, info): (AuthOptional, Req, Path<(u32,)>)) -> FutRes
 
 #[inline]
 pub fn with_app(app: App<AppState>) -> App<AppState> {
-    app
-    .resource("/cards/{card_id}", |r| {
-        r.method(http::Method::GET).with(self::get_card)
+    app.resource("/cards/{card_id}", |r| {
+        r.method(http::Method::GET).with(self::get);
+        r.method(http::Method::PUT).with(self::edit);
     })
-    // .resource("/cards", |r| {
-    //     r.method(http::Method::POST).with(self::create);
-    //     r.method(http::Method::GET).with(self::list)
-    // })
+    .resource("/cards", |r| {
+        r.method(http::Method::POST).with(self::create);
+        r.method(http::Method::GET).with(self::list)
+    })
 }

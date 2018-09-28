@@ -31,6 +31,7 @@ pub mod auth_token;
 pub mod consts;
 pub mod hasher;
 pub mod prelude;
+pub mod time;
 #[macro_use]
 pub mod layer;
 pub mod handlers;
