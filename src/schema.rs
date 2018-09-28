@@ -5,6 +5,7 @@ table! {
         title -> Varchar,
         content -> Varchar,
         created_at -> Nullable<Timestamp>,
+        updated_at -> Nullable<Timestamp>,
     }
 }
 
