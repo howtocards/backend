@@ -11,9 +11,9 @@ pub mod cards;
 use app_state::{AppState, Req};
 use auth::{Auth, AuthOptional};
 
-
 #[inline]
 pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
-    scope.nested("/account", account::scope)
+    scope
+        .nested("/account", account::scope)
         .nested("/cards", cards::scope)
 }

@@ -66,19 +66,22 @@ pub fn get_session((auth, req): (Auth, Req)) -> HttpResponse {
         token: String,
     }
 
-    answer_success!(Ok, R {
-        id: auth.user.id,
-        email: auth.user.email.clone(),
-        token: req.identity().unwrap(),
-    })
+    answer_success!(
+        Ok,
+        R {
+            id: auth.user.id,
+            email: auth.user.email.clone(),
+            token: req.identity().unwrap(),
+        }
+    )
 }
 
 #[inline]
 pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
-    scope.resource("/", |r| {
-        r.post().with(self::create)
-    }).resource("/session/", |r| {
-        r.post().with(self::login);
-        r.get().with(self::get_session)
-    })
+    scope
+        .resource("/", |r| r.post().with(self::create))
+        .resource("/session/", |r| {
+            r.post().with(self::login);
+            r.get().with(self::get_session)
+        })
 }

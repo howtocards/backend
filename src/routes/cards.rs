@@ -134,12 +134,14 @@ pub fn delete((auth, req, path): (Auth, Req, CardPath)) -> FutRes {
 
 #[inline]
 pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
-    scope.resource("/{card_id}", |r| {
-        r.get().with(self::get);
-        r.put().with(self::edit);
-        r.delete().with(self::delete);
-    }).resource("/", |r| {
-        r.post().with(self::create);
-        r.get().with(self::list)
-    })
+    scope
+        .resource("/{card_id}", |r| {
+            r.get().with(self::get);
+            r.put().with(self::edit);
+            r.delete().with(self::delete);
+        })
+        .resource("/", |r| {
+            r.post().with(self::create);
+            r.get().with(self::list)
+        })
 }
