@@ -75,7 +75,7 @@ pub fn create_server(db_url: String) -> Result<(), failure::Error> {
             .middleware(IdentityService::new(auth_token::TokenIdentityPolicy::new(
                 "bearer".into(),
             )));
-        routes::with_app(app)
+        app.scope("/api", routes::scope)
     };
 
     let app = server::new(server_creator)

@@ -56,26 +56,28 @@ pub fn login((login_data, req): (Json<SessionCreate>, Req)) -> FutureResponse<Ht
 }
 
 /// GET /account/session
-pub fn get_session((auth, req): (Auth, Req)) -> Json<impl Serialize> {
+pub fn get_session((auth, req): (Auth, Req)) -> HttpResponse {
     use actix_web::middleware::identity::RequestIdentity;
 
     #[derive(Serialize)]
     struct R {
+        id: i32,
         email: String,
         token: String,
     }
 
-    Json(R {
+    answer_success!(Ok, R {
+        id: auth.user.id,
         email: auth.user.email.clone(),
         token: req.identity().unwrap(),
     })
 }
 
 #[inline]
-pub fn with_app(app: App<AppState>) -> App<AppState> {
-    app.resource("/account", |r| {
+pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
+    scope.resource("/", |r| {
         r.method(http::Method::POST).with(self::create)
-    }).resource("/account/session", |r| {
+    }).resource("/session/", |r| {
         r.method(http::Method::POST).with(self::login);
         r.method(http::Method::GET).with(self::get_session)
     })
