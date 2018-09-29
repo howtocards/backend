@@ -76,9 +76,9 @@ pub fn get_session((auth, req): (Auth, Req)) -> HttpResponse {
 #[inline]
 pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
     scope.resource("/", |r| {
-        r.method(http::Method::POST).with(self::create)
+        r.post().with(self::create)
     }).resource("/session/", |r| {
-        r.method(http::Method::POST).with(self::login);
-        r.method(http::Method::GET).with(self::get_session)
+        r.post().with(self::login);
+        r.get().with(self::get_session)
     })
 }
