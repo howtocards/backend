@@ -15,6 +15,7 @@ extern crate uuid;
 #[macro_use]
 extern crate diesel;
 extern crate chrono;
+extern crate env_logger;
 
 use actix_web::middleware::identity::IdentityService;
 use actix_web::{http, middleware, server, App, HttpRequest, Json, Responder};
@@ -49,6 +50,7 @@ fn establish_connection(db_url: String) -> PgConnection {
 }
 
 pub fn create_server(db_url: String) -> Result<(), failure::Error> {
+    env_logger::init();
     use actix::{SyncArbiter, System};
     use app_state::DbExecutor;
 
@@ -60,7 +62,8 @@ pub fn create_server(db_url: String) -> Result<(), failure::Error> {
 
     let server_creator = move || {
         let state = AppState::new(addr.clone());
-        let app = App::with_state(state)
+        App::with_state(state)
+            .middleware(middleware::Logger::default())
             .middleware(
                 middleware::cors::Cors::build()
                 // .allowed_origin("http://127.0.0.1:9000/")
@@ -74,8 +77,8 @@ pub fn create_server(db_url: String) -> Result<(), failure::Error> {
             )
             .middleware(IdentityService::new(auth_token::TokenIdentityPolicy::new(
                 "bearer".into(),
-            )));
-        app.scope("/api", routes::scope)
+            )))
+            .scope("/api", routes::scope)
     };
 
     let app = server::new(server_creator)
