@@ -74,11 +74,9 @@ pub fn create_server(db_url: String) -> Result<(), failure::Error> {
                 .allowed_headers(vec![http::header::CONTENT_TYPE])
                 .max_age(3600)
                 .finish(),
-            )
-            .middleware(IdentityService::new(auth_token::TokenIdentityPolicy::new(
+            ).middleware(IdentityService::new(auth_token::TokenIdentityPolicy::new(
                 "bearer".into(),
-            )))
-            .scope("/api", routes::scope)
+            ))).scope("/api", routes::scope)
     };
 
     let app = server::new(server_creator)
