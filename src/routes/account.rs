@@ -28,8 +28,7 @@ pub fn create((account, req): (Json<AccountCreate>, Req)) -> FutureResponse<Http
         .and_then(|res| match res {
             Ok(_) => Ok(HttpResponse::Ok().into()),
             Err(err) => Ok(err.error_response()),
-        })
-        .responder()
+        }).responder()
 }
 
 /// POST /account/session
@@ -51,8 +50,7 @@ pub fn login((login_data, req): (Json<SessionCreate>, Req)) -> FutureResponse<Ht
                 }
             )),
             Err(err) => Ok(err.error_response()),
-        })
-        .responder()
+        }).responder()
 }
 
 /// GET /account/session
