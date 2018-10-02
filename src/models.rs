@@ -1,6 +1,8 @@
 //! Diesel models
+#![allow(proc_macro_derive_resolution_fallback)]
 
 use chrono::NaiveDateTime;
+use diesel::prelude::*;
 
 use schema::cards;
 use schema::tokens;
