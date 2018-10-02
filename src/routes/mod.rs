@@ -7,6 +7,7 @@ use failure::Fail;
 
 pub mod account;
 pub mod cards;
+pub mod gql;
 
 use app_state::{AppState, Req};
 use auth::{Auth, AuthOptional};
@@ -16,4 +17,5 @@ pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
     scope
         .nested("/account", account::scope)
         .nested("/cards", cards::scope)
+        .nested("/", gql::scope)
 }

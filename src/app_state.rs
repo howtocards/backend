@@ -5,6 +5,24 @@ use actix_web::HttpRequest;
 use diesel::prelude::*;
 use std::sync::{Arc, Mutex};
 
+use graphql;
+
+
+pub struct GraphQLExecutor {
+    pub schema: Arc<graphql::Schema>,
+}
+
+impl Actor for GraphQLExecutor {
+    type Context = SyncContext<Self>;
+}
+
+impl GraphQLExecutor {
+    pub fn new(schema: Arc<graphql::Schema>) -> Self {
+        Self { schema }
+    }
+}
+
+
 /// Actor with connection to postgres
 pub struct DbExecutor {
     pub conn: PgConnection,
@@ -25,12 +43,13 @@ impl DbExecutor {
 pub struct AppState {
     /// Postgres connection actor
     pub pg: Addr<DbExecutor>,
+    pub gql: Addr<GraphQLExecutor>,
 }
 
 impl AppState {
     /// Make new state
-    pub fn new(pg: Addr<DbExecutor>) -> AppState {
-        AppState { pg }
+    pub fn new(pg: Addr<DbExecutor>, gql: Addr<GraphQLExecutor>) -> AppState {
+        AppState { pg, gql }
     }
 }
 
