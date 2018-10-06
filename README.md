@@ -1,5 +1,15 @@
 # HowToCards
 
+## Installation
+
+Install `diesel_cli`
+
+```sh
+apt install gcc # ubuntu
+
+cargo install diesel_cli --no-default-features --features postgres
+```
+
 
 ## REST API
 
