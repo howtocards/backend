@@ -1,0 +1,3 @@
+CREATE DATABASE howtocards;
+CREATE ROLE howtocards WITH ENCRYPTED PASSWORD 'howtocards';
+GRANT ALL PRIVILEGES TO DATABASE howtocards ON howtocards;

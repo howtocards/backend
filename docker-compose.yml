@@ -1,0 +1,29 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=howtocards
+      - POSTGRES_PASSWORD=howtocards
+      - POSTGRES_DATABASE=howtocards
+    ports:
+      - 5432:5432
+
+  backend:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: ssova/howtocards
+    restart: always
+    ports:
+      - 9000:9000
+    links:
+      - db
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://howtocards:howtocards@db/howtocards
