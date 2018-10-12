@@ -2,5 +2,3 @@
 
 pub mod account;
 pub mod cards;
-
-pub mod gql;

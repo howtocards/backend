@@ -17,8 +17,6 @@ extern crate uuid;
 extern crate diesel;
 extern crate chrono;
 extern crate env_logger;
-#[macro_use]
-extern crate juniper;
 
 use actix_web::middleware::identity::IdentityService;
 use actix_web::{http, middleware, server, App, HttpRequest, Json, Responder};
@@ -38,7 +36,6 @@ pub mod prelude;
 pub mod time;
 #[macro_use]
 pub mod layer;
-pub mod graphql;
 pub mod handlers;
 pub mod models;
 pub mod routes;
@@ -56,7 +53,7 @@ fn establish_connection(db_url: String) -> PgConnection {
 pub fn create_server(db_url: String) -> Result<(), failure::Error> {
     env_logger::init();
     use actix::{SyncArbiter, System};
-    use app_state::{DbExecutor, GraphQLExecutor};
+    use app_state::{DbExecutor};
 
     let system = System::new("htc-server");
 
@@ -64,11 +61,8 @@ pub fn create_server(db_url: String) -> Result<(), failure::Error> {
         DbExecutor::new(establish_connection(db_url.clone()))
     });
 
-    let schema = Arc::new(graphql::create_schema());
-    let gql = SyncArbiter::start(3, move || GraphQLExecutor::new(schema.clone()));
-
     let server_creator = move || {
-        let state = AppState::new(pg.clone(), gql.clone());
+        let state = AppState::new(pg.clone());
         App::with_state(state)
             .middleware(middleware::Logger::default())
             .middleware(
