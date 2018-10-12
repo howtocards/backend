@@ -7,7 +7,6 @@ use std::sync::{Arc, Mutex};
 
 use graphql;
 
-
 pub struct GraphQLExecutor {
     pub schema: Arc<graphql::Schema>,
 }
@@ -21,7 +20,6 @@ impl GraphQLExecutor {
         Self { schema }
     }
 }
-
 
 /// Actor with connection to postgres
 pub struct DbExecutor {

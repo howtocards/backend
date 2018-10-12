@@ -9,7 +9,6 @@ pub struct User {
     pub email: String,
 }
 
-
 #[derive(GraphQLObject)]
 /// Card object
 pub struct Card {

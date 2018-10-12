@@ -38,9 +38,9 @@ pub mod prelude;
 pub mod time;
 #[macro_use]
 pub mod layer;
+pub mod graphql;
 pub mod handlers;
 pub mod models;
-pub mod graphql;
 pub mod routes;
 pub mod schema;
 
@@ -65,9 +65,7 @@ pub fn create_server(db_url: String) -> Result<(), failure::Error> {
     });
 
     let schema = Arc::new(graphql::create_schema());
-    let gql = SyncArbiter::start(3, move || {
-        GraphQLExecutor::new(schema.clone())
-    });
+    let gql = SyncArbiter::start(3, move || GraphQLExecutor::new(schema.clone()));
 
     let server_creator = move || {
         let state = AppState::new(pg.clone(), gql.clone());

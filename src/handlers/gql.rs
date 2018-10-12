@@ -1,16 +1,16 @@
-use serde_json;
 use actix::prelude::*;
 use actix_web::Error;
 use juniper::http::GraphQLRequest;
+use serde_json;
 
-use graphql::*;
 use app_state::GraphQLExecutor;
+use graphql::*;
 
 #[derive(Serialize, Deserialize)]
 pub struct GraphQLData(GraphQLRequest);
 
 impl Message for GraphQLData {
-  type Result = Result<String, Error>;
+    type Result = Result<String, Error>;
 }
 
 impl Handler<GraphQLData> for GraphQLExecutor {
