@@ -34,7 +34,7 @@ pub fn create((account, req): (Json<AccountCreate>, Req)) -> FutureResponse<Http
 /// POST /account/session
 pub fn login((login_data, req): (Json<SessionCreate>, Req)) -> FutureResponse<HttpResponse> {
     #[derive(Serialize)]
-    #[serde(rename_all="camelCase")]
+    #[serde(rename_all = "camelCase")]
     struct R {
         token: String,
     }
@@ -59,7 +59,7 @@ pub fn get_session((auth, req): (Auth, Req)) -> HttpResponse {
     use actix_web::middleware::identity::RequestIdentity;
 
     #[derive(Serialize)]
-    #[serde(rename_all="camelCase")]
+    #[serde(rename_all = "camelCase")]
     struct R {
         id: i32,
         email: String,

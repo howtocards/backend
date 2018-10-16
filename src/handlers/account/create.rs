@@ -25,7 +25,7 @@ impl_response_error_for!(AccountCreateError as BadRequest);
 ///
 /// Should be sended to DbExecutor
 #[derive(Deserialize, Debug)]
-#[serde(rename_all="camelCase")]
+#[serde(rename_all = "camelCase")]
 pub struct AccountCreate {
     pub email: String,
     pub password: String,
