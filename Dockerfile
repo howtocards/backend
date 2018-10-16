@@ -15,9 +15,7 @@ RUN cargo build --release  && \
 
 COPY ./ ./
 
-RUN rm -rf ./target/release/libhowtocards.* && \
-    rm -rf ./target/release/howtocards_server && \
-    rm -rf ./target/release/deps/*howtocards* && \
+RUN rm -rf ./target/release/howtocards_server && \
     cargo build --release
 
 FROM debian:9-slim
