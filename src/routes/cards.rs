@@ -10,6 +10,7 @@ use models::*;
 type FutRes = FutureResponse<HttpResponse>;
 
 #[derive(Deserialize)]
+#[serde(rename_all="camelCase")]
 pub struct CardCreateBody {
     content: String,
     title: String,
@@ -20,6 +21,7 @@ pub fn create((card_form, auth, req): (Json<CardCreateBody>, Auth, Req)) -> FutR
     use handlers::cards::create::*;
 
     #[derive(Serialize)]
+    #[serde(rename_all="camelCase")]
     struct R {
         card: Card,
     }
@@ -38,6 +40,7 @@ pub fn create((card_form, auth, req): (Json<CardCreateBody>, Auth, Req)) -> FutR
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all="camelCase")]
 pub struct CardEditBody {
     content: Option<String>,
     title: Option<String>,
@@ -47,6 +50,7 @@ pub fn edit((edit_form, auth, req, path): (Json<CardEditBody>, Auth, Req, Path<(
     use handlers::cards::edit::*;
 
     #[derive(Serialize)]
+    #[serde(rename_all="camelCase")]
     pub struct R {
         card: Card,
     }

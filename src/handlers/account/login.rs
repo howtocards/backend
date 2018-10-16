@@ -33,6 +33,7 @@ pub struct SessionToken(pub String);
 ///
 /// Should be sended to DbExecutor
 #[derive(Deserialize, Debug)]
+#[serde(rename_all="camelCase")]
 pub struct SessionCreate {
     pub email: String,
     pub password: String,
