@@ -1,30 +1,27 @@
-FROM rust:1.29.1 as build
+ARG RUST_VERSION=1.29.1
+ARG ALPINE_VERSION=3.8
 
-RUN USER=root cargo new --bin howtocards
-RUN touch /howtocards/src/lib.rs
-WORKDIR /howtocards
+FROM rust:$RUST_VERSION as build
+
+RUN USER=root cargo new --bin /app && \
+    touch /app/src/lib.rs
+WORKDIR /app
 
 # COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
 
-RUN cargo build --release
-RUN rm -rf src
+RUN cargo build --release  && \
+    rm -rf src
 
-COPY ./src ./src
-COPY ./migrations ./migrations
-COPY ./diesel.toml ./diesel.toml
+COPY ./ ./
 
-RUN rm -rf ./target/release/libhowtocards.*
-RUN rm -rf ./target/release/howtocards_server
-RUN rm -rf ./target/release/deps/*howtocards*
-RUN cargo build --release
+RUN rm -rf ./target/release/howtocards_server && \
+    cargo build --release
 
-FROM rust:1.29.1
+FROM debian:9-slim
 
-RUN ls -la /
-RUN apt-get update && apt-get install libpq-dev
+RUN apt-get update && apt-get -y install libpq-dev && touch .env
 
-RUN touch .env
-COPY --from=build /howtocards/target/release/howtocards_server .
+COPY --from=build /app/target/release/howtocards_server ./
 
-CMD ["./howtocards_server"]
+ENTRYPOINT ["/howtocards_server"]

@@ -14,9 +14,9 @@ services:
       - 5432:5432
 
   backend:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: ssova/howtocards
     restart: always
     ports:
