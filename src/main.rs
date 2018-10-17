@@ -102,7 +102,7 @@ fn create_server(db_url: String) -> Result<(), failure::Error> {
 
     let app = server::new(server_creator)
         .workers(2)
-        .bind("127.0.0.1:9000")
+        .bind("0.0.0.0:9000")
         .expect("Can not bind to 127.0.0.1:9000");
 
     println!("Server started on http://127.0.0.1:9000");
