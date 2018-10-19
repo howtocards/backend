@@ -21,12 +21,18 @@ use layer::SuccessAnswer;
 pub fn create((account, req): (Json<AccountCreate>, Req)) -> FutureResponse<HttpResponse> {
     use schema::users::dsl::*;
 
+    #[derive(Serialize)]
+    #[serde(rename_all = "camelCase")]
+    struct R {
+        user_id: i32,
+    }
+
     req.state()
         .pg
         .send(account.0)
         .from_err()
         .and_then(|res| match res {
-            Ok(_) => Ok(HttpResponse::Ok().into()),
+            Ok(user) => Ok(answer_success!(Created, R { user_id: user.id })),
             Err(err) => Ok(err.error_response()),
         }).responder()
 }
