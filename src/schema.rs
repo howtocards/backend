@@ -1,5 +1,4 @@
 #![allow(proc_macro_derive_resolution_fallback)]
-
 table! {
     cards (id) {
         id -> Int4,
@@ -8,6 +7,7 @@ table! {
         content -> Varchar,
         created_at -> Nullable<Timestamp>,
         updated_at -> Nullable<Timestamp>,
+        useful_for -> Int8,
     }
 }
 
@@ -15,6 +15,14 @@ table! {
     tokens (token) {
         token -> Varchar,
         user_id -> Int4,
+    }
+}
+
+table! {
+    useful_marks (card_id, user_id) {
+        card_id -> Int4,
+        user_id -> Int4,
+        created_at -> Timestamp,
     }
 }
 
@@ -28,5 +36,7 @@ table! {
 
 joinable!(cards -> users (author_id));
 joinable!(tokens -> users (user_id));
+joinable!(useful_marks -> cards (card_id));
+joinable!(useful_marks -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(cards, tokens, users,);
+allow_tables_to_appear_in_same_query!(cards, tokens, useful_marks, users,);

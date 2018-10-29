@@ -40,8 +40,8 @@ mod time;
 mod layer;
 mod handlers;
 mod models;
-mod routes;
-mod schema;
+pub mod routes;
+pub mod schema;
 
 use app_state::AppState;
 use prelude::*;
@@ -87,14 +87,15 @@ fn create_server(db_url: String) -> Result<(), failure::Error> {
             .middleware(middleware::Logger::default())
             .middleware(
                 middleware::cors::Cors::build()
-                // .allowed_origin("http://127.0.0.1:9000/")
-                // .send_wildcard()
-                .supports_credentials()
-                .allowed_methods(vec!["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"])
-                .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-                .allowed_headers(vec![http::header::CONTENT_TYPE])
-                .max_age(3600)
-                .finish(),
+                    // .allowed_origin("http://127.0.0.1:9000/")
+                    // .send_wildcard()
+                    .supports_credentials()
+                    .allowed_methods(vec![
+                        "GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS",
+                    ]).allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+                    .allowed_headers(vec![http::header::CONTENT_TYPE])
+                    .max_age(3600)
+                    .finish(),
             ).middleware(IdentityService::new(auth_token::TokenIdentityPolicy::new(
                 "bearer".into(),
             ))).scope("/api", routes::scope)

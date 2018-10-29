@@ -2,3 +2,4 @@
 **/*.rs.bk
 .env
 tmp
+.DS_Store
