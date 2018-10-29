@@ -39,36 +39,6 @@ pub fn create((card_form, auth, req): (Json<CardCreateBody>, Auth, Req)) -> FutR
         }).responder()
 }
 
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct CardEditBody {
-    content: Option<String>,
-    title: Option<String>,
-}
-
-pub fn edit((edit_form, auth, req, path): (Json<CardEditBody>, Auth, Req, Path<(u32,)>)) -> FutRes {
-    use handlers::cards::edit::*;
-
-    #[derive(Serialize)]
-    #[serde(rename_all = "camelCase")]
-    pub struct R {
-        card: Card,
-    }
-
-    req.state()
-        .pg
-        .send(CardEdit {
-            card_id: path.0,
-            requester_id: auth.user.id,
-            title: edit_form.0.title,
-            content: edit_form.0.content,
-        }).from_err()
-        .and_then(|res| match res {
-            Ok(card) => Ok(answer_success!(Ok, R { card })),
-            Err(err) => Ok(err.error_response()),
-        }).responder()
-}
-
 /// GET /cards
 pub fn list((_auth, req): (AuthOptional, Req)) -> FutRes {
     use handlers::cards::list::*;
@@ -107,6 +77,37 @@ pub fn get((_auth, req, path): (AuthOptional, Req, CardPath)) -> FutRes {
         }).responder()
 }
 
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CardEditBody {
+    content: Option<String>,
+    title: Option<String>,
+}
+
+/// PUT /cards/{card_id}
+pub fn edit((edit_form, auth, req, path): (Json<CardEditBody>, Auth, Req, Path<(u32,)>)) -> FutRes {
+    use handlers::cards::edit::*;
+
+    #[derive(Serialize)]
+    #[serde(rename_all = "camelCase")]
+    pub struct R {
+        card: Card,
+    }
+
+    req.state()
+        .pg
+        .send(CardEdit {
+            card_id: path.0,
+            requester_id: auth.user.id,
+            title: edit_form.0.title,
+            content: edit_form.0.content,
+        }).from_err()
+        .and_then(|res| match res {
+            Ok(card) => Ok(answer_success!(Ok, R { card })),
+            Err(err) => Ok(err.error_response()),
+        }).responder()
+}
+
 /// DELETE /cards/{card_id}
 pub fn delete((auth, req, path): (Auth, Req, CardPath)) -> FutRes {
     use handlers::cards::delete::*;
@@ -128,6 +129,34 @@ pub fn delete((auth, req, path): (Auth, Req, CardPath)) -> FutRes {
         }).responder()
 }
 
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MarkUseful {
+    is_useful: bool,
+}
+
+/// POST /cards/{card_id}/useful
+pub fn useful((body, auth, req, path): (Json<MarkUseful>, Auth, Req, CardPath)) -> FutRes {
+    use handlers::cards::mark_useful::*;
+
+    #[derive(Serialize)]
+    pub struct R {
+        card: Card,
+    }
+
+    req.state()
+        .pg
+        .send(SetMarkCardUseful {
+            requester_id: auth.user.id,
+            card_id: path.0 as i32,
+            set_is_useful: body.is_useful,
+        }).from_err()
+        .and_then(|res| match res {
+            Ok(card) => Ok(answer_success!(Ok, R { card })),
+            Err(err) => Ok(err.error_response()),
+        }).responder()
+}
+
 #[inline]
 pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
     scope
@@ -135,8 +164,10 @@ pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
             r.get().with(self::get);
             r.put().with(self::edit);
             r.delete().with(self::delete);
+        }).resource("/{card_id}/useful", |r| {
+            r.post().with(self::useful);
         }).resource("/", |r| {
             r.post().with(self::create);
-            r.get().with(self::list)
+            r.get().with(self::list);
         })
 }

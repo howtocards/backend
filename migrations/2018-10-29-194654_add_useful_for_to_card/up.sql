@@ -1,0 +1,1 @@
+ALTER TABLE cards ADD COLUMN useful_for int8 NOT NULL DEFAULT 0;
