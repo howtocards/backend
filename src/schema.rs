@@ -1,4 +1,3 @@
-#![allow(proc_macro_derive_resolution_fallback)]
 table! {
     cards (id) {
         id -> Int4,
@@ -31,6 +30,7 @@ table! {
         id -> Int4,
         email -> Varchar,
         password -> Varchar,
+        display_name -> Nullable<Varchar>,
     }
 }
 
@@ -39,4 +39,9 @@ joinable!(tokens -> users (user_id));
 joinable!(useful_marks -> cards (card_id));
 joinable!(useful_marks -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(cards, tokens, useful_marks, users,);
+allow_tables_to_appear_in_same_query!(
+    cards,
+    tokens,
+    useful_marks,
+    users,
+);
