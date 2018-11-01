@@ -37,23 +37,27 @@ pub fn create((account, req): (Json<AccountCreate>, Req)) -> FutureResponse<Http
         }).responder()
 }
 
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct AccountInfo {
+    token: String,
+    id: i32,
+    email: String,
+}
+
 /// POST /account/session
 pub fn login((login_data, req): (Json<SessionCreate>, Req)) -> FutureResponse<HttpResponse> {
-    #[derive(Serialize)]
-    #[serde(rename_all = "camelCase")]
-    struct R {
-        token: String,
-    }
-
     req.state()
         .pg
         .send(login_data.0)
         .from_err()
         .and_then(|res| match res {
-            Ok(session_token) => Ok(answer_success!(
+            Ok(login_info) => Ok(answer_success!(
                 Ok,
-                R {
-                    token: session_token.0,
+                AccountInfo {
+                    token: login_info.0,
+                    id: login_info.1.id,
+                    email: login_info.1.email,
                 }
             )),
             Err(err) => Ok(err.error_response()),
@@ -64,17 +68,9 @@ pub fn login((login_data, req): (Json<SessionCreate>, Req)) -> FutureResponse<Ht
 pub fn get_session((auth, req): (Auth, Req)) -> HttpResponse {
     use actix_web::middleware::identity::RequestIdentity;
 
-    #[derive(Serialize)]
-    #[serde(rename_all = "camelCase")]
-    struct R {
-        id: i32,
-        email: String,
-        token: String,
-    }
-
     answer_success!(
         Ok,
-        R {
+        AccountInfo {
             id: auth.user.id,
             email: auth.user.email.clone(),
             token: req.identity().unwrap(),
