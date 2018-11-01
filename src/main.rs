@@ -42,6 +42,7 @@ mod handlers;
 mod models;
 pub mod routes;
 pub mod schema;
+mod views;
 
 use app_state::AppState;
 use prelude::*;
