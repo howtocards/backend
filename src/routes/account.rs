@@ -7,6 +7,7 @@ use actix_web::*;
 use diesel::prelude::*;
 use failure::*;
 use futures::prelude::*;
+use models;
 use serde::Serialize;
 
 use app_state::{AppState, Req};
@@ -41,8 +42,7 @@ pub fn create((account, req): (Json<AccountCreate>, Req)) -> FutureResponse<Http
 #[serde(rename_all = "camelCase")]
 struct AccountInfo {
     token: String,
-    id: i32,
-    email: String,
+    user: models::User,
 }
 
 /// POST /account/session
@@ -56,8 +56,7 @@ pub fn login((login_data, req): (Json<SessionCreate>, Req)) -> FutureResponse<Ht
                 Ok,
                 AccountInfo {
                     token: login_info.0,
-                    id: login_info.1.id,
-                    email: login_info.1.email,
+                    user: login_info.1,
                 }
             )),
             Err(err) => Ok(err.error_response()),
@@ -71,9 +70,8 @@ pub fn get_session((auth, req): (Auth, Req)) -> HttpResponse {
     answer_success!(
         Ok,
         AccountInfo {
-            id: auth.user.id,
-            email: auth.user.email.clone(),
             token: req.identity().unwrap(),
+            user: auth.user,
         }
     )
 }
