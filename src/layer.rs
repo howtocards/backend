@@ -1,8 +1,5 @@
 //! Response layer
 
-use actix_web::HttpResponse;
-use serde::Serialize;
-
 #[derive(Serialize)]
 pub struct ErrorAnswer {
     ok: bool,

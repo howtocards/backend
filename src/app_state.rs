@@ -3,7 +3,6 @@
 use actix::prelude::*;
 use actix_web::HttpRequest;
 use diesel::prelude::*;
-use std::sync::{Arc, Mutex};
 
 /// Actor with connection to postgres
 pub struct DbExecutor {

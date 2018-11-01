@@ -2,15 +2,12 @@
 
 use actix::prelude::*;
 use actix_web::*;
-use chrono::NaiveDateTime;
 use diesel;
 use diesel::prelude::*;
 
-use app_state::{DbExecutor, Req};
-use layer::ErrorAnswer;
+use app_state::DbExecutor;
 use models::*;
 use prelude::*;
-use time;
 
 #[derive(Fail, Debug)]
 pub enum CardDeleteError {

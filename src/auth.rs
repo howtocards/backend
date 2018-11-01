@@ -1,15 +1,11 @@
 //! Authentication extractors
 
-use actix_web::error::ErrorBadRequest;
 use actix_web::middleware::identity::RequestIdentity;
-use actix_web::{
-    http, App, Error, FromRequest, FutureResponse, HttpRequest, HttpResponse, Responder,
-    ResponseError,
-};
+use actix_web::{FromRequest, HttpRequest, HttpResponse, ResponseError};
 use failure::*;
 use futures::prelude::*;
 
-use app_state::{AppState, Req};
+use app_state::AppState;
 use handlers::account::session_fetch::AccountSessionFetch;
 use models::User;
 use prelude::ResultExt;
