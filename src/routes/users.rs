@@ -1,15 +1,15 @@
-use actix::prelude::*;
+// use actix::prelude::*;
 use actix_web::*;
-use failure::*;
-use futures::*;
+// use failure::*;
+// use futures::*;
 
 use app_state::{AppState, Req};
-use auth::{Auth, AuthOptional};
-use models::*;
+// use auth::{Auth, AuthOptional};
+// use models::*;
 
-type FutRes = FutureResponse<HttpResponse>;
+// type FutRes = FutureResponse<HttpResponse>;
 
-type UserPath = Path<(u32,)>;
+// type UserPath = Path<(u32,)>;
 
 // pub fn info((auth, req, path): (AuthOptional, Req, UserPath)) -> FutRes {
 //     use handlers::users::get_use::*;

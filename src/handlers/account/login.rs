@@ -6,10 +6,9 @@ use diesel;
 use diesel::prelude::*;
 use uuid::Uuid;
 
-use app_state::{DbExecutor, Req};
+use app_state::DbExecutor;
 use consts;
 use hasher;
-use layer::ErrorAnswer;
 use models::*;
 use prelude::*;
 
@@ -48,8 +47,6 @@ impl Handler<SessionCreate> for DbExecutor {
 
     fn handle(&mut self, msg: SessionCreate, _: &mut Self::Context) -> Self::Result {
         use diesel::RunQueryDsl;
-        use schema::tokens::dsl::*;
-        use schema::users::dsl::*;
         use schema::{tokens, users};
 
         let new_account = UserNew {

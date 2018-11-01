@@ -1,6 +1,4 @@
-use actix::prelude::*;
 use actix_web::*;
-use failure::*;
 use futures::*;
 
 use app_state::{AppState, Req};
@@ -18,13 +16,7 @@ pub struct CardCreateBody {
 
 /// POST /cards
 pub fn create((card_form, auth, req): (Json<CardCreateBody>, Auth, Req)) -> FutRes {
-    use handlers::cards::create::*;
-
-    #[derive(Serialize)]
-    #[serde(rename_all = "camelCase")]
-    struct R {
-        card: Card,
-    }
+    // use handlers::cards::create::*;
 
     req.state()
         .pg

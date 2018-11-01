@@ -1,7 +1,7 @@
 //! Hashing utilites
 
 use sha2::{Digest, Sha256};
-use std::{fmt::Display, str::from_utf8};
+use std::fmt::Display;
 
 /// Hash string with sha256
 ///
@@ -34,17 +34,9 @@ where
     hash_string(format!("{}${}", password, salt))
 }
 
-/// Check hashed password with salt and original password
-pub fn validate_password<P, S>(hash: &String, salt: S, password: P) -> bool
-where
-    P: Display,
-    S: Display,
-{
-    hash_password(password, salt).eq(hash)
-}
-
 mod test {
-    use super::*;
+    #[allow(unused_imports)]
+    use super::{hash_password, hash_string};
 
     #[test]
     fn hash_string_should_get_different_results_for_different_input() {

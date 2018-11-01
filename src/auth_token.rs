@@ -2,7 +2,7 @@
 
 use actix_web::middleware::identity::{Identity, IdentityPolicy};
 use actix_web::middleware::Response;
-use actix_web::{Error, HttpMessage, HttpRequest, HttpResponse};
+use actix_web::{Error, HttpMessage, HttpResponse};
 use futures::future::{ok as fut_ok, FutureResult};
 use std::rc::Rc;
 use std::str::FromStr;
@@ -28,7 +28,7 @@ impl FromStr for Authorization {
         if source.len() < 3 {
             Err(ParseAuthorizationError::EmptyContent)
         } else {
-            let chunks: Vec<&str> = source.split(" ").collect();
+            let chunks: Vec<&str> = source.split(' ').collect();
 
             if chunks.len() != 2 {
                 Err(ParseAuthorizationError::InvalidChunksCount)
@@ -65,7 +65,7 @@ impl TokenIdentityInner {
 
 pub struct TokenIdentity {
     identity: Option<String>,
-    inner: Rc<TokenIdentityInner>,
+    // inner: Rc<TokenIdentityInner>,
 }
 
 impl Identity for TokenIdentity {
@@ -103,7 +103,7 @@ impl IdentityPolicy<AppState> for TokenIdentityPolicy {
 
         fut_ok(TokenIdentity {
             identity,
-            inner: Rc::clone(&self.0),
+            // inner: Rc::clone(&self.0),
         })
     }
 }

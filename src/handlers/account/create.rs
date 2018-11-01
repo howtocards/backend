@@ -3,12 +3,10 @@
 use actix::prelude::*;
 use actix_web::*;
 use diesel;
-use diesel::prelude::*;
 
-use app_state::{DbExecutor, Req};
+use app_state::DbExecutor;
 use consts;
 use hasher;
-use layer::ErrorAnswer;
 use models::*;
 use prelude::*;
 
@@ -40,7 +38,6 @@ impl Handler<AccountCreate> for DbExecutor {
 
     fn handle(&mut self, msg: AccountCreate, _: &mut Self::Context) -> Self::Result {
         use diesel::RunQueryDsl;
-        use schema::users;
         use schema::users::dsl::*;
 
         let new_account = UserNew {

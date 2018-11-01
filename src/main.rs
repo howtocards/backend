@@ -1,5 +1,6 @@
 #![doc(html_logo_url = "https://avatars0.githubusercontent.com/u/38739163?s=200&v=4")]
-#![allow(dead_code, unused_imports)]
+// #![allow(dead_code, unused_imports)]
+#![allow(proc_macro_derive_resolution_fallback)]
 
 extern crate actix;
 extern crate actix_web;
@@ -19,15 +20,11 @@ extern crate chrono;
 extern crate env_logger;
 
 use actix_web::middleware::identity::IdentityService;
-use actix_web::{http, middleware, server, App, HttpRequest, Json, Responder};
+use actix_web::{http, middleware, server, App};
 use diesel::PgConnection;
 use failure::Fail;
 use prelude::*;
 use std::env;
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
 
 mod app_state;
 mod auth;
@@ -45,7 +42,6 @@ pub mod schema;
 mod views;
 
 use app_state::AppState;
-use prelude::*;
 
 fn main() {
     if let Err(e) = run() {
@@ -78,9 +74,7 @@ fn create_server(db_url: String) -> Result<(), failure::Error> {
 
     let system = System::new("htc-server");
 
-    let pg = SyncArbiter::start(3, move || {
-        DbExecutor::new(establish_connection(db_url.clone()))
-    });
+    let pg = SyncArbiter::start(3, move || DbExecutor::new(establish_connection(&db_url)));
 
     let server_creator = move || {
         let state = AppState::new(pg.clone());
@@ -115,8 +109,8 @@ fn create_server(db_url: String) -> Result<(), failure::Error> {
 }
 
 #[inline]
-fn establish_connection(db_url: String) -> PgConnection {
+fn establish_connection(db_url: &str) -> PgConnection {
     use diesel::prelude::*;
 
-    PgConnection::establish(&db_url).expect(&format!("Error connecting to {}", db_url))
+    PgConnection::establish(&db_url).unwrap_or_else(|_| panic!("Error connecting to {}", db_url))
 }

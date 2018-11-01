@@ -3,10 +3,8 @@
 use actix::prelude::*;
 use actix_web::*;
 use diesel;
-use diesel::prelude::*;
 
-use app_state::{DbExecutor, Req};
-use layer::ErrorAnswer;
+use app_state::DbExecutor;
 use models::*;
 use prelude::*;
 

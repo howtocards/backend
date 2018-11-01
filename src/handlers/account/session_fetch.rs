@@ -1,15 +1,9 @@
 ///! Fetch user from session token
 use actix::prelude::*;
-use actix_web::*;
-use diesel;
 use diesel::prelude::*;
 
-use app_state::{DbExecutor, Req};
-use consts;
-use hasher;
-use layer::ErrorAnswer;
+use app_state::DbExecutor;
 use models::*;
-use prelude::*;
 
 /// Fetch user account from session token
 ///

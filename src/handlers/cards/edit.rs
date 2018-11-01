@@ -2,11 +2,10 @@
 
 use actix::prelude::*;
 use actix_web::*;
-use chrono::NaiveDateTime;
 use diesel;
 use diesel::prelude::*;
 
-use app_state::{DbExecutor, Req};
+use app_state::DbExecutor;
 use layer::ErrorAnswer;
 use models::*;
 use prelude::*;
