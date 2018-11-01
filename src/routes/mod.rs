@@ -4,7 +4,7 @@ use actix_web::*;
 
 pub mod account;
 pub mod cards;
-// pub mod users;
+pub mod users;
 
 use app_state::AppState;
 
@@ -13,4 +13,5 @@ pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
     scope
         .nested("/account", account::scope)
         .nested("/cards", cards::scope)
+        .nested("/users", users::scope)
 }

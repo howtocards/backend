@@ -5,7 +5,7 @@ use app_state::DbExecutor;
 use models::*;
 
 pub struct GetUser {
-    user_id: i32,
+    pub user_id: i32,
 }
 
 impl Message for GetUser {
