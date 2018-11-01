@@ -7,6 +7,7 @@ use failure::Fail;
 
 pub mod account;
 pub mod cards;
+pub mod users;
 
 use app_state::{AppState, Req};
 use auth::{Auth, AuthOptional};

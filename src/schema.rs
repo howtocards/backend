@@ -39,9 +39,4 @@ joinable!(tokens -> users (user_id));
 joinable!(useful_marks -> cards (card_id));
 joinable!(useful_marks -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(
-    cards,
-    tokens,
-    useful_marks,
-    users,
-);
+allow_tables_to_appear_in_same_query!(cards, tokens, useful_marks, users,);
