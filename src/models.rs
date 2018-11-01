@@ -15,7 +15,9 @@ use uuid::Uuid;
 pub struct User {
     pub id: i32,
     pub email: String,
+    #[serde(skip)]
     pub password: String,
+    pub display_name: Option<String>,
 }
 
 #[derive(Deserialize, Insertable, Queryable)]
