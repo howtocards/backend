@@ -26,8 +26,8 @@ pub enum SessionCreateError {
 
 impl_response_error_for!(SessionCreateError as BadRequest);
 
-/// Just handle token
-pub struct SessionToken(pub String);
+/// Pass data to router
+pub struct SessionToken(pub String, pub User);
 
 /// Session create message
 ///
@@ -75,6 +75,6 @@ impl Handler<SessionCreate> for DbExecutor {
             .execute(&self.conn)
             .or_err(SessionCreateError::TokenInsertFail)?;
 
-        Ok(SessionToken(new_token.token))
+        Ok(SessionToken(new_token.token, user))
     }
 }
