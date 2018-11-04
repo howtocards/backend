@@ -1,3 +1,4 @@
+use diesel::prelude::*;
 use schema::users;
 use views::{EncodableUserPrivate, EncodableUserPublic};
 
@@ -31,6 +32,12 @@ impl User {
             email,
             id,
         }
+    }
+
+    pub fn find_by_id(conn: &PgConnection, user_id: i32) -> Option<Self> {
+        use schema::users::dsl::*;
+
+        users.find(user_id).get_result::<Self>(conn).ok()
     }
 }
 

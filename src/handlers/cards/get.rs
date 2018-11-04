@@ -1,7 +1,6 @@
 //! Get single card
 
 use actix::prelude::*;
-use diesel::prelude::*;
 
 use app_state::DbExecutor;
 use models::*;
@@ -10,7 +9,7 @@ use models::*;
 ///
 /// Should be sended to DbExecutor
 pub struct CardFetch {
-    pub id: u32,
+    pub card_id: u32,
 }
 
 impl Message for CardFetch {
@@ -21,11 +20,6 @@ impl Handler<CardFetch> for DbExecutor {
     type Result = Option<Card>;
 
     fn handle(&mut self, msg: CardFetch, _ctx: &mut Self::Context) -> Self::Result {
-        use schema::cards::dsl::*;
-
-        cards
-            .find(msg.id as i32)
-            .get_result::<Card>(&self.conn)
-            .ok()
+        Card::find_by_id(&self.conn, msg.card_id as i32)
     }
 }
