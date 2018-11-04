@@ -61,7 +61,7 @@ pub fn get((_auth, req, path): (AuthOptional, Req, CardPath)) -> FutRes {
 
     req.state()
         .pg
-        .send(CardFetch { id: path.0 })
+        .send(CardFetch { card_id: path.0 })
         .from_err()
         .and_then(|res| match res {
             Some(card) => Ok(answer_success!(Ok, R { card })),

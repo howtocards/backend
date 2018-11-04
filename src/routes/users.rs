@@ -5,8 +5,7 @@ use futures::*;
 use app_state::{AppState, Req};
 use auth::AuthOptional;
 
-use handlers::users::get_user::*;
-use models::User;
+use models::{Card, User};
 use views::{EncodableUserPrivate, EncodableUserPublic};
 
 type FutRes = FutureResponse<HttpResponse>;
@@ -20,6 +19,7 @@ enum GetUserInfoError {
 }
 
 pub fn info((auth, req, path): (AuthOptional, Req, UserPath)) -> FutRes {
+    use handlers::users::get_user::*;
     #[derive(Serialize)]
     #[serde(untagged)]
     enum R {
@@ -60,9 +60,31 @@ pub fn info((auth, req, path): (AuthOptional, Req, UserPath)) -> FutRes {
         }).responder()
 }
 
+pub fn useful((_auth, req, path): (AuthOptional, Req, UserPath)) -> FutRes {
+    use handlers::users::useful_cards::*;
+    #[derive(Serialize)]
+    #[serde(rename_all = "camelCase")]
+    struct R {
+        cards: Vec<Card>,
+    }
+
+    req.state()
+        .pg
+        .send(GetUsefulCardsForUser {
+            user_id: path.0 as i32,
+        }).from_err()
+        .and_then(|res| match res {
+            Some(cards) => Ok(answer_success!(Ok, R { cards })),
+            None => Ok(answer_success!(Ok, R { cards: vec![] })),
+        }).responder()
+}
+
 #[inline]
 pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
-    scope.resource("/{user_id}/", |r| {
-        r.get().with(self::info);
-    })
+    scope
+        .resource("/{user_id}/", |r| {
+            r.get().with(self::info);
+        }).resource("/{user_id}/cards/useful/", |r| {
+            r.get().with(self::useful);
+        })
 }
