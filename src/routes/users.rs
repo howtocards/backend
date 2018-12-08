@@ -23,27 +23,28 @@ pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
     use handlers::users::get_user::*;
 
     #[derive(Serialize)]
-    #[serde(untagged)]
-    enum R {
-        Public { user: EncodableUserPublic },
-        Private { user: EncodableUserPrivate },
+    struct R {
+        user: UserView,
     }
 
-    impl R {
+    #[derive(Serialize)]
+    #[serde(untagged)]
+    enum UserView {
+        Public(EncodableUserPublic),
+        Private(EncodableUserPrivate),
+    }
+
+    impl UserView {
         #[inline]
-        fn answer(auth: AuthOptional, user: User) -> R {
+        fn answer(auth: AuthOptional, user: User) -> Self {
             if auth
                 .user
                 .map(|auth_user| auth_user.id == user.id)
                 .unwrap_or(false)
             {
-                R::Private {
-                    user: user.encodable_private(),
-                }
+                UserView::Private(user.encodable_private())
             } else {
-                R::Public {
-                    user: user.encodable_public(),
-                }
+                UserView::Public(user.encodable_public())
             }
         }
     }
@@ -54,7 +55,12 @@ pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
             user_id: path.user_id as i32,
         }).from_err()
         .and_then(|res| match res {
-            Some(user) => Ok(answer_success!(Ok, R::answer(auth, user))),
+            Some(user) => Ok(answer_success!(
+                Ok,
+                R {
+                    user: UserView::answer(auth, user),
+                }
+            )),
             None => Ok(answer_error!(
                 NotFound,
                 GetUserInfoError::NotFound.to_string()
