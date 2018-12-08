@@ -18,11 +18,11 @@ extern crate uuid;
 extern crate diesel;
 extern crate chrono;
 extern crate env_logger;
+extern crate num_cpus;
 
 use actix_web::middleware::identity::IdentityService;
 use actix_web::{http, middleware, server, App};
 use diesel::PgConnection;
-use failure::Fail;
 use prelude::*;
 use std::env;
 
@@ -54,7 +54,7 @@ enum StartErr {
     #[fail(display = "expected DATABASE_URL env var")]
     DbExpected,
 
-    #[fail(display = "Check .env file exists")]
+    #[fail(display = "expected .env file exists")]
     DotEnvFail,
 }
 
@@ -72,9 +72,10 @@ fn create_server(db_url: String) -> Result<(), failure::Error> {
     use actix::{SyncArbiter, System};
     use app_state::DbExecutor;
 
+    let cpus = num_cpus::get();
     let system = System::new("htc-server");
 
-    let pg = SyncArbiter::start(3, move || DbExecutor::new(establish_connection(&db_url)));
+    let pg = SyncArbiter::start(cpus, move || DbExecutor::new(establish_connection(&db_url)));
 
     let server_creator = move || {
         let state = AppState::new(pg.clone());
@@ -97,7 +98,7 @@ fn create_server(db_url: String) -> Result<(), failure::Error> {
     };
 
     let app = server::new(server_creator)
-        .workers(2)
+        .workers(cpus)
         .bind("0.0.0.0:9000")
         .expect("Can not bind to 127.0.0.1:9000");
 
