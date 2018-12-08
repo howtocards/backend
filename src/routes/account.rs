@@ -1,7 +1,6 @@
 //! /account
 
-use actix_web::*;
-use futures::prelude::*;
+use prelude::*;
 use views;
 
 use app_state::{AppState, Req};
