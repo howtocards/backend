@@ -81,7 +81,9 @@ pub struct CardEditBody {
 }
 
 /// PUT /cards/{card_id}
-pub fn edit((edit_form, auth, req, path): (Json<CardEditBody>, Auth, Req, Path<CardPath>)) -> FutRes {
+pub fn edit(
+    (edit_form, auth, req, path): (Json<CardEditBody>, Auth, Req, Path<CardPath>),
+) -> FutRes {
     use handlers::cards::edit::*;
 
     #[derive(Serialize)]

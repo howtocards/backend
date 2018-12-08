@@ -1,9 +1,5 @@
 //! /account
 
-use actix_web::dev::HttpResponseBuilder;
-use actix_web::Error;
-use serde::Serialize;
-
 use prelude::*;
 use views;
 

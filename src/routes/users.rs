@@ -1,6 +1,4 @@
-use actix_web::*;
-use failure::*;
-use futures::*;
+use prelude::*;
 
 use app_state::{AppState, Req};
 use auth::AuthOptional;
@@ -10,7 +8,10 @@ use views::{EncodableUserPrivate, EncodableUserPublic};
 
 type FutRes = FutureResponse<HttpResponse>;
 
-type UserPath = Path<(u32,)>;
+#[derive(Deserialize)]
+pub struct UserPath {
+    user_id: u32,
+}
 
 #[derive(Fail, Debug)]
 enum GetUserInfoError {
@@ -18,8 +19,9 @@ enum GetUserInfoError {
     NotFound,
 }
 
-pub fn info((auth, req, path): (AuthOptional, Req, UserPath)) -> FutRes {
+pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
     use handlers::users::get_user::*;
+
     #[derive(Serialize)]
     #[serde(untagged)]
     enum R {
@@ -49,7 +51,7 @@ pub fn info((auth, req, path): (AuthOptional, Req, UserPath)) -> FutRes {
     req.state()
         .pg
         .send(GetUser {
-            user_id: path.0 as i32,
+            user_id: path.user_id as i32,
         }).from_err()
         .and_then(|res| match res {
             Some(user) => Ok(answer_success!(Ok, R::answer(auth, user))),
