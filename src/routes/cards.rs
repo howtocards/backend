@@ -1,5 +1,6 @@
-use actix_web::*;
-use futures::*;
+//! /cards
+
+use prelude::*;
 
 use app_state::{AppState, Req};
 use auth::{Auth, AuthOptional};

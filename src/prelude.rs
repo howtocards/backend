@@ -1,3 +1,9 @@
+pub use actix::prelude::*;
+pub use actix_web::*;
+pub use diesel::prelude::*;
+pub use failure::*;
+pub use futures::prelude::*;
+
 /// Local extensions for Result type
 pub trait ResultExt<T, E> {
     /// Returns passed `err` wrapped to `Err()` if the result is `Err`
