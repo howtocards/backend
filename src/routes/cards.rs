@@ -49,10 +49,13 @@ pub fn list((_auth, req): (AuthOptional, Req)) -> FutRes {
         }).responder()
 }
 
-type CardPath = Path<(u32,)>;
+#[derive(Deserialize)]
+pub struct CardPath {
+    card_id: u32,
+}
 
 /// GET /cards/{card_id}
-pub fn get((_auth, req, path): (AuthOptional, Req, CardPath)) -> FutRes {
+pub fn get((_auth, req, path): (AuthOptional, Req, Path<CardPath>)) -> FutRes {
     use handlers::cards::get::*;
 
     #[derive(Serialize)]
@@ -62,7 +65,7 @@ pub fn get((_auth, req, path): (AuthOptional, Req, CardPath)) -> FutRes {
 
     req.state()
         .pg
-        .send(CardFetch { card_id: path.0 })
+        .send(CardFetch { card_id: path.card_id })
         .from_err()
         .and_then(|res| match res {
             Some(card) => Ok(answer_success!(Ok, R { card })),
@@ -78,7 +81,7 @@ pub struct CardEditBody {
 }
 
 /// PUT /cards/{card_id}
-pub fn edit((edit_form, auth, req, path): (Json<CardEditBody>, Auth, Req, Path<(u32,)>)) -> FutRes {
+pub fn edit((edit_form, auth, req, path): (Json<CardEditBody>, Auth, Req, Path<CardPath>)) -> FutRes {
     use handlers::cards::edit::*;
 
     #[derive(Serialize)]
@@ -90,7 +93,7 @@ pub fn edit((edit_form, auth, req, path): (Json<CardEditBody>, Auth, Req, Path<(
     req.state()
         .pg
         .send(CardEdit {
-            card_id: path.0,
+            card_id: path.card_id,
             requester_id: auth.user.id,
             title: edit_form.0.title,
             content: edit_form.0.content,
@@ -102,7 +105,7 @@ pub fn edit((edit_form, auth, req, path): (Json<CardEditBody>, Auth, Req, Path<(
 }
 
 /// DELETE /cards/{card_id}
-pub fn delete((auth, req, path): (Auth, Req, CardPath)) -> FutRes {
+pub fn delete((auth, req, path): (Auth, Req, Path<CardPath>)) -> FutRes {
     use handlers::cards::delete::*;
 
     #[derive(Serialize)]
@@ -114,7 +117,7 @@ pub fn delete((auth, req, path): (Auth, Req, CardPath)) -> FutRes {
         .pg
         .send(CardDelete {
             requester_id: auth.user.id,
-            card_id: path.0,
+            card_id: path.card_id,
         }).from_err()
         .and_then(|res| match res {
             Ok(card) => Ok(answer_success!(Accepted, R { card })),
@@ -129,7 +132,7 @@ pub struct MarkUseful {
 }
 
 /// POST /cards/{card_id}/useful
-pub fn useful((body, auth, req, path): (Json<MarkUseful>, Auth, Req, CardPath)) -> FutRes {
+pub fn useful((body, auth, req, path): (Json<MarkUseful>, Auth, Req, Path<CardPath>)) -> FutRes {
     use handlers::cards::mark_useful::*;
 
     #[derive(Serialize)]
@@ -141,7 +144,7 @@ pub fn useful((body, auth, req, path): (Json<MarkUseful>, Auth, Req, CardPath)) 
         .pg
         .send(SetMarkCardUseful {
             requester_id: auth.user.id,
-            card_id: path.0 as i32,
+            card_id: path.card_id as i32,
             set_is_useful: body.is_useful,
         }).from_err()
         .and_then(|res| match res {
