@@ -68,6 +68,7 @@ pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
         }).responder()
 }
 
+/// GET /users/{user_id}/cards/useful/
 pub fn useful((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
     use handlers::users::useful_cards::*;
     #[derive(Serialize)]
@@ -87,6 +88,27 @@ pub fn useful((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes
         }).responder()
 }
 
+/// GET /users/{user_id}/cards/authors/
+/// Get cards by user
+pub fn authors((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
+    use handlers::users::cards_by_author::*;
+    #[derive(Serialize)]
+    #[serde(rename_all = "camelCase")]
+    struct R {
+        cards: Vec<Card>,
+    }
+
+    req.state()
+        .pg
+        .send(GetCardsByAuthor {
+            author_id: path.user_id as i32,
+        }).from_err()
+        .and_then(|res| match res {
+            Some(cards) => Ok(answer_success!(Ok, R { cards })),
+            None => Ok(answer_success!(Ok, R { cards: vec![] })),
+        }).responder()
+}
+
 #[inline]
 pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
     scope
@@ -94,5 +116,5 @@ pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
             r.get().with(self::info);
         }).resource("/{user_id}/cards/useful/", |r| {
             r.get().with(self::useful);
-        })
+        }).resource("/{user_id}/cards/authors/", |r| r.get().with(self::authors))
 }

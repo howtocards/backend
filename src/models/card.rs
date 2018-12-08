@@ -46,4 +46,13 @@ impl Card {
             .load::<Card>(conn)
             .unwrap_or(Vec::new())
     }
+
+    pub fn find_all_by_author(conn: &PgConnection, author_id: i32) -> Vec<Self> {
+        use schema::cards;
+
+        cards::table
+            .filter(cards::author_id.eq(author_id))
+            .get_results::<Card>(conn)
+            .unwrap_or(Vec::new())
+    }
 }
