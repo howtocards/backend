@@ -68,7 +68,7 @@ pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
         }).responder()
 }
 
-pub fn useful((_auth, req, path): (AuthOptional, Req, UserPath)) -> FutRes {
+pub fn useful((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
     use handlers::users::useful_cards::*;
     #[derive(Serialize)]
     #[serde(rename_all = "camelCase")]
@@ -79,7 +79,7 @@ pub fn useful((_auth, req, path): (AuthOptional, Req, UserPath)) -> FutRes {
     req.state()
         .pg
         .send(GetUsefulCardsForUser {
-            user_id: path.0 as i32,
+            user_id: path.user_id as i32,
         }).from_err()
         .and_then(|res| match res {
             Some(cards) => Ok(answer_success!(Ok, R { cards })),

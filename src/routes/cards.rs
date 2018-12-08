@@ -65,8 +65,9 @@ pub fn get((_auth, req, path): (AuthOptional, Req, Path<CardPath>)) -> FutRes {
 
     req.state()
         .pg
-        .send(CardFetch { card_id: path.card_id })
-        .from_err()
+        .send(CardFetch {
+            card_id: path.card_id,
+        }).from_err()
         .and_then(|res| match res {
             Some(card) => Ok(answer_success!(Ok, R { card })),
             None => Ok(answer_error!(NotFound, "id_not_found".to_string())),
