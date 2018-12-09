@@ -1,6 +1,6 @@
 //! Application state types
 
-use actix::prelude::*;
+use actix_base::prelude::*;
 use actix_web::HttpRequest;
 use diesel::prelude::*;
 

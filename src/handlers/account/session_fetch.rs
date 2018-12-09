@@ -1,9 +1,9 @@
 ///! Fetch user from session token
-use actix::prelude::*;
+use actix_base::prelude::*;
 use diesel::prelude::*;
 
-use app_state::DbExecutor;
-use models::*;
+use crate::app_state::DbExecutor;
+use crate::models::*;
 
 /// Fetch user account from session token
 ///
@@ -21,8 +21,8 @@ impl Handler<AccountSessionFetch> for DbExecutor {
     type Result = Option<User>;
 
     fn handle(&mut self, msg: AccountSessionFetch, _ctx: &mut Self::Context) -> Self::Result {
-        use schema::tokens::dsl::*;
-        use schema::users::dsl::*;
+        use crate::schema::tokens::dsl::*;
+        use crate::schema::users::dsl::*;
 
         let found_token: Token = tokens.filter(token.eq(msg.token)).first(&self.conn).ok()?;
 

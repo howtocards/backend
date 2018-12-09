@@ -1,29 +1,17 @@
 #![doc(html_logo_url = "https://avatars0.githubusercontent.com/u/38739163?s=200&v=4")]
-// #![allow(dead_code, unused_imports)]
 #![allow(proc_macro_derive_resolution_fallback)]
 
-extern crate actix;
-extern crate actix_web;
-extern crate dotenv;
-extern crate serde;
-extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
 #[macro_use]
-extern crate failure;
-extern crate futures;
-extern crate sha2;
-extern crate uuid;
-#[macro_use]
 extern crate diesel;
-extern crate chrono;
-extern crate env_logger;
-extern crate num_cpus;
+#[macro_use]
+extern crate failure;
+extern crate actix_base;
 
 use actix_web::middleware::identity::IdentityService;
 use actix_web::{http, middleware, server, App};
 use diesel::PgConnection;
-use prelude::*;
 use std::env;
 
 mod app_state;
@@ -41,7 +29,8 @@ pub mod routes;
 pub mod schema;
 mod views;
 
-use app_state::AppState;
+use self::app_state::AppState;
+use self::prelude::*;
 
 fn main() {
     if let Err(e) = run() {
@@ -69,8 +58,8 @@ fn run() -> Result<(), failure::Error> {
 
 fn create_server(db_url: String) -> Result<(), failure::Error> {
     env_logger::init();
-    use actix::{SyncArbiter, System};
-    use app_state::DbExecutor;
+    use self::app_state::DbExecutor;
+    use actix_base::{SyncArbiter, System};
 
     let cpus = num_cpus::get();
     let system = System::new("htc-server");

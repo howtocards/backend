@@ -1,8 +1,8 @@
 use chrono::NaiveDateTime;
 
+use crate::models::User;
+use crate::schema::cards;
 use diesel::prelude::*;
-use models::User;
-use schema::cards;
 
 #[derive(Debug, Deserialize, Insertable, Associations)]
 #[belongs_to(User, foreign_key = "author_id")]
@@ -30,14 +30,14 @@ pub struct Card {
 
 impl Card {
     pub fn find_by_id(conn: &PgConnection, card_id: i32) -> Option<Self> {
-        use schema::cards::dsl::*;
+        use crate::schema::cards::dsl::*;
 
         cards.find(card_id).get_result::<Self>(conn).ok()
     }
 
     pub fn get_useful_for_user(conn: &PgConnection, user_id: i32) -> Vec<Self> {
-        use schema::cards;
-        use schema::useful_marks;
+        use crate::schema::cards;
+        use crate::schema::useful_marks;
 
         cards::table
             .inner_join(useful_marks::table)
@@ -48,7 +48,7 @@ impl Card {
     }
 
     pub fn find_all_by_author(conn: &PgConnection, author_id: i32) -> Vec<Self> {
-        use schema::cards;
+        use crate::schema::cards;
 
         cards::table
             .filter(cards::author_id.eq(author_id))

@@ -1,14 +1,13 @@
 //! Create account
-
-use actix::prelude::*;
+use actix_base::prelude::*;
 use actix_web::*;
 use diesel;
 
-use app_state::DbExecutor;
-use consts;
-use hasher;
-use models::*;
-use prelude::*;
+use crate::app_state::DbExecutor;
+use crate::consts;
+use crate::hasher;
+use crate::models::*;
+use crate::prelude::*;
 
 #[derive(Fail, Debug)]
 pub enum AccountCreateError {
@@ -37,8 +36,8 @@ impl Handler<AccountCreate> for DbExecutor {
     type Result = Result<User, AccountCreateError>;
 
     fn handle(&mut self, msg: AccountCreate, _: &mut Self::Context) -> Self::Result {
+        use crate::schema::users::dsl::*;
         use diesel::RunQueryDsl;
-        use schema::users::dsl::*;
 
         let new_account = UserNew {
             email: msg.email,

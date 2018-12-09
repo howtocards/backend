@@ -1,6 +1,7 @@
+use crate::models::{Card, User};
+use crate::schema::useful_marks;
 use chrono::NaiveDateTime;
-use models::{Card, User};
-use schema::useful_marks;
+use diesel::{Associations, Insertable, Queryable};
 
 #[derive(Debug, Insertable, Queryable, Associations)]
 #[belongs_to(User)]

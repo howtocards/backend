@@ -6,7 +6,7 @@ pub mod account;
 pub mod cards;
 pub mod users;
 
-use app_state::AppState;
+use crate::app_state::AppState;
 
 #[inline]
 pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {

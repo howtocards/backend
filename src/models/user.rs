@@ -1,6 +1,6 @@
+use crate::schema::users;
+use crate::views::{EncodableUserPrivate, EncodableUserPublic};
 use diesel::prelude::*;
-use schema::users;
-use views::{EncodableUserPrivate, EncodableUserPublic};
 
 #[derive(Queryable, Associations, Identifiable, Debug)]
 pub struct User {
@@ -35,7 +35,7 @@ impl User {
     }
 
     pub fn find_by_id(conn: &PgConnection, user_id: i32) -> Option<Self> {
-        use schema::users::dsl::*;
+        use crate::schema::users::dsl::*;
 
         users.find(user_id).get_result::<Self>(conn).ok()
     }

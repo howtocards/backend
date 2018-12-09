@@ -1,10 +1,10 @@
-use prelude::*;
+use crate::prelude::*;
 
-use app_state::{AppState, Req};
-use auth::AuthOptional;
+use crate::app_state::{AppState, Req};
+use crate::auth::AuthOptional;
 
-use models::{Card, User};
-use views::{EncodableUserPrivate, EncodableUserPublic};
+use crate::models::{Card, User};
+use crate::views::{EncodableUserPrivate, EncodableUserPublic};
 
 type FutRes = FutureResponse<HttpResponse>;
 
@@ -20,7 +20,7 @@ enum GetUserInfoError {
 }
 
 pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
-    use handlers::users::get_user::*;
+    use crate::handlers::users::get_user::*;
 
     #[derive(Serialize)]
     struct R {
@@ -72,7 +72,7 @@ pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
 
 /// GET /users/{user_id}/cards/useful/
 pub fn useful((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
-    use handlers::users::useful_cards::*;
+    use crate::handlers::users::useful_cards::*;
     #[derive(Serialize)]
     #[serde(rename_all = "camelCase")]
     struct R {
@@ -95,7 +95,7 @@ pub fn useful((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes
 /// GET /users/{user_id}/cards/authors/
 /// Get cards by user
 pub fn authors((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
-    use handlers::users::cards_by_author::*;
+    use crate::handlers::users::cards_by_author::*;
     #[derive(Serialize)]
     #[serde(rename_all = "camelCase")]
     struct R {

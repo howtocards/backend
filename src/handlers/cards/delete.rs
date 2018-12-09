@@ -1,13 +1,13 @@
 //! Delete existing card
 
-use actix::prelude::*;
+use actix_base::prelude::*;
 use actix_web::*;
 use diesel;
 use diesel::prelude::*;
 
-use app_state::DbExecutor;
-use models::*;
-use prelude::*;
+use crate::app_state::DbExecutor;
+use crate::models::*;
+use crate::prelude::*;
 
 #[derive(Fail, Debug)]
 pub enum CardDeleteError {
@@ -37,8 +37,8 @@ impl Handler<CardDelete> for DbExecutor {
     type Result = Result<Card, CardDeleteError>;
 
     fn handle(&mut self, msg: CardDelete, _ctx: &mut Self::Context) -> Self::Result {
+        use crate::schema::cards::dsl::*;
         use diesel::RunQueryDsl;
-        use schema::cards::dsl::*;
 
         let target = cards
             .filter(id.eq(msg.card_id as i32))

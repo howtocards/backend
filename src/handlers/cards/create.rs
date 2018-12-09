@@ -1,12 +1,12 @@
 //! Create card
 
-use actix::prelude::*;
+use actix_base::prelude::*;
 use actix_web::*;
 use diesel;
 
-use app_state::DbExecutor;
-use models::*;
-use prelude::*;
+use crate::app_state::DbExecutor;
+use crate::models::*;
+use crate::prelude::*;
 
 #[derive(Fail, Debug)]
 pub enum CardCreateError {
@@ -29,8 +29,8 @@ impl Handler<CardNew> for DbExecutor {
     type Result = Result<Card, CardCreateError>;
 
     fn handle(&mut self, msg: CardNew, _: &mut Self::Context) -> Self::Result {
+        use crate::schema::cards::dsl::*;
         use diesel::RunQueryDsl;
-        use schema::cards::dsl::*;
 
         Ok(diesel::insert_into(cards)
             .values(&msg)

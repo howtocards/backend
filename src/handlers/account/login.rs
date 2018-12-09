@@ -1,16 +1,15 @@
 //! Session create
-
-use actix::prelude::*;
+use actix_base::prelude::*;
 use actix_web::*;
 use diesel;
 use diesel::prelude::*;
 use uuid::Uuid;
 
-use app_state::DbExecutor;
-use consts;
-use hasher;
-use models::*;
-use prelude::*;
+use crate::app_state::DbExecutor;
+use crate::consts;
+use crate::hasher;
+use crate::models::*;
+use crate::prelude::*;
 
 #[derive(Debug, Fail, Serialize)]
 pub enum SessionCreateError {
@@ -46,8 +45,8 @@ impl Handler<SessionCreate> for DbExecutor {
     type Result = Result<SessionToken, SessionCreateError>;
 
     fn handle(&mut self, msg: SessionCreate, _: &mut Self::Context) -> Self::Result {
+        use crate::schema::{tokens, users};
         use diesel::RunQueryDsl;
-        use schema::{tokens, users};
 
         let new_account = UserNew {
             email: msg.email,

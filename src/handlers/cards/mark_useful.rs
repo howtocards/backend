@@ -1,14 +1,14 @@
 //! Mark card as useful
 
-use actix::prelude::*;
+use actix_base::prelude::*;
 use actix_web::*;
 use diesel;
 use diesel::prelude::*;
 
-use app_state::DbExecutor;
-use models::*;
-use prelude::*;
-use time;
+use crate::app_state::DbExecutor;
+use crate::models::*;
+use crate::prelude::*;
+use crate::time;
 
 /// May fail when SetMarkCardUseful sended to DbExecutor
 #[derive(Fail, Debug)]
@@ -43,7 +43,7 @@ impl Handler<SetMarkCardUseful> for DbExecutor {
 
         let card = {
             // Check if cards exists
-            use schema::cards::dsl::*;
+            use crate::schema::cards::dsl::*;
 
             cards
                 .filter(id.eq(msg.card_id))
@@ -52,7 +52,7 @@ impl Handler<SetMarkCardUseful> for DbExecutor {
         };
         {
             // Check if user exists
-            use schema::users::dsl::*;
+            use crate::schema::users::dsl::*;
 
             users
                 .filter(id.eq(msg.requester_id))
@@ -62,7 +62,7 @@ impl Handler<SetMarkCardUseful> for DbExecutor {
 
         {
             // Delete previous mark, if exists
-            use schema::useful_marks::dsl::*;
+            use crate::schema::useful_marks::dsl::*;
 
             let filter = useful_marks
                 .filter(card_id.eq(msg.card_id))
@@ -71,7 +71,7 @@ impl Handler<SetMarkCardUseful> for DbExecutor {
         }
 
         if msg.set_is_useful {
-            use schema::useful_marks::dsl::*;
+            use crate::schema::useful_marks::dsl::*;
 
             let mark = UsefulMark {
                 card_id: msg.card_id,
@@ -85,8 +85,8 @@ impl Handler<SetMarkCardUseful> for DbExecutor {
         }
 
         let useful_count: i64 = {
+            use crate::schema::useful_marks::dsl::*;
             use diesel::dsl::count;
-            use schema::useful_marks::dsl::*;
 
             useful_marks
                 .filter(card_id.eq(msg.card_id))
@@ -98,7 +98,7 @@ impl Handler<SetMarkCardUseful> for DbExecutor {
 
         let new_card = {
             // Update card with `updated_at` and `useful_for`
-            use schema::cards::dsl::*;
+            use crate::schema::cards::dsl::*;
             let filter = cards.filter(id.eq(msg.card_id));
 
             diesel::update(filter)

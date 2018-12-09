@@ -1,4 +1,4 @@
-pub use actix::prelude::*;
+pub use actix_base::prelude::*;
 pub use actix_web::*;
 pub use diesel::prelude::*;
 pub use failure::*;

@@ -1,10 +1,10 @@
 //! Cards list
 
-use actix::prelude::*;
+use actix_base::prelude::*;
 use diesel::prelude::*;
 
-use app_state::DbExecutor;
-use models::*;
+use crate::app_state::DbExecutor;
+use crate::models::*;
 
 /// Fetch all cards
 ///
@@ -20,7 +20,7 @@ impl Handler<CardsListFetch> for DbExecutor {
     type Result = Option<Vec<Card>>;
 
     fn handle(&mut self, _msg: CardsListFetch, _ctx: &mut Self::Context) -> Self::Result {
-        use schema::cards::dsl::*;
+        use crate::schema::cards::dsl::*;
 
         cards
             .get_results::<Card>(&self.conn)

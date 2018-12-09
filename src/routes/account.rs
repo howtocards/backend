@@ -1,12 +1,12 @@
 //! /account
 
-use prelude::*;
-use views;
+use crate::prelude::*;
+use crate::views;
 
-use app_state::{AppState, Req};
-use auth::Auth;
-use handlers::account::create::*;
-use handlers::account::login::*;
+use crate::app_state::{AppState, Req};
+use crate::auth::Auth;
+use crate::handlers::account::create::*;
+use crate::handlers::account::login::*;
 
 /// POST /account
 pub fn create((account, req): (Json<AccountCreate>, Req)) -> FutureResponse<HttpResponse> {

@@ -1,5 +1,5 @@
-use models::User;
-use schema::tokens;
+use crate::models::User;
+use crate::schema::tokens;
 
 #[derive(Debug, Queryable, Serialize, Insertable, Deserialize, Associations, Identifiable)]
 #[belongs_to(User)]

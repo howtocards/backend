@@ -1,10 +1,10 @@
 //! /cards
 
-use prelude::*;
+use crate::prelude::*;
 
-use app_state::{AppState, Req};
-use auth::{Auth, AuthOptional};
-use models::*;
+use crate::app_state::{AppState, Req};
+use crate::auth::{Auth, AuthOptional};
+use crate::models::*;
 
 type FutRes = FutureResponse<HttpResponse>;
 
@@ -17,7 +17,7 @@ pub struct CardCreateBody {
 
 /// POST /cards
 pub fn create((card_form, auth, req): (Json<CardCreateBody>, Auth, Req)) -> FutRes {
-    // use handlers::cards::create::*;
+    // use crate::handlers::cards::create::*;
 
     req.state()
         .pg
@@ -36,7 +36,7 @@ pub fn create((card_form, auth, req): (Json<CardCreateBody>, Auth, Req)) -> FutR
 
 /// GET /cards
 pub fn list((_auth, req): (AuthOptional, Req)) -> FutRes {
-    use handlers::cards::list::*;
+    use crate::handlers::cards::list::*;
 
     #[derive(Serialize)]
     pub struct R(Vec<Card>);
@@ -59,7 +59,7 @@ pub struct CardPath {
 
 /// GET /cards/{card_id}
 pub fn get((_auth, req, path): (AuthOptional, Req, Path<CardPath>)) -> FutRes {
-    use handlers::cards::get::*;
+    use crate::handlers::cards::get::*;
 
     #[derive(Serialize)]
     pub struct R {
@@ -90,7 +90,7 @@ pub struct CardEditBody {
 pub fn edit(
     (edit_form, auth, req, path): (Json<CardEditBody>, Auth, Req, Path<CardPath>),
 ) -> FutRes {
-    use handlers::cards::edit::*;
+    use crate::handlers::cards::edit::*;
 
     #[derive(Serialize)]
     #[serde(rename_all = "camelCase")]
@@ -116,7 +116,7 @@ pub fn edit(
 
 /// DELETE /cards/{card_id}
 pub fn delete((auth, req, path): (Auth, Req, Path<CardPath>)) -> FutRes {
-    use handlers::cards::delete::*;
+    use crate::handlers::cards::delete::*;
 
     #[derive(Serialize)]
     pub struct R {
@@ -145,7 +145,7 @@ pub struct MarkUseful {
 
 /// POST /cards/{card_id}/useful
 pub fn useful((body, auth, req, path): (Json<MarkUseful>, Auth, Req, Path<CardPath>)) -> FutRes {
-    use handlers::cards::mark_useful::*;
+    use crate::handlers::cards::mark_useful::*;
 
     #[derive(Serialize)]
     pub struct R {

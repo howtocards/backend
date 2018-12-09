@@ -7,7 +7,7 @@ use futures::future::{ok as fut_ok, FutureResult};
 use std::rc::Rc;
 use std::str::FromStr;
 
-use app_state::{AppState, Req};
+use crate::app_state::{AppState, Req};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ParseAuthorizationError {

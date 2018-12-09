@@ -1,9 +1,9 @@
 //! Get single card
 
-use actix::prelude::*;
+use actix_base::prelude::*;
 
-use app_state::DbExecutor;
-use models::*;
+use crate::app_state::DbExecutor;
+use crate::models::*;
 
 /// Fetch single card
 ///
