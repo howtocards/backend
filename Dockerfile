@@ -3,14 +3,13 @@ ARG ALPINE_VERSION=3.8
 
 FROM rust:$RUST_VERSION as build
 
-RUN USER=root cargo new --bin /app && \
-    touch /app/src/lib.rs
+RUN USER=root cargo new --bin /app
 WORKDIR /app
 
-# COPY ./Cargo.lock ./Cargo.lock
+COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
 
-RUN cargo build --release  && \
+RUN cargo build --release && \
     rm -rf src
 
 COPY ./ ./
