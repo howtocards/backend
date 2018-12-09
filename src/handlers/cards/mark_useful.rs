@@ -105,7 +105,8 @@ impl Handler<SetMarkCardUseful> for DbExecutor {
                 .set((
                     updated_at.eq(Some(time::now())),
                     useful_for.eq(useful_count),
-                )).get_result(&self.conn)
+                ))
+                .get_result(&self.conn)
                 .unwrap_or(card)
         };
 

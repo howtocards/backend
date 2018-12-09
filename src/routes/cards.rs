@@ -25,11 +25,13 @@ pub fn create((card_form, auth, req): (Json<CardCreateBody>, Auth, Req)) -> FutR
             author_id: auth.user.id,
             content: card_form.0.content,
             title: card_form.0.title,
-        }).from_err()
+        })
+        .from_err()
         .and_then(|res| match res {
             Ok(created) => Ok(answer_success!(Ok, created)),
             Err(err) => Ok(err.error_response()),
-        }).responder()
+        })
+        .responder()
 }
 
 /// GET /cards
@@ -46,7 +48,8 @@ pub fn list((_auth, req): (AuthOptional, Req)) -> FutRes {
         .and_then(|res| match res {
             Some(list) => Ok(answer_success!(Ok, R(list))),
             None => Ok(answer_success!(Ok, R(vec![]))),
-        }).responder()
+        })
+        .responder()
 }
 
 #[derive(Deserialize)]
@@ -67,11 +70,13 @@ pub fn get((_auth, req, path): (AuthOptional, Req, Path<CardPath>)) -> FutRes {
         .pg
         .send(CardFetch {
             card_id: path.card_id,
-        }).from_err()
+        })
+        .from_err()
         .and_then(|res| match res {
             Some(card) => Ok(answer_success!(Ok, R { card })),
             None => Ok(answer_error!(NotFound, "id_not_found".to_string())),
-        }).responder()
+        })
+        .responder()
 }
 
 #[derive(Deserialize)]
@@ -100,11 +105,13 @@ pub fn edit(
             requester_id: auth.user.id,
             title: edit_form.0.title,
             content: edit_form.0.content,
-        }).from_err()
+        })
+        .from_err()
         .and_then(|res| match res {
             Ok(card) => Ok(answer_success!(Ok, R { card })),
             Err(err) => Ok(err.error_response()),
-        }).responder()
+        })
+        .responder()
 }
 
 /// DELETE /cards/{card_id}
@@ -121,11 +128,13 @@ pub fn delete((auth, req, path): (Auth, Req, Path<CardPath>)) -> FutRes {
         .send(CardDelete {
             requester_id: auth.user.id,
             card_id: path.card_id,
-        }).from_err()
+        })
+        .from_err()
         .and_then(|res| match res {
             Ok(card) => Ok(answer_success!(Accepted, R { card })),
             Err(err) => Ok(err.error_response()),
-        }).responder()
+        })
+        .responder()
 }
 
 #[derive(Deserialize)]
@@ -149,11 +158,13 @@ pub fn useful((body, auth, req, path): (Json<MarkUseful>, Auth, Req, Path<CardPa
             requester_id: auth.user.id,
             card_id: path.card_id as i32,
             set_is_useful: body.is_useful,
-        }).from_err()
+        })
+        .from_err()
         .and_then(|res| match res {
             Ok(card) => Ok(answer_success!(Ok, R { card })),
             Err(err) => Ok(err.error_response()),
-        }).responder()
+        })
+        .responder()
 }
 
 #[inline]
@@ -163,9 +174,11 @@ pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
             r.get().with(self::get);
             r.put().with(self::edit);
             r.delete().with(self::delete);
-        }).resource("/{card_id}/useful", |r| {
+        })
+        .resource("/{card_id}/useful", |r| {
             r.post().with(self::useful);
-        }).resource("/", |r| {
+        })
+        .resource("/", |r| {
             r.post().with(self::create);
             r.get().with(self::list);
         })

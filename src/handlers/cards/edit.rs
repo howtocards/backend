@@ -32,7 +32,8 @@ impl ResponseError for CardEditError {
             CardEditError::NotFound => HttpResponse::NotFound(),
             CardEditError::IncorrectForm => HttpResponse::BadRequest(),
             CardEditError::NoRights => HttpResponse::Forbidden(),
-        }.json(ErrorAnswer::new(format!("{}", self)))
+        }
+        .json(ErrorAnswer::new(format!("{}", self)))
     }
 }
 

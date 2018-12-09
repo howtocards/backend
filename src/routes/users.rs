@@ -53,7 +53,8 @@ pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
         .pg
         .send(GetUser {
             user_id: path.user_id as i32,
-        }).from_err()
+        })
+        .from_err()
         .and_then(|res| match res {
             Some(user) => Ok(answer_success!(
                 Ok,
@@ -65,7 +66,8 @@ pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
                 NotFound,
                 GetUserInfoError::NotFound.to_string()
             )),
-        }).responder()
+        })
+        .responder()
 }
 
 /// GET /users/{user_id}/cards/useful/
@@ -81,11 +83,13 @@ pub fn useful((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes
         .pg
         .send(GetUsefulCardsForUser {
             user_id: path.user_id as i32,
-        }).from_err()
+        })
+        .from_err()
         .and_then(|res| match res {
             Some(cards) => Ok(answer_success!(Ok, R { cards })),
             None => Ok(answer_success!(Ok, R { cards: vec![] })),
-        }).responder()
+        })
+        .responder()
 }
 
 /// GET /users/{user_id}/cards/authors/
@@ -102,11 +106,13 @@ pub fn authors((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRe
         .pg
         .send(GetCardsByAuthor {
             author_id: path.user_id as i32,
-        }).from_err()
+        })
+        .from_err()
         .and_then(|res| match res {
             Some(cards) => Ok(answer_success!(Ok, R { cards })),
             None => Ok(answer_success!(Ok, R { cards: vec![] })),
-        }).responder()
+        })
+        .responder()
 }
 
 #[inline]
@@ -114,7 +120,9 @@ pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
     scope
         .resource("/{user_id}/", |r| {
             r.get().with(self::info);
-        }).resource("/{user_id}/cards/useful/", |r| {
+        })
+        .resource("/{user_id}/cards/useful/", |r| {
             r.get().with(self::useful);
-        }).resource("/{user_id}/cards/authors/", |r| r.get().with(self::authors))
+        })
+        .resource("/{user_id}/cards/authors/", |r| r.get().with(self::authors))
 }

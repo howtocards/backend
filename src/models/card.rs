@@ -44,7 +44,7 @@ impl Card {
             .filter(useful_marks::user_id.eq(user_id))
             .select(cards::all_columns)
             .load::<Card>(conn)
-            .unwrap_or(Vec::new())
+            .unwrap_or_default()
     }
 
     pub fn find_all_by_author(conn: &PgConnection, author_id: i32) -> Vec<Self> {
@@ -53,6 +53,6 @@ impl Card {
         cards::table
             .filter(cards::author_id.eq(author_id))
             .get_results::<Card>(conn)
-            .unwrap_or(Vec::new())
+            .unwrap_or_default()
     }
 }
