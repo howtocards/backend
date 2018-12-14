@@ -5,9 +5,9 @@
 extern crate serde_derive;
 #[macro_use]
 extern crate diesel;
-#[macro_use]
-extern crate failure;
+// #[macro_use]
 extern crate actix_base;
+extern crate failure;
 
 use actix_web::middleware::identity::IdentityService;
 use actix_web::{http, middleware, server, App};

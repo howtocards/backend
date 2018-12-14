@@ -29,7 +29,7 @@ pub fn create((account, req): (Json<AccountCreate>, Req)) -> FutureResponse<Http
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
-struct AccountInfo {
+struct LoginInfo {
     token: String,
     user: views::EncodableUserPrivate,
 }
@@ -43,7 +43,7 @@ pub fn login((login_data, req): (Json<SessionCreate>, Req)) -> FutureResponse<Ht
         .and_then(|res| match res {
             Ok(login_info) => Ok(answer_success!(
                 Ok,
-                AccountInfo {
+                LoginInfo {
                     token: login_info.0,
                     user: login_info.1.encodable_private(),
                 }
@@ -53,14 +53,17 @@ pub fn login((login_data, req): (Json<SessionCreate>, Req)) -> FutureResponse<Ht
         .responder()
 }
 
-/// GET /account/session
-pub fn get_session((auth, req): (Auth, Req)) -> HttpResponse {
-    use actix_web::middleware::identity::RequestIdentity;
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SessionInfo {
+    user: views::EncodableUserPrivate,
+}
 
+/// GET /account/session
+pub fn get_session((auth, _req): (Auth, Req)) -> HttpResponse {
     answer_success!(
         Ok,
-        AccountInfo {
-            token: req.identity().unwrap(),
+        SessionInfo {
             user: auth.user.encodable_private(),
         }
     )
