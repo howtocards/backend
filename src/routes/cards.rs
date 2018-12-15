@@ -143,7 +143,7 @@ pub struct MarkUseful {
     is_useful: bool,
 }
 
-/// POST /cards/{card_id}/useful
+/// POST /cards/{card_id}/useful/
 pub fn useful((body, auth, req, path): (Json<MarkUseful>, Auth, Req, Path<CardPath>)) -> FutRes {
     use crate::handlers::cards::mark_useful::*;
 
@@ -175,7 +175,7 @@ pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
             r.put().with(self::edit);
             r.delete().with(self::delete);
         })
-        .resource("/{card_id}/useful", |r| {
+        .resource("/{card_id}/useful/", |r| {
             r.post().with(self::useful);
         })
         .resource("/", |r| {
