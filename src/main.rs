@@ -8,6 +8,8 @@ extern crate diesel;
 // #[macro_use]
 extern crate actix_base;
 extern crate failure;
+#[macro_use]
+extern crate maplit;
 
 use actix_web::middleware::identity::IdentityService;
 use actix_web::{http, middleware, server, App};
@@ -26,6 +28,7 @@ mod layer;
 mod handlers;
 mod models;
 pub mod routes;
+mod sanitize;
 pub mod schema;
 mod views;
 

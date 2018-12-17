@@ -27,3 +27,5 @@ sha2 = "0.7.1"
 uuid = { version = "0.7.1", features = ["serde", "v4"] }
 chrono = { version = "0.4.6", features = ["serde"] }
 num_cpus = "1.8.0"
+ammonia = "1.2.0"
+maplit = "1.0.1"
