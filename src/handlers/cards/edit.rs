@@ -9,6 +9,7 @@ use crate::app_state::DbExecutor;
 use crate::layer::ErrorAnswer;
 use crate::models::*;
 use crate::prelude::*;
+use crate::sanitize::sanitize;
 use crate::time;
 
 #[derive(Fail, Debug)]
@@ -66,10 +67,15 @@ impl Handler<CardEdit> for DbExecutor {
             Err(CardEditError::NoRights)?;
         }
 
+        let new_content = msg
+            .content
+            .map(|html| sanitize(&html))
+            .unwrap_or(found.content);
+
         let update = diesel::update(target).set((
             updated_at.eq(Some(time::now())),
             title.eq(msg.title.unwrap_or(found.title)),
-            content.eq(msg.content.unwrap_or(found.content)),
+            content.eq(new_content),
         ));
 
         Ok(update

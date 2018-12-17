@@ -7,6 +7,7 @@ use diesel;
 use crate::app_state::DbExecutor;
 use crate::models::*;
 use crate::prelude::*;
+use crate::sanitize::sanitize;
 
 #[derive(Fail, Debug)]
 pub enum CardCreateError {
@@ -32,8 +33,13 @@ impl Handler<CardNew> for DbExecutor {
         use crate::schema::cards::dsl::*;
         use diesel::RunQueryDsl;
 
+        let card = CardNew {
+            content: sanitize(&msg.content),
+            ..msg
+        };
+
         Ok(diesel::insert_into(cards)
-            .values(&msg)
+            .values(&card)
             .get_result::<Card>(&self.conn)
             .or_err(CardCreateError::IncorrectForm)?)
     }
