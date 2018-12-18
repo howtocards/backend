@@ -148,6 +148,7 @@ pub fn useful((body, auth, req, path): (Json<MarkUseful>, Auth, Req, Path<CardPa
     use crate::handlers::cards::mark_useful::*;
 
     #[derive(Serialize)]
+    #[serde(rename_all = "camelCase")]
     pub struct R {
         card: Card,
     }
@@ -172,6 +173,7 @@ pub fn is_useful((auth, req, path): (Auth, Req, Path<CardPath>)) -> FutRes {
     use crate::handlers::cards::is_useful::*;
 
     #[derive(Serialize)]
+    #[serde(rename_all = "camelCase")]
     struct R {
         is_useful: bool,
     }
