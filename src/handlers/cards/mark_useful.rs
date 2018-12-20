@@ -60,16 +60,6 @@ impl Handler<SetMarkCardUseful> for DbExecutor {
                 .or_err(MarkCardUsefulError::UserNotFound)?;
         };
 
-        {
-            // Delete previous mark, if exists
-            use crate::schema::useful_marks::dsl::*;
-
-            let filter = useful_marks
-                .filter(card_id.eq(msg.card_id))
-                .filter(user_id.eq(msg.requester_id));
-            let _ = diesel::delete(filter).execute(&self.conn);
-        }
-
         if msg.set_is_useful {
             use crate::schema::useful_marks::dsl::*;
 
@@ -82,6 +72,13 @@ impl Handler<SetMarkCardUseful> for DbExecutor {
             let _ = diesel::insert_into(useful_marks)
                 .values(&mark)
                 .execute(&self.conn);
+        } else {
+            use crate::schema::useful_marks::dsl::*;
+
+            let filter = useful_marks
+                .filter(card_id.eq(msg.card_id))
+                .filter(user_id.eq(msg.requester_id));
+            let _ = diesel::delete(filter).execute(&self.conn);
         }
 
         let useful_count: i64 = {
@@ -90,7 +87,6 @@ impl Handler<SetMarkCardUseful> for DbExecutor {
 
             useful_marks
                 .filter(card_id.eq(msg.card_id))
-                .filter(user_id.eq(msg.requester_id))
                 .select(count(card_id))
                 .first(&self.conn)
                 .unwrap_or(0)
