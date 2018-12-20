@@ -148,6 +148,7 @@ pub fn useful((body, auth, req, path): (Json<MarkUseful>, Auth, Req, Path<CardPa
     use crate::handlers::cards::mark_useful::*;
 
     #[derive(Serialize)]
+    #[serde(rename_all = "camelCase")]
     pub struct R {
         card: Card,
     }
@@ -167,6 +168,30 @@ pub fn useful((body, auth, req, path): (Json<MarkUseful>, Auth, Req, Path<CardPa
         .responder()
 }
 
+/// GET /cards/{card_id}/useful/
+pub fn is_useful((auth, req, path): (Auth, Req, Path<CardPath>)) -> FutRes {
+    use crate::handlers::cards::is_useful::*;
+
+    #[derive(Serialize)]
+    #[serde(rename_all = "camelCase")]
+    struct R {
+        is_useful: bool,
+    }
+
+    req.state()
+        .pg
+        .send(IsCardUseful {
+            card_id: path.card_id as i32,
+            user_id: auth.user.id,
+        })
+        .from_err()
+        .and_then(|res| match res {
+            Ok(is_useful) => Ok(answer_success!(Ok, R { is_useful })),
+            Err(err) => Ok(err.error_response()),
+        })
+        .responder()
+}
+
 #[inline]
 pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
     scope
@@ -177,6 +202,7 @@ pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
         })
         .resource("/{card_id}/useful/", |r| {
             r.post().with(self::useful);
+            r.get().with(self::is_useful);
         })
         .resource("/", |r| {
             r.post().with(self::create);
