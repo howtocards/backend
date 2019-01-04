@@ -16,6 +16,7 @@ pub struct CardNew {
 }
 
 #[derive(Serialize, Deserialize, Queryable, Default, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct CardMeta {
     pub is_useful: bool,
     pub can_edit: bool,
