@@ -45,6 +45,7 @@ impl Handler<CardDelete> for DbExecutor {
             .filter(author_id.eq(msg.requester_id));
 
         let found = target
+            .select(select_card(msg.requester_id))
             .get_result::<Card>(&self.conn)
             .or_err(CardDeleteError::NotFound)?;
 

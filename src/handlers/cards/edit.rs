@@ -60,6 +60,7 @@ impl Handler<CardEdit> for DbExecutor {
         let target = cards.filter(id.eq(msg.card_id as i32));
 
         let found = target
+            .select(select_card(msg.requester_id))
             .get_result::<Card>(&self.conn)
             .or_err(CardEditError::NotFound)?;
 
@@ -79,6 +80,7 @@ impl Handler<CardEdit> for DbExecutor {
         ));
 
         Ok(update
+            .returning(select_card(msg.requester_id))
             .get_result::<Card>(&self.conn)
             .or_err(CardEditError::IncorrectForm)?)
     }

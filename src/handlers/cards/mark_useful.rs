@@ -47,6 +47,7 @@ impl Handler<SetMarkCardUseful> for DbExecutor {
 
             cards
                 .filter(id.eq(msg.card_id))
+                .select(select_card(msg.requester_id))
                 .get_result::<Card>(&self.conn)
                 .or_err(MarkCardUsefulError::CardNotFound)?
         };
@@ -94,14 +95,15 @@ impl Handler<SetMarkCardUseful> for DbExecutor {
 
         let new_card = {
             // Update card with `updated_at` and `useful_for`
-            use crate::schema::cards::dsl::*;
-            let filter = cards.filter(id.eq(msg.card_id));
+            use crate::schema::cards;
+            let filter = cards::table.filter(cards::id.eq(msg.card_id));
 
             diesel::update(filter)
                 .set((
-                    updated_at.eq(Some(time::now())),
-                    useful_for.eq(useful_count),
+                    cards::updated_at.eq(Some(time::now())),
+                    cards::useful_for.eq(useful_count),
                 ))
+                .returning(select_card(msg.requester_id))
                 .get_result(&self.conn)
                 .unwrap_or(card)
         };

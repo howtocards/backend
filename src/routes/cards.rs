@@ -35,7 +35,7 @@ pub fn create((card_form, auth, req): (Json<CardCreateBody>, Auth, Req)) -> FutR
 }
 
 /// GET /cards
-pub fn list((_auth, req): (AuthOptional, Req)) -> FutRes {
+pub fn list((auth, req): (AuthOptional, Req)) -> FutRes {
     use crate::handlers::cards::list::*;
 
     #[derive(Serialize)]
@@ -43,7 +43,9 @@ pub fn list((_auth, req): (AuthOptional, Req)) -> FutRes {
 
     req.state()
         .pg
-        .send(CardsListFetch)
+        .send(CardsListFetch {
+            requester_id: auth.user.map(|user| user.id),
+        })
         .from_err()
         .and_then(|res| match res {
             Some(list) => Ok(answer_success!(Ok, R(list))),
@@ -58,7 +60,7 @@ pub struct CardPath {
 }
 
 /// GET /cards/{card_id}
-pub fn get((_auth, req, path): (AuthOptional, Req, Path<CardPath>)) -> FutRes {
+pub fn get((auth, req, path): (AuthOptional, Req, Path<CardPath>)) -> FutRes {
     use crate::handlers::cards::get::*;
 
     #[derive(Serialize)]
@@ -70,6 +72,7 @@ pub fn get((_auth, req, path): (AuthOptional, Req, Path<CardPath>)) -> FutRes {
         .pg
         .send(CardFetch {
             card_id: path.card_id,
+            requester_id: auth.user.map(|user| user.id),
         })
         .from_err()
         .and_then(|res| match res {
