@@ -142,13 +142,15 @@ pub fn delete((auth, req, path): (Auth, Req, Path<CardPath>)) -> FutRes {
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct MarkUseful {
+pub struct SetCardUseful {
     is_useful: bool,
 }
 
 /// POST /cards/{card_id}/useful/
-pub fn useful((body, auth, req, path): (Json<MarkUseful>, Auth, Req, Path<CardPath>)) -> FutRes {
-    use crate::handlers::cards::mark_useful::*;
+pub fn toggle_useful(
+    (body, auth, req, path): (Json<SetCardUseful>, Auth, Req, Path<CardPath>),
+) -> FutRes {
+    use crate::handlers::cards::toggle_useful_mark::*;
 
     #[derive(Serialize)]
     #[serde(rename_all = "camelCase")]
@@ -158,7 +160,7 @@ pub fn useful((body, auth, req, path): (Json<MarkUseful>, Auth, Req, Path<CardPa
 
     req.state()
         .pg
-        .send(SetMarkCardUseful {
+        .send(ToggleUsefulMark {
             requester_id: auth.user.id,
             card_id: path.card_id as i32,
             set_is_useful: body.is_useful,
@@ -166,30 +168,6 @@ pub fn useful((body, auth, req, path): (Json<MarkUseful>, Auth, Req, Path<CardPa
         .from_err()
         .and_then(|res| match res {
             Ok(card) => Ok(answer_success!(Ok, R { card })),
-            Err(err) => Ok(err.error_response()),
-        })
-        .responder()
-}
-
-/// GET /cards/{card_id}/useful/
-pub fn is_useful((auth, req, path): (Auth, Req, Path<CardPath>)) -> FutRes {
-    use crate::handlers::cards::is_useful::*;
-
-    #[derive(Serialize)]
-    #[serde(rename_all = "camelCase")]
-    struct R {
-        is_useful: bool,
-    }
-
-    req.state()
-        .pg
-        .send(IsCardUseful {
-            card_id: path.card_id as i32,
-            user_id: auth.user.id,
-        })
-        .from_err()
-        .and_then(|res| match res {
-            Ok(is_useful) => Ok(answer_success!(Ok, R { is_useful })),
             Err(err) => Ok(err.error_response()),
         })
         .responder()
@@ -204,8 +182,7 @@ pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
             r.delete().with(self::delete);
         })
         .resource("/{card_id}/useful/", |r| {
-            r.post().with(self::useful);
-            r.get().with(self::is_useful);
+            r.post().with(self::toggle_useful);
         })
         .resource("/", |r| {
             r.post().with(self::create);

@@ -3,14 +3,12 @@
 use actix_base::prelude::*;
 use actix_web::*;
 use diesel;
-use diesel::prelude::*;
 
 use crate::app_state::DbExecutor;
 use crate::layer::ErrorAnswer;
 use crate::models::*;
 use crate::prelude::*;
 use crate::sanitize::sanitize;
-use crate::time;
 
 #[derive(Fail, Debug)]
 pub enum CardEditError {
@@ -54,15 +52,8 @@ impl Handler<CardEdit> for DbExecutor {
     type Result = Result<Card, CardEditError>;
 
     fn handle(&mut self, msg: CardEdit, _ctx: &mut Self::Context) -> Self::Result {
-        use crate::schema::cards::dsl::*;
-        use diesel::RunQueryDsl;
-
-        let target = cards.filter(id.eq(msg.card_id as i32));
-
-        let found = target
-            .select(select_card(msg.requester_id))
-            .get_result::<Card>(&self.conn)
-            .or_err(CardEditError::NotFound)?;
+        let found = Card::find_by_id(&self.conn, msg.card_id as i32, msg.requester_id)
+            .ok_or(CardEditError::NotFound)?;
 
         if found.author_id != msg.requester_id {
             Err(CardEditError::NoRights)?;
@@ -73,15 +64,13 @@ impl Handler<CardEdit> for DbExecutor {
             .map(|html| sanitize(&html))
             .unwrap_or(found.content);
 
-        let update = diesel::update(target).set((
-            updated_at.eq(Some(time::now())),
-            title.eq(msg.title.unwrap_or(found.title)),
-            content.eq(new_content),
-        ));
-
-        Ok(update
-            .returning(select_card(msg.requester_id))
-            .get_result::<Card>(&self.conn)
-            .or_err(CardEditError::IncorrectForm)?)
+        Card::update(
+            &self.conn,
+            msg.card_id as i32,
+            msg.requester_id,
+            msg.title.unwrap_or(found.title),
+            new_content,
+        )
+        .ok_or(CardEditError::IncorrectForm)
     }
 }

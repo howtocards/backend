@@ -30,18 +30,15 @@ impl Handler<CardNew> for DbExecutor {
     type Result = Result<Card, CardCreateError>;
 
     fn handle(&mut self, msg: CardNew, _: &mut Self::Context) -> Self::Result {
-        use crate::schema::cards::dsl::*;
-        use diesel::RunQueryDsl;
+        if msg.title.len() > 2 && msg.content.len() > 2 {
+            let card = CardNew {
+                content: sanitize(&msg.content),
+                ..msg
+            };
 
-        let card = CardNew {
-            content: sanitize(&msg.content),
-            ..msg
-        };
-
-        Ok(diesel::insert_into(cards)
-            .values(&card)
-            .returning(select_card(msg.author_id))
-            .get_result::<Card>(&self.conn)
-            .or_err(CardCreateError::IncorrectForm)?)
+            Card::create(&self.conn, card, msg.author_id).ok_or(CardCreateError::IncorrectForm)
+        } else {
+            Err(CardCreateError::EmptyTitleContent)
+        }
     }
 }
