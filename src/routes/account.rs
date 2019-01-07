@@ -3,20 +3,24 @@
 use crate::prelude::*;
 use crate::views;
 
-use crate::app_state::{AppState, Req};
+use crate::app_state::AppState;
 use crate::auth::Auth;
 use crate::handlers::account::create::*;
 use crate::handlers::account::login::*;
+use actix_web::State;
 
 /// POST /account
-pub fn create((account, req): (Json<AccountCreate>, Req)) -> FutureResponse<HttpResponse> {
+pub fn create(
+    account: Json<AccountCreate>,
+    state: State<AppState>,
+) -> FutureResponse<HttpResponse> {
     #[derive(Serialize)]
     #[serde(rename_all = "camelCase")]
     struct R {
         user_id: i32,
     }
 
-    req.state()
+    state
         .pg
         .send(account.0)
         .from_err()
@@ -27,25 +31,28 @@ pub fn create((account, req): (Json<AccountCreate>, Req)) -> FutureResponse<Http
         .responder()
 }
 
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-struct LoginInfo {
-    token: String,
-    user: views::EncodableUserPrivate,
-}
-
 /// POST /account/session
-pub fn login((login_data, req): (Json<SessionCreate>, Req)) -> FutureResponse<HttpResponse> {
-    req.state()
+pub fn login(
+    login_data: Json<SessionCreate>,
+    state: State<AppState>,
+) -> FutureResponse<HttpResponse> {
+    #[derive(Serialize)]
+    #[serde(rename_all = "camelCase")]
+    struct R {
+        token: String,
+        user: views::EncodableUserPrivate,
+    }
+
+    state
         .pg
         .send(login_data.0)
         .from_err()
         .and_then(|res| match res {
             Ok(login_info) => Ok(answer_success!(
                 Ok,
-                LoginInfo {
-                    token: login_info.0,
-                    user: login_info.1.encodable_private(),
+                R {
+                    token: login_info.token,
+                    user: login_info.user.encodable_private(),
                 }
             )),
             Err(err) => Ok(err.error_response()),
@@ -60,7 +67,7 @@ struct SessionInfo {
 }
 
 /// GET /account/session
-pub fn get_session((auth, _req): (Auth, Req)) -> HttpResponse {
+pub fn get_session(auth: Auth) -> HttpResponse {
     answer_success!(
         Ok,
         SessionInfo {

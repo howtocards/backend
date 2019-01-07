@@ -39,11 +39,11 @@ impl UsefulMark {
     }
 
     pub fn count_for_card(conn: &PgConnection, card_id: i32) -> i64 {
-        use diesel::dsl::count;
+        use diesel::dsl::count_star;
 
         useful_marks::table
             .filter(useful_marks::card_id.eq(card_id))
-            .select(count(useful_marks::card_id))
+            .select(count_star())
             .first(conn)
             .unwrap_or(0)
     }

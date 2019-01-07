@@ -39,6 +39,32 @@ impl User {
 
         users.find(user_id).get_result::<Self>(conn).ok()
     }
+
+    pub fn create(conn: &PgConnection, new_user: UserNew) -> Option<Self> {
+        diesel::insert_into(users::table)
+            .values(&new_user)
+            .get_result(conn)
+            .ok()
+    }
+
+    pub fn find_by_credentials(conn: &PgConnection, credentials: UserNew) -> Option<Self> {
+        users::table
+            .filter(users::email.eq(credentials.email))
+            .filter(users::password.eq(credentials.password))
+            .get_result(conn)
+            .ok()
+    }
+
+    pub fn find_by_token(conn: &PgConnection, token: String) -> Option<Self> {
+        use crate::schema::tokens;
+
+        tokens::table
+            .inner_join(users::table)
+            .filter(tokens::token.eq(token))
+            .select(users::all_columns)
+            .get_result(conn)
+            .ok()
+    }
 }
 
 #[derive(Deserialize, Insertable, Queryable)]

@@ -2,8 +2,6 @@
 use actix_base::prelude::*;
 use actix_web::*;
 use diesel;
-use diesel::prelude::*;
-use uuid::Uuid;
 
 use crate::app_state::DbExecutor;
 use crate::consts;
@@ -25,7 +23,10 @@ pub enum SessionCreateError {
 impl_response_error_for!(SessionCreateError as BadRequest);
 
 /// Pass data to router
-pub struct SessionToken(pub String, pub User);
+pub struct SessionToken {
+    pub token: String,
+    pub user: User,
+}
 
 /// Session create message
 ///
@@ -45,32 +46,18 @@ impl Handler<SessionCreate> for DbExecutor {
     type Result = Result<SessionToken, SessionCreateError>;
 
     fn handle(&mut self, msg: SessionCreate, _: &mut Self::Context) -> Self::Result {
-        use crate::schema::{tokens, users};
-        use diesel::RunQueryDsl;
-
-        let new_account = UserNew {
+        let credentials = UserNew {
             email: msg.email,
             password: hasher::hash_password(&msg.password, consts::SALT),
         };
 
-        let user = users::table
-            .filter(users::email.eq(new_account.email.clone()))
-            .filter(users::password.eq(new_account.password.clone()))
-            .get_result::<User>(&self.conn)
-            .or_err(SessionCreateError::UserNotFound)?;
+        let user = User::find_by_credentials(&self.conn, credentials)
+            .ok_or(SessionCreateError::UserNotFound)?;
 
-        let token_string = format!("{}-{}", Uuid::new_v4(), Uuid::new_v4());
+        let token = Token::create(&self.conn, user.id)
+            .ok_or(SessionCreateError::TokenInsertFail)?
+            .token;
 
-        let new_token = Token {
-            token: token_string,
-            user_id: user.id,
-        };
-
-        diesel::insert_into(tokens::table)
-            .values(&new_token)
-            .execute(&self.conn)
-            .or_err(SessionCreateError::TokenInsertFail)?;
-
-        Ok(SessionToken(new_token.token, user))
+        Ok(SessionToken { token, user })
     }
 }

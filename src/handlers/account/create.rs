@@ -36,17 +36,11 @@ impl Handler<AccountCreate> for DbExecutor {
     type Result = Result<User, AccountCreateError>;
 
     fn handle(&mut self, msg: AccountCreate, _: &mut Self::Context) -> Self::Result {
-        use crate::schema::users::dsl::*;
-        use diesel::RunQueryDsl;
-
         let new_account = UserNew {
             email: msg.email,
             password: hasher::hash_password(&msg.password, consts::SALT),
         };
 
-        Ok(diesel::insert_into(users)
-            .values(&new_account)
-            .get_result::<User>(&self.conn)
-            .or_err(AccountCreateError::EmailExists)?)
+        User::create(&self.conn, new_account).ok_or(AccountCreateError::EmailExists)
     }
 }
