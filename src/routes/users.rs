@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-use crate::app_state::{AppState, Req};
+use crate::app_state::AppState;
 use crate::auth::AuthOptional;
 
 use crate::models::{Card, User};
@@ -19,7 +19,7 @@ enum GetUserInfoError {
     NotFound,
 }
 
-pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
+pub fn info(auth: AuthOptional, path: Path<UserPath>, state: State<AppState>) -> FutRes {
     use crate::handlers::users::get_user::*;
 
     #[derive(Serialize)]
@@ -49,7 +49,7 @@ pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
         }
     }
 
-    req.state()
+    state
         .pg
         .send(GetUser {
             user_id: path.user_id as i32,
@@ -71,7 +71,7 @@ pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
 }
 
 /// GET /users/{user_id}/cards/useful/
-pub fn useful((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
+pub fn useful(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>) -> FutRes {
     use crate::handlers::users::useful_cards::*;
     #[derive(Serialize)]
     #[serde(rename_all = "camelCase")]
@@ -79,7 +79,7 @@ pub fn useful((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes
         cards: Vec<Card>,
     }
 
-    req.state()
+    state
         .pg
         .send(GetUsefulCardsForUser {
             user_id: path.user_id as i32,
@@ -94,7 +94,7 @@ pub fn useful((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes
 
 /// GET /users/{user_id}/cards/authors/
 /// Get cards by user
-pub fn authors((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
+pub fn authors(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>) -> FutRes {
     use crate::handlers::users::cards_by_author::*;
     #[derive(Serialize)]
     #[serde(rename_all = "camelCase")]
@@ -102,7 +102,7 @@ pub fn authors((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRe
         cards: Vec<Card>,
     }
 
-    req.state()
+    state
         .pg
         .send(GetCardsByAuthor {
             author_id: path.user_id as i32,

@@ -2,9 +2,10 @@
 
 use crate::prelude::*;
 
-use crate::app_state::{AppState, Req};
+use crate::app_state::AppState;
 use crate::auth::{Auth, AuthOptional};
 use crate::models::*;
+use actix_web::State;
 
 type FutRes = FutureResponse<HttpResponse>;
 
@@ -16,10 +17,8 @@ pub struct CardCreateBody {
 }
 
 /// POST /cards
-pub fn create((card_form, auth, req): (Json<CardCreateBody>, Auth, Req)) -> FutRes {
-    // use crate::handlers::cards::create::*;
-
-    req.state()
+pub fn create(card_form: Json<CardCreateBody>, auth: Auth, state: State<AppState>) -> FutRes {
+    state
         .pg
         .send(CardNew {
             author_id: auth.user.id,
@@ -35,13 +34,13 @@ pub fn create((card_form, auth, req): (Json<CardCreateBody>, Auth, Req)) -> FutR
 }
 
 /// GET /cards
-pub fn list((auth, req): (AuthOptional, Req)) -> FutRes {
+pub fn list(auth: AuthOptional, state: State<AppState>) -> FutRes {
     use crate::handlers::cards::list::*;
 
     #[derive(Serialize)]
     pub struct R(Vec<Card>);
 
-    req.state()
+    state
         .pg
         .send(CardsListFetch {
             requester_id: auth.user.map(|user| user.id),
@@ -60,7 +59,7 @@ pub struct CardPath {
 }
 
 /// GET /cards/{card_id}
-pub fn get((auth, req, path): (AuthOptional, Req, Path<CardPath>)) -> FutRes {
+pub fn get(auth: AuthOptional, path: Path<CardPath>, state: State<AppState>) -> FutRes {
     use crate::handlers::cards::get::*;
 
     #[derive(Serialize)]
@@ -68,7 +67,7 @@ pub fn get((auth, req, path): (AuthOptional, Req, Path<CardPath>)) -> FutRes {
         card: Card,
     }
 
-    req.state()
+    state
         .pg
         .send(CardFetch {
             card_id: path.card_id,
@@ -91,7 +90,10 @@ pub struct CardEditBody {
 
 /// PUT /cards/{card_id}
 pub fn edit(
-    (edit_form, auth, req, path): (Json<CardEditBody>, Auth, Req, Path<CardPath>),
+    auth: Auth,
+    path: Path<CardPath>,
+    edit_form: Json<CardEditBody>,
+    state: State<AppState>,
 ) -> FutRes {
     use crate::handlers::cards::edit::*;
 
@@ -101,7 +103,7 @@ pub fn edit(
         card: Card,
     }
 
-    req.state()
+    state
         .pg
         .send(CardEdit {
             card_id: path.card_id,
@@ -118,7 +120,7 @@ pub fn edit(
 }
 
 /// DELETE /cards/{card_id}
-pub fn delete((auth, req, path): (Auth, Req, Path<CardPath>)) -> FutRes {
+pub fn delete(auth: Auth, path: Path<CardPath>, state: State<AppState>) -> FutRes {
     use crate::handlers::cards::delete::*;
 
     #[derive(Serialize)]
@@ -126,7 +128,7 @@ pub fn delete((auth, req, path): (Auth, Req, Path<CardPath>)) -> FutRes {
         card: Card,
     }
 
-    req.state()
+    state
         .pg
         .send(CardDelete {
             requester_id: auth.user.id,
@@ -148,7 +150,10 @@ pub struct SetCardUseful {
 
 /// POST /cards/{card_id}/useful/
 pub fn toggle_useful(
-    (body, auth, req, path): (Json<SetCardUseful>, Auth, Req, Path<CardPath>),
+    auth: Auth,
+    path: Path<CardPath>,
+    body: Json<SetCardUseful>,
+    state: State<AppState>,
 ) -> FutRes {
     use crate::handlers::cards::toggle_useful_mark::*;
 
@@ -158,7 +163,7 @@ pub fn toggle_useful(
         card: Card,
     }
 
-    req.state()
+    state
         .pg
         .send(ToggleUsefulMark {
             requester_id: auth.user.id,
