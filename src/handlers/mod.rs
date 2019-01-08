@@ -2,4 +2,5 @@
 
 pub mod account;
 pub mod cards;
+pub mod search;
 pub mod users;
