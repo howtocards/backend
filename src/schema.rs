@@ -3,10 +3,10 @@ table! {
         id -> Int4,
         author_id -> Int4,
         title -> Varchar,
-        content -> Varchar,
         created_at -> Nullable<Timestamp>,
         updated_at -> Nullable<Timestamp>,
         useful_for -> Int8,
+        content -> Jsonb,
     }
 }
 

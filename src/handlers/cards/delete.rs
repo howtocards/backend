@@ -2,7 +2,6 @@
 
 use actix_base::prelude::*;
 use actix_web::*;
-use diesel;
 
 use crate::app_state::DbExecutor;
 use crate::models::*;

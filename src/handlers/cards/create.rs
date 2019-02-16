@@ -2,12 +2,10 @@
 
 use actix_base::prelude::*;
 use actix_web::*;
-use diesel;
 
 use crate::app_state::DbExecutor;
 use crate::models::*;
 use crate::prelude::*;
-use crate::sanitize::sanitize;
 
 #[derive(Fail, Debug)]
 pub enum CardCreateError {
@@ -30,9 +28,9 @@ impl Handler<CardNew> for DbExecutor {
     type Result = Result<Card, CardCreateError>;
 
     fn handle(&mut self, msg: CardNew, _: &mut Self::Context) -> Self::Result {
-        if msg.title.len() > 2 && msg.content.len() > 2 {
+        if msg.title.len() > 2 {
             let card = CardNew {
-                content: sanitize(&msg.content),
+                content: msg.content,
                 ..msg
             };
 

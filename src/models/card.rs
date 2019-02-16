@@ -5,6 +5,7 @@ use crate::schema::cards;
 use crate::time;
 use diesel::dsl::sql;
 use diesel::prelude::*;
+use serde_json::Value;
 
 #[derive(Debug, Deserialize, Insertable, Associations)]
 #[belongs_to(User, foreign_key = "author_id")]
@@ -13,7 +14,7 @@ use diesel::prelude::*;
 pub struct CardNew {
     pub author_id: i32,
     pub title: String,
-    pub content: String,
+    pub content: Value,
 }
 
 #[derive(Serialize, Deserialize, Queryable, Default, Debug)]
@@ -30,7 +31,7 @@ pub struct Card {
     pub id: i32,
     pub author_id: i32,
     pub title: String,
-    pub content: String,
+    pub content: Value,
     pub created_at: Option<NaiveDateTime>,
     pub updated_at: Option<NaiveDateTime>,
     /// Count of users, that added card to its library
@@ -142,7 +143,7 @@ impl Card {
         card_id: i32,
         requester_id: i32,
         title: String,
-        content: String,
+        content: Value,
     ) -> Option<Card> {
         let target = cards::table.filter(cards::id.eq(card_id));
 
