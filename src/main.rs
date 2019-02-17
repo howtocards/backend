@@ -28,7 +28,6 @@ mod layer;
 mod handlers;
 mod models;
 pub mod routes;
-mod sanitize;
 pub mod schema;
 mod views;
 

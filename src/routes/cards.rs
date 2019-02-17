@@ -1,6 +1,6 @@
 //! /cards
-
 use crate::prelude::*;
+use serde_json::Value;
 
 use crate::app_state::AppState;
 use crate::auth::{Auth, AuthOptional};
@@ -12,7 +12,7 @@ type FutRes = FutureResponse<HttpResponse>;
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CardCreateBody {
-    content: String,
+    content: Value,
     title: String,
 }
 
@@ -84,7 +84,7 @@ pub fn get(auth: AuthOptional, path: Path<CardPath>, state: State<AppState>) -> 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CardEditBody {
-    content: Option<String>,
+    content: Option<Value>,
     title: Option<String>,
 }
 

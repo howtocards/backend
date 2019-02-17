@@ -2,13 +2,12 @@
 
 use actix_base::prelude::*;
 use actix_web::*;
-use diesel;
+use serde_json::Value;
 
 use crate::app_state::DbExecutor;
 use crate::layer::ErrorAnswer;
 use crate::models::*;
 use crate::prelude::*;
-use crate::sanitize::sanitize;
 
 #[derive(Fail, Debug)]
 pub enum CardEditError {
@@ -41,7 +40,7 @@ pub struct CardEdit {
     /// User id who requested edit of card
     pub requester_id: i32,
     pub title: Option<String>,
-    pub content: Option<String>,
+    pub content: Option<Value>,
 }
 
 impl Message for CardEdit {
@@ -59,10 +58,7 @@ impl Handler<CardEdit> for DbExecutor {
             Err(CardEditError::NoRights)?;
         }
 
-        let new_content = msg
-            .content
-            .map(|html| sanitize(&html))
-            .unwrap_or(found.content);
+        let new_content = msg.content.unwrap_or(found.content);
 
         Card::update(
             &self.conn,
