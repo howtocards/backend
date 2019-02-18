@@ -29,6 +29,7 @@ mod handlers;
 mod models;
 pub mod routes;
 pub mod schema;
+mod slate;
 mod views;
 
 use self::app_state::AppState;
