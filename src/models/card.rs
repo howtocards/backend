@@ -2,19 +2,41 @@ use chrono::NaiveDateTime;
 
 use crate::models::User;
 use crate::schema::cards;
+use crate::slate::plain_serialize;
 use crate::time;
 use diesel::dsl::sql;
 use diesel::prelude::*;
 use serde_json::Value;
 
-#[derive(Debug, Deserialize, Insertable, Associations)]
-#[belongs_to(User, foreign_key = "author_id")]
-#[table_name = "cards"]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CardNew {
     pub author_id: i32,
     pub title: String,
     pub content: Value,
+}
+
+impl Into<CardNewForSearch> for CardNew {
+    fn into(self) -> CardNewForSearch {
+        let content_for_search = plain_serialize(&self.content);
+        CardNewForSearch {
+            author_id: self.author_id,
+            title: self.title,
+            content: self.content,
+            content_for_search,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, Insertable, Associations)]
+#[belongs_to(User, foreign_key = "author_id")]
+#[table_name = "cards"]
+#[serde(rename_all = "camelCase")]
+pub struct CardNewForSearch {
+    pub author_id: i32,
+    pub title: String,
+    pub content: Value,
+    pub content_for_search: String,
 }
 
 #[derive(Serialize, Deserialize, Queryable, Default, Debug)]
@@ -37,6 +59,8 @@ pub struct Card {
     /// Count of users, that added card to its library
     pub useful_for: i64,
     pub meta: CardMeta,
+    #[serde(skip)]
+    pub content_for_search: String,
 }
 
 pub type AllColumns = (
@@ -51,6 +75,7 @@ pub type AllColumns = (
         diesel::expression::SqlLiteral<diesel::sql_types::Bool>,
         diesel::expression::SqlLiteral<diesel::sql_types::Bool>,
     ),
+    crate::schema::cards::content_for_search,
 );
 
 impl Card {
@@ -80,6 +105,7 @@ impl Card {
                 )
                 .as_str()),
             ),
+            content_for_search,
         )
     }
 
@@ -123,8 +149,9 @@ impl Card {
     }
 
     pub fn create(conn: &PgConnection, new_card: CardNew, creator_id: i32) -> Option<Self> {
+        let card: CardNewForSearch = new_card.into();
         diesel::insert_into(cards::table)
-            .values(&new_card)
+            .values(&card)
             .returning(Self::all_columns(creator_id))
             .get_result(conn)
             .ok()
@@ -149,12 +176,14 @@ impl Card {
         content: Value,
     ) -> Option<Card> {
         let target = cards::table.filter(cards::id.eq(card_id));
+        let content_for_search = plain_serialize(&content);
 
         diesel::update(target)
             .set((
                 cards::updated_at.eq(Some(time::now())),
                 cards::title.eq(title),
                 cards::content.eq(content),
+                cards::content_for_search.eq(content_for_search),
             ))
             .returning(Self::all_columns(requester_id))
             .get_result(conn)
