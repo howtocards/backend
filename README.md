@@ -12,7 +12,7 @@
 ```sh
 curl https://sh.rustup.rs -sSf | sh
 sudo apt install gcc
-sudo apt install libpq-dev
+sudo apt install postgresql postgresql-contrib libpq-dev
 ```
 
 ### Diesel CLI
