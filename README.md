@@ -7,11 +7,17 @@
 
 ## Installation
 
-Install [`diesel_cli`]
+### Ubuntu
 
 ```sh
-apt install gcc # ubuntu
+curl https://sh.rustup.rs -sSf | sh
+sudo apt install gcc
+sudo apt install libpq-dev
+```
 
+### Diesel CLI
+
+```sh
 cargo install diesel_cli --no-default-features --features postgres
 ```
 
