@@ -1,14 +1,20 @@
 //! Search
 
 use actix_base::prelude::*;
-use actix_web::*;
+use diesel::*;
 
 use crate::app_state::DbExecutor;
 use crate::models::*;
-use crate::prelude::*;
+use crate::schema::cards;
+
+#[allow(dead_code)]
+pub enum Sort {
+    RecentCreated,
+    MostUseful,
+}
 
 pub struct SearchRequest {
-    pub requester_id: i32,
+    pub requester_id: Option<i32>,
     pub query: String,
     pub pagination: Pagination,
 }
@@ -21,7 +27,22 @@ impl Handler<SearchRequest> for DbExecutor {
     type Result = Option<Vec<Card>>;
 
     fn handle(&mut self, msg: SearchRequest, _ctx: &mut Self::Context) -> Self::Result {
-        None
+        let mut query = cards::table
+            .select(Card::all_columns(msg.requester_id.unwrap_or(-1)))
+            .into_boxed();
+
+        let query_for_title = msg.query.replace(" ", "%");
+        let query_string = format!("%{}%", query_for_title);
+
+        query = query.filter(
+            cards::content_for_search
+                .ilike::<String>(query_string.clone())
+                .or(cards::title.ilike::<String>(query_string))
+                .or(cards::title.eq::<String>(query_for_title)),
+        );
+
+        let cards = query.load::<Card>(&self.conn);
+        cards.ok()
     }
 }
 
@@ -42,6 +63,7 @@ impl Default for Pagination {
     }
 }
 
+#[allow(dead_code)]
 impl Pagination {
     fn offset(&self) -> u32 {
         self.page * self.limit() - self.limit()

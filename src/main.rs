@@ -8,7 +8,6 @@ extern crate diesel;
 // #[macro_use]
 extern crate actix_base;
 extern crate failure;
-#[macro_use]
 extern crate maplit;
 
 use actix_web::middleware::identity::IdentityService;

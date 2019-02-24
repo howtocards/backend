@@ -15,7 +15,7 @@ pub struct SearchQuery {
 }
 
 impl SearchQuery {
-    fn pagination(&self) -> Pagination {
+    fn to_pagination(&self) -> Pagination {
         let def: Pagination = Default::default();
 
         Pagination {
@@ -35,8 +35,8 @@ pub fn search(auth: AuthOptional, state: State<AppState>, query: Query<SearchQue
     state
         .pg
         .send(SearchRequest {
-            requester_id: auth.user.map_or(-1, |u| u.id),
-            pagination: query.pagination(),
+            requester_id: auth.user.map(|u| u.id),
+            pagination: query.to_pagination(),
             query: query.q.clone(),
         })
         .from_err()
