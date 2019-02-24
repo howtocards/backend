@@ -53,13 +53,13 @@ pub struct Card {
     pub id: i32,
     pub author_id: i32,
     pub title: String,
-    #[serde(skip)]
     pub content: Value,
     pub created_at: Option<NaiveDateTime>,
     pub updated_at: Option<NaiveDateTime>,
     /// Count of users, that added card to its library
     pub useful_for: i64,
     pub meta: CardMeta,
+    #[serde(skip)]
     pub content_for_search: String,
 }
 
