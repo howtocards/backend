@@ -7,7 +7,7 @@ start() {
 }
 
 kill() {
-  cat /tmp/howtocards_instance.pid | xargs kill -9 2> /dev/null
+  cat /tmp/howtocards_instance.pid | xargs kill -9 2> /dev/null || true
 }
 
 case "$1" in
