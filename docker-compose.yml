@@ -3,7 +3,7 @@ version: '3.7'
 services:
   db:
     container_name: howtocards_db
-    image: postgres
+    image: postgres:latest
     restart: always
     volumes:
       - ./tmp/db:/var/lib/postgresql/data
