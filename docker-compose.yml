@@ -1,7 +1,8 @@
-version: '3.1'
+version: '3.7'
 
 services:
   db:
+    container_name: howtocards_db
     image: postgres
     restart: always
     volumes:
@@ -9,16 +10,20 @@ services:
     environment:
       - POSTGRES_USER=howtocards
       - POSTGRES_PASSWORD=howtocards
-      - POSTGRES_DATABASE=howtocards
+      - POSTGRES_DB=howtocards
     ports:
       - 5432:5432
 
   backend:
+    container_name: howtocards_backend
     build:
       context: .
       dockerfile: Dockerfile
-    image: ssova/howtocards
+    image: howtocards/backend
     restart: always
+    volumes:
+      - ./migrations:/app/migrations
+      - ./diesel.toml:/app/diesel.toml
     ports:
       - 9000:9000
     links:
