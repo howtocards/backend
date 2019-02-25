@@ -15,6 +15,15 @@ sudo apt install gcc
 sudo apt install postgresql postgresql-contrib libpq-dev
 ```
 
+### Docker
+```sh
+docker-compose up -d
+docker exec -it howtocards_backend bash # login to the docker container
+cd /app
+diesel migration run
+exit # logout from the docker container
+```
+
 ### Diesel CLI
 
 ```sh
