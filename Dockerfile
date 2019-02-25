@@ -32,5 +32,5 @@ COPY --from=build /app/target/release/howtocards_server ./
 COPY docker-entrypoint.sh ./entrypoint.sh
 RUN chmod +x entrypoint.sh && chmod +x howtocards_server
 
-ENTRYPOINT ["./entrypoint.sh"]
-CMD ["./howtocards_server"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/howtocards_server"]
