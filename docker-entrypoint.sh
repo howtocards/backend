@@ -5,7 +5,7 @@ set -e
 
 cmd="$@"
 
-until PGPASSWORD=howtocards psql -h db -U "howtocards" -c '\q'; do
+until PGPASSWORD=${POSTGRES_PASSWORD} psql -h db -U ${POSTGRES_USER} -c '\q'; do
   >&2 echo "Postgres is unavailable - sleeping"
   sleep 1
 done
