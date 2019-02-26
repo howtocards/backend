@@ -35,3 +35,5 @@ impl<T, E, R> ResultExt<T, R> for Result<T, E> {
         self.map_err(|_| err)
     }
 }
+
+pub type FutRes = FutureResponse<HttpResponse>;

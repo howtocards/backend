@@ -1,0 +1,985 @@
+{
+  "document": {
+    "data": {},
+    "nodes": [
+      {
+        "data": { "language": "json" },
+        "nodes": [
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  { "marks": [], "object": "leaf", "text": "  \"scripts\": {" }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "    \"test\": \"npm run test:eslint && npm run test:code\","
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "    \"test:code\": \"jest\","
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "    \"test:watch\": \"jest --watch\","
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "    \"test:eslint\": \"eslint .\","
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "    \"prettier\": \"prettier './**/**/**.{json,js,eslintrc}' --write\","
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "    \"build:prod\": \"NODE_ENV=production webpack-cli\","
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "    \"dev\": \"webpack-dev-server\""
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [{ "marks": [], "object": "leaf", "text": "  }," }],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  { "marks": [], "object": "leaf", "text": "  \"husky\": {" }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  { "marks": [], "object": "leaf", "text": "    \"hooks\": {" }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "      \"pre-commit\": \"lint-staged\","
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "      \"pre-push\": \"npm run test:eslint\""
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [{ "marks": [], "object": "leaf", "text": "    }" }],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [{ "marks": [], "object": "leaf", "text": "  }," }],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          }
+        ],
+        "object": "block",
+        "type": "code"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": { "language": "javascript" },
+        "nodes": [
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "    // Handle the extra wrapping required for list buttons."
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "    const isList = hasBlock(\"list-item\", props)"
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "    const isType = value.blocks.some((block) =>"
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "      Boolean(document.getClosest(block.key, (parent) => parent.type === type)),"
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [{ "marks": [], "object": "leaf", "text": "    )" }],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "    unWrapBlocks(editor, ["
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "      \"bulleted-list\","
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "      \"numbered-list\","
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "      \"block-quote\","
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  { "marks": [], "object": "leaf", "text": "      \"code\"," }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [{ "marks": [], "object": "leaf", "text": "    ])" }],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "code_line"
+          }
+        ],
+        "object": "block",
+        "type": "code"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [{ "marks": [], "object": "leaf", "text": "one " }],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "list-item"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [{ "marks": [], "object": "leaf", "text": "two" }],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "list-item"
+          }
+        ],
+        "object": "block",
+        "type": "numbered-list"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [{ "marks": [], "object": "leaf", "text": "three" }],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "list-item"
+          }
+        ],
+        "object": "block",
+        "type": "numbered-list"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [{ "marks": [], "object": "leaf", "text": "one-1" }],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "list-item"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [{ "marks": [], "object": "leaf", "text": "two-1" }],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "list-item"
+          }
+        ],
+        "object": "block",
+        "type": "bulleted-list"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [
+              {
+                "marks": [
+                  { "data": {}, "object": "mark", "type": "underlined" },
+                  { "data": {}, "object": "mark", "type": "italic" },
+                  { "data": {}, "object": "mark", "type": "bold" }
+                ],
+                "object": "leaf",
+                "text": "bold text-test-ltialic .    ret4eg4534regt34rw"
+              }
+            ],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [
+              {
+                "marks": [
+                  { "data": {}, "object": "mark", "type": "underlined" },
+                  { "data": {}, "object": "mark", "type": "italic" },
+                  { "data": {}, "object": "mark", "type": "bold" }
+                ],
+                "object": "leaf",
+                "text": ""
+              }
+            ],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [
+              {
+                "marks": [
+                  { "data": {}, "object": "mark", "type": "underlined" },
+                  { "data": {}, "object": "mark", "type": "italic" },
+                  { "data": {}, "object": "mark", "type": "bold" }
+                ],
+                "object": "leaf",
+                "text": ""
+              }
+            ],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [
+              {
+                "marks": [
+                  { "data": {}, "object": "mark", "type": "underlined" },
+                  { "data": {}, "object": "mark", "type": "italic" },
+                  { "data": {}, "object": "mark", "type": "bold" }
+                ],
+                "object": "leaf",
+                "text": ""
+              }
+            ],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [
+              {
+                "marks": [
+                  { "data": {}, "object": "mark", "type": "bold" },
+                  { "data": {}, "object": "mark", "type": "italic" }
+                ],
+                "object": "leaf",
+                "text": "43"
+              }
+            ],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  { "marks": [], "object": "leaf", "text": "three-1" }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "list-item"
+          }
+        ],
+        "object": "block",
+        "type": "bulleted-list"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+            "object": "text"
+          }
+        ],
+        "object": "block",
+        "type": "paragraph"
+      },
+      {
+        "data": {},
+        "nodes": [
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "цитатацитатацитатацитатацитатацитатацитатацитатацитата"
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "paragraph"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "цитатацитатацитатацитатацитатацитатацитатацитата"
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "paragraph"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [{ "marks": [], "object": "leaf", "text": "" }],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "paragraph"
+          },
+          {
+            "data": {},
+            "nodes": [
+              {
+                "leaves": [
+                  {
+                    "marks": [],
+                    "object": "leaf",
+                    "text": "цитатацитатацитата"
+                  }
+                ],
+                "object": "text"
+              }
+            ],
+            "object": "block",
+            "type": "paragraph"
+          }
+        ],
+        "object": "block",
+        "type": "block-quote"
+      }
+    ],
+    "object": "document"
+  },
+  "object": "value"
+}

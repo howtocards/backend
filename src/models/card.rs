@@ -2,19 +2,41 @@ use chrono::NaiveDateTime;
 
 use crate::models::User;
 use crate::schema::cards;
+use crate::slate::plain_serialize;
 use crate::time;
 use diesel::dsl::sql;
 use diesel::prelude::*;
 use serde_json::Value;
 
-#[derive(Debug, Deserialize, Insertable, Associations)]
-#[belongs_to(User, foreign_key = "author_id")]
-#[table_name = "cards"]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CardNew {
     pub author_id: i32,
     pub title: String,
     pub content: Value,
+}
+
+impl Into<CardNewForSearch> for CardNew {
+    fn into(self) -> CardNewForSearch {
+        let content_for_search = plain_serialize(&self.content);
+        CardNewForSearch {
+            author_id: self.author_id,
+            title: self.title,
+            content: self.content,
+            content_for_search,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, Insertable, Associations)]
+#[belongs_to(User, foreign_key = "author_id")]
+#[table_name = "cards"]
+#[serde(rename_all = "camelCase")]
+pub struct CardNewForSearch {
+    pub author_id: i32,
+    pub title: String,
+    pub content: Value,
+    pub content_for_search: String,
 }
 
 #[derive(Serialize, Deserialize, Queryable, Default, Debug)]
@@ -37,6 +59,8 @@ pub struct Card {
     /// Count of users, that added card to its library
     pub useful_for: i64,
     pub meta: CardMeta,
+    #[serde(skip)]
+    pub content_for_search: String,
 }
 
 pub type AllColumns = (
@@ -51,48 +75,55 @@ pub type AllColumns = (
         diesel::expression::SqlLiteral<diesel::sql_types::Bool>,
         diesel::expression::SqlLiteral<diesel::sql_types::Bool>,
     ),
+    crate::schema::cards::content_for_search,
 );
 
-pub fn select_card(requester_id: i32) -> AllColumns {
-    use crate::schema::cards::dsl::*;
-
-    (
-        id,
-        author_id,
-        title,
-        content,
-        created_at,
-        updated_at,
-        useful_for,
-        (
-            // Card is useful if useful_marks more than one
-            sql(format!(
-                "CASE WHEN (select count(*) from useful_marks WHERE user_id={} AND card_id=cards.id)=1 THEN true ELSE false END AS is_useful",
-                requester_id
-            ).as_str()),
-
-            // User can edit card if he is author
-            sql(format!(
-                "CASE WHEN author_id={} THEN true ELSE false END AS can_edit",
-                requester_id
-            )
-            .as_str()),
-        ),
-    )
-}
-
 impl Card {
-    pub fn find_by_id(conn: &PgConnection, card_id: i32, current_user_id: i32) -> Option<Self> {
-        cards::table
+    #[inline]
+    pub fn all_columns(requester_id: i32) -> AllColumns {
+        use crate::schema::cards::dsl::*;
+
+        (
+            id,
+            author_id,
+            title,
+            content,
+            created_at,
+            updated_at,
+            useful_for,
+            (
+                // Card is useful if useful_marks more than one
+                sql(format!(
+                    "CASE WHEN (select count(*) from useful_marks WHERE user_id={} AND card_id=cards.id)=1 THEN true ELSE false END AS is_useful",
+                    requester_id
+                ).as_str()),
+
+                // User can edit card if he is author
+                sql(format!(
+                    "CASE WHEN author_id={} THEN true ELSE false END AS can_edit",
+                    requester_id
+                )
+                .as_str()),
+            ),
+            content_for_search,
+        )
+    }
+
+    pub fn select_for(requester_id: i32) -> diesel::dsl::Select<cards::table, AllColumns> {
+        use crate::schema::cards::dsl::*;
+
+        cards.select(Self::all_columns(requester_id))
+    }
+
+    pub fn find_by_id(conn: &PgConnection, card_id: i32, requester_id: i32) -> Option<Self> {
+        Self::select_for(requester_id)
             .find(card_id)
-            .select(select_card(current_user_id))
             .get_result(conn)
             .ok()
     }
 
     pub fn get_latest_cards(conn: &PgConnection, requester_id: i32) -> Vec<Self> {
-        cards::table
-            .select(select_card(requester_id))
+        Self::select_for(requester_id)
             .order(cards::created_at.desc())
             .get_results(conn)
             .unwrap_or_default()
@@ -101,28 +132,27 @@ impl Card {
     pub fn get_useful_for_user(conn: &PgConnection, user_id: i32) -> Vec<Self> {
         use crate::schema::useful_marks;
 
-        cards::table
+        Self::select_for(user_id)
             .inner_join(useful_marks::table)
             .order(useful_marks::created_at.desc())
             .filter(useful_marks::user_id.eq(user_id))
-            .select(select_card(user_id))
             .load(conn)
             .unwrap_or_default()
     }
 
     pub fn find_all_by_author(conn: &PgConnection, author_id: i32) -> Vec<Self> {
-        cards::table
+        Self::select_for(author_id)
             .order(cards::updated_at.desc())
             .filter(cards::author_id.eq(author_id))
-            .select(select_card(author_id))
             .get_results(conn)
             .unwrap_or_default()
     }
 
     pub fn create(conn: &PgConnection, new_card: CardNew, creator_id: i32) -> Option<Self> {
+        let card: CardNewForSearch = new_card.into();
         diesel::insert_into(cards::table)
-            .values(&new_card)
-            .returning(select_card(creator_id))
+            .values(&card)
+            .returning(Self::all_columns(creator_id))
             .get_result(conn)
             .ok()
     }
@@ -133,7 +163,7 @@ impl Card {
             .filter(cards::author_id.eq(requester_id));
 
         diesel::delete(target)
-            .returning(select_card(requester_id))
+            .returning(Self::all_columns(requester_id))
             .get_result(conn)
             .ok()
     }
@@ -146,14 +176,16 @@ impl Card {
         content: Value,
     ) -> Option<Card> {
         let target = cards::table.filter(cards::id.eq(card_id));
+        let content_for_search = plain_serialize(&content);
 
         diesel::update(target)
             .set((
                 cards::updated_at.eq(Some(time::now())),
                 cards::title.eq(title),
                 cards::content.eq(content),
+                cards::content_for_search.eq(content_for_search),
             ))
-            .returning(select_card(requester_id))
+            .returning(Self::all_columns(requester_id))
             .get_result(conn)
             .ok()
     }
@@ -171,7 +203,7 @@ impl Card {
                 cards::updated_at.eq(Some(time::now())),
                 cards::useful_for.eq(useful_for),
             ))
-            .returning(select_card(requester_id))
+            .returning(Self::all_columns(requester_id))
             .get_result(conn)
             .ok()
     }
