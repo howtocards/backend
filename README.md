@@ -3,7 +3,7 @@
 ## Requirements
 
 - [Stable rust](https://rustup.rs)
-- Postgresql 10, requires [`libpq`](https://postgrespro.ru/docs/postgresql/9.6/libpq)
+- Postgresql 11, requires [`libpq`](https://postgrespro.ru/docs/postgresql/9.6/libpq)
 
 ## Installation
 
