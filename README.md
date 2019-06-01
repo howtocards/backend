@@ -16,6 +16,11 @@ sudo apt install postgresql postgresql-contrib libpq-dev
 ```
 
 ### Docker
+Using makefile
+```sh
+make docker-init
+```
+or manual
 ```sh
 docker-compose up -d
 docker exec -i howtocards_backend bash -c 'cd /app && diesel migration run'
