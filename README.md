@@ -16,7 +16,7 @@ sudo apt install postgresql postgresql-contrib libpq-dev
 ```
 
 ### Docker
-Using dockerfile
+Using makefile
 ```sh
 make docker-init
 ```
