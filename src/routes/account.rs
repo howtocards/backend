@@ -7,6 +7,7 @@ use crate::app_state::AppState;
 use crate::auth::Auth;
 use crate::handlers::account::create::*;
 use crate::handlers::account::login::*;
+use crate::handlers::account::update::*;
 use actix_web::State;
 
 /// POST /account
@@ -26,6 +27,29 @@ pub fn create(
         .from_err()
         .and_then(|res| match res {
             Ok(user) => Ok(answer_success!(Created, R { user_id: user.id })),
+            Err(err) => Ok(err.error_response()),
+        })
+        .responder()
+}
+
+fn update(state: State<AppState>, update: Json<AccountUpdate>) -> FutureResponse<HttpResponse> {
+    #[derive(Serialize)]
+    #[serde(rename_all = "camelCase")]
+    struct R {
+        user: views::EncodableUserPrivate,
+    }
+
+    state
+        .pg
+        .send(update.0)
+        .from_err()
+        .and_then(|res| match res {
+            Ok(user) => Ok(answer_success!(
+                Ok,
+                R {
+                    user: user.encodable_private()
+                }
+            )),
             Err(err) => Ok(err.error_response()),
         })
         .responder()
@@ -79,7 +103,10 @@ pub fn get_session(auth: Auth) -> HttpResponse {
 #[inline]
 pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
     scope
-        .resource("/", |r| r.post().with(self::create))
+        .resource("/", |r| {
+            r.post().with(self::create);
+            r.get().with(self::update);
+        })
         .resource("/session/", |r| {
             r.post().with(self::login);
             r.get().with(self::get_session)

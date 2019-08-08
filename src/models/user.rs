@@ -65,6 +65,16 @@ impl User {
             .get_result(conn)
             .ok()
     }
+
+    pub fn update(conn: &PgConnection, user_id: i32, display_name: String) -> Option<User> {
+        let target = users::table.filter(users::id.eq(user_id));
+
+        diesel::update(target)
+            .set(users::display_name.eq(Some(display_name)))
+            .returning(users::all_columns)
+            .get_result(conn)
+            .ok()
+    }
 }
 
 #[derive(Deserialize, Insertable, Queryable)]
