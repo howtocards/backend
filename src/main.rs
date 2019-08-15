@@ -61,7 +61,6 @@ fn run() -> Result<(), failure::Error> {
 fn create_server(db_url: String) -> Result<(), failure::Error> {
     env_logger::init();
     use self::app_state::DbExecutor;
-    use actix_base::{SyncArbiter, System};
 
     let cpus = num_cpus::get();
     let system = System::new("htc-server");
