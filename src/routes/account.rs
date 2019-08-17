@@ -32,27 +32,50 @@ pub fn create(
         .responder()
 }
 
-fn update(state: State<AppState>, update: Json<AccountUpdate>) -> FutureResponse<HttpResponse> {
-    #[derive(Serialize)]
-    #[serde(rename_all = "camelCase")]
-    struct R {
-        user: views::EncodableUserPrivate,
-    }
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct Update {
+    display_name: Option<String>,
+}
 
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SettingsResponse {
+    settings: views::UserSettings,
+}
+
+fn update(
+    state: State<AppState>,
+    auth: Auth,
+    update: Json<Update>,
+) -> FutureResponse<HttpResponse> {
     state
         .pg
-        .send(update.0)
+        .send(AccountUpdate {
+            requester_id: auth.user.id,
+            display_name: update.display_name.clone(),
+        })
         .from_err()
         .and_then(|res| match res {
             Ok(user) => Ok(answer_success!(
                 Ok,
-                R {
-                    user: user.encodable_private()
+                SettingsResponse {
+                    settings: user.encodable_settings()
                 }
             )),
             Err(err) => Ok(err.error_response()),
         })
         .responder()
+}
+
+pub fn settings(auth: Auth) -> FutureResponse<HttpResponse> {
+    futures::future::ok(answer_success!(
+        Ok,
+        SettingsResponse {
+            settings: auth.user.encodable_settings()
+        }
+    ))
+    .responder()
 }
 
 /// POST /account/session
@@ -105,7 +128,10 @@ pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
     scope
         .resource("/", |r| {
             r.post().with(self::create);
-            r.get().with(self::update);
+        })
+        .resource("/settings/", |r| {
+            r.get().with(self::settings);
+            r.put().with(self::update);
         })
         .resource("/session/", |r| {
             r.post().with(self::login);

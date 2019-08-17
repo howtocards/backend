@@ -16,3 +16,11 @@ pub struct EncodableUserPublic {
     pub display_name: Option<String>,
     pub id: i32,
 }
+
+/// User settings to communicate with frontend
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UserSettings {
+    pub display_name: Option<String>,
+    pub gravatar_email: Option<String>,
+}

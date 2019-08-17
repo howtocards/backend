@@ -1,5 +1,5 @@
 use crate::schema::users;
-use crate::views::{EncodableUserPrivate, EncodableUserPublic};
+use crate::views::{EncodableUserPrivate, EncodableUserPublic, UserSettings};
 use diesel::prelude::*;
 
 #[derive(Queryable, Associations, Identifiable, Debug)]
@@ -31,6 +31,15 @@ impl User {
             display_name,
             email,
             id,
+        }
+    }
+
+    pub fn encodable_settings(self) -> UserSettings {
+        let User { display_name, .. } = self;
+
+        UserSettings {
+            display_name,
+            gravatar_email: None,
         }
     }
 
