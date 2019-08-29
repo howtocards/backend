@@ -5,6 +5,7 @@ use serde_json::Value;
 use crate::app_state::AppState;
 use crate::auth::{Auth, AuthOptional};
 use crate::models::*;
+use crate::views::CardMeta as CardMetaView;
 use actix_web::State;
 
 type FutRes = FutureResponse<HttpResponse>;
@@ -177,6 +178,33 @@ pub fn toggle_useful(
         })
         .responder()
 }
+/// GET /cards/{card_id}/meta/
+pub fn meta(auth: AuthOptional, path: Path<CardPath>, state: State<AppState>) -> FutRes {
+    use crate::handlers::cards::get::*;
+
+    #[derive(Serialize)]
+    pub struct R {
+        meta: CardMetaView,
+    }
+
+    state
+        .pg
+        .send(CardFetch {
+            card_id: path.card_id,
+            requester_id: auth.user.map(|user| user.id),
+        })
+        .from_err()
+        .and_then(|res| match res {
+            Some(card) => Ok(answer_success!(
+                Ok,
+                R {
+                    meta: card.encodable_meta()
+                }
+            )),
+            None => Ok(answer_error!(NotFound, "id_not_found".to_string())),
+        })
+        .responder()
+}
 
 #[inline]
 pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
@@ -188,6 +216,9 @@ pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
         })
         .resource("/{card_id}/useful/", |r| {
             r.post().with(self::toggle_useful);
+        })
+        .resource("/{card_id}/meta/", |r| {
+            r.get().with(self::meta);
         })
         .resource("/", |r| {
             r.post().with(self::create);

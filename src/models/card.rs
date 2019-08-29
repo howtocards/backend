@@ -4,6 +4,7 @@ use crate::models::User;
 use crate::schema::cards;
 use crate::slate::plain_serialize;
 use crate::time;
+use crate::views::CardMeta as CardMetaView;
 use diesel::dsl::sql;
 use diesel::prelude::*;
 use serde_json::Value;
@@ -206,5 +207,16 @@ impl Card {
             .returning(Self::all_columns(requester_id))
             .get_result(conn)
             .ok()
+    }
+
+    pub fn encodable_meta(self) -> CardMetaView {
+        CardMetaView {
+            id: self.id,
+            title: self.title,
+            description: self.content_for_search,
+            created_at: self.created_at,
+            updated_at: self.updated_at,
+            preview: None,
+        }
     }
 }
