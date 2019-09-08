@@ -12,6 +12,6 @@ jobs:
       script:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker build -t howtocards-backend .
-        - docker images
         - docker tag howtocards-backend howtocards/backend:$TRAVIS_COMMIT
+        - docker images
         - docker push howtocards/backend:$TRAVIS_COMMIT
