@@ -1,28 +1,17 @@
-language: rust
-rust:
-  - stable
+language: minimal
 
 os:
   - linux
-  - osx
 
 services:
   - docker
 
-cache: cargo
-
 jobs:
   include:
     - stage: test and build docker image
-      if: os = linux
       script:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker build -t howtocards-backend .
         - docker images
         - docker tag howtocards-backend howtocards/backend:$TRAVIS_COMMIT
         - docker push howtocards/backend:$TRAVIS_COMMIT
-    - stage: test
-      if: os = osx
-      script:
-        - cargo test --release --verbose --all
-        - cargo build --release --verbose --all
