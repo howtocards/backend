@@ -16,7 +16,7 @@ jobs:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker build -t $DOCKER_IMAGE:$TRAVIS_COMMIT .
         - docker images
-        - docker push $DOCKER_IMAGE:$TRAVIS_COMMIT:$TRAVIS_COMMIT
+        - docker push $DOCKER_IMAGE:$TRAVIS_COMMIT
     - stage: push latest
       if: branch = master
       script:
