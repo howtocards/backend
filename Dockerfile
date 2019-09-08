@@ -11,6 +11,8 @@ RUN USER=root cargo install diesel_cli --no-default-features --features postgres
 COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
 
+RUN cargo test --release --verbose --all
+
 RUN cargo build --release && \
     rm src/*.rs
 
