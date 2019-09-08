@@ -1,10 +1,10 @@
-use prelude::*;
+use crate::prelude::*;
 
-use app_state::{AppState, Req};
-use auth::AuthOptional;
+use crate::app_state::AppState;
+use crate::auth::AuthOptional;
 
-use models::{Card, User};
-use views::{EncodableUserPrivate, EncodableUserPublic};
+use crate::models::{Card, User};
+use crate::views::{EncodableUserPrivate, EncodableUserPublic};
 
 type FutRes = FutureResponse<HttpResponse>;
 
@@ -19,8 +19,8 @@ enum GetUserInfoError {
     NotFound,
 }
 
-pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
-    use handlers::users::get_user::*;
+pub fn info(auth: AuthOptional, path: Path<UserPath>, state: State<AppState>) -> FutRes {
+    use crate::handlers::users::get_user::*;
 
     #[derive(Serialize)]
     struct R {
@@ -49,11 +49,12 @@ pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
         }
     }
 
-    req.state()
+    state
         .pg
         .send(GetUser {
             user_id: path.user_id as i32,
-        }).from_err()
+        })
+        .from_err()
         .and_then(|res| match res {
             Some(user) => Ok(answer_success!(
                 Ok,
@@ -65,48 +66,53 @@ pub fn info((auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
                 NotFound,
                 GetUserInfoError::NotFound.to_string()
             )),
-        }).responder()
+        })
+        .responder()
 }
 
 /// GET /users/{user_id}/cards/useful/
-pub fn useful((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
-    use handlers::users::useful_cards::*;
+pub fn useful(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>) -> FutRes {
+    use crate::handlers::users::useful_cards::*;
     #[derive(Serialize)]
     #[serde(rename_all = "camelCase")]
     struct R {
         cards: Vec<Card>,
     }
 
-    req.state()
+    state
         .pg
         .send(GetUsefulCardsForUser {
             user_id: path.user_id as i32,
-        }).from_err()
+        })
+        .from_err()
         .and_then(|res| match res {
             Some(cards) => Ok(answer_success!(Ok, R { cards })),
             None => Ok(answer_success!(Ok, R { cards: vec![] })),
-        }).responder()
+        })
+        .responder()
 }
 
 /// GET /users/{user_id}/cards/authors/
 /// Get cards by user
-pub fn authors((_auth, req, path): (AuthOptional, Req, Path<UserPath>)) -> FutRes {
-    use handlers::users::cards_by_author::*;
+pub fn authors(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>) -> FutRes {
+    use crate::handlers::users::cards_by_author::*;
     #[derive(Serialize)]
     #[serde(rename_all = "camelCase")]
     struct R {
         cards: Vec<Card>,
     }
 
-    req.state()
+    state
         .pg
         .send(GetCardsByAuthor {
             author_id: path.user_id as i32,
-        }).from_err()
+        })
+        .from_err()
         .and_then(|res| match res {
             Some(cards) => Ok(answer_success!(Ok, R { cards })),
             None => Ok(answer_success!(Ok, R { cards: vec![] })),
-        }).responder()
+        })
+        .responder()
 }
 
 #[inline]
@@ -114,7 +120,9 @@ pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
     scope
         .resource("/{user_id}/", |r| {
             r.get().with(self::info);
-        }).resource("/{user_id}/cards/useful/", |r| {
+        })
+        .resource("/{user_id}/cards/useful/", |r| {
             r.get().with(self::useful);
-        }).resource("/{user_id}/cards/authors/", |r| r.get().with(self::authors))
+        })
+        .resource("/{user_id}/cards/authors/", |r| r.get().with(self::authors))
 }

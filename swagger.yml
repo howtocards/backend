@@ -1,0 +1,376 @@
+openapi: "3.0.0"
+info:
+  version: "1.0.0"
+  title: "Howtocards API"
+  termsOfService: "https://howtocards.io/terms/"
+  contact:
+    email: "mail@sergeysova.com"
+tags:
+  - name: "users"
+    description: "Users on service"
+  - name: "account"
+    description: "Current user session"
+  - name: "cards"
+    description: "Solutions"
+  - name: "search"
+    description: "How to search solution"
+
+paths:
+  /users/{userId}:
+    parameters:
+      - $ref: "#/components/parameters/userId"
+    get:
+      operationId: "userInfo"
+      tags: ["users"]
+      description: "Get information about user by ID"
+      summary: "Info about user"
+      responses:
+        "200":
+          description: "User response"
+          content:
+            "application/json":
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/UserExternal"
+                  - $ref: "#/components/schemas/UserCurrent"
+              examples:
+                current:
+                  summary: "When user getting info about himself"
+                  value:
+                    displayName: "Sergey Sova"
+                    email: "sergeysova@howtocards.io"
+                    id: 1
+                external:
+                  summary: "When getting info about another user"
+                  value:
+                    displayName: "Another User"
+                    id: 2
+                current_optional:
+                  summary: "Display name is optional (current user)"
+                  value:
+                    email: "sergeysova@howtocards.io"
+                    id: 1
+                external_optional:
+                  summary: "Display name is optional (external user)"
+                  value:
+                    id: 2
+
+  /users/{userId}/cards/useful:
+    parameters:
+      - $ref: "#/components/parameters/userId"
+    get:
+      operationId: "usefulCards"
+      tags: ["users", "cards"]
+      description: "Get useful cards for specific user"
+      summary: "Useful cards"
+      responses:
+        "200":
+          description: "List of cards"
+          content:
+            "application/json":
+              schema:
+                type: "object"
+                required:
+                  - "cards"
+                properties:
+                  cards:
+                    type: "array"
+                    items: { $ref: "#/components/schemas/Card" }
+
+  /users/{userId}/cards/authors:
+    parameters:
+      - $ref: "#/components/parameters/userId"
+    get:
+      operationId: "createdCards"
+      tags: ["users", "cards"]
+      description: "Get cards created by user"
+      summary: "Created cards"
+      responses:
+        "200":
+          description: "List of cards"
+          content:
+            "application/json":
+              schema:
+                type: "object"
+                required:
+                  - "cards"
+                properties:
+                  cards:
+                    type: "array"
+                    items: { $ref: "#/components/schemas/Card" }
+
+  /account:
+    post:
+      operationId: "createAccount"
+      tags: ["account"]
+      description: "Create account"
+      summary: "Registration"
+      requestBody: { $ref: "#/components/requestBodies/AccountCreate" }
+      responses:
+        "201":
+          description: "Information about created account"
+          content:
+            "application/json":
+              schema:
+                type: "object"
+                required:
+                  - userId
+                properties:
+                  userId:
+                    type: "integer"
+                    format: "int32"
+              example:
+                userId: 215
+
+  /account/session:
+    post:
+      operationId: "createSession"
+      tags: ["account"]
+      description: "Create session"
+      summary: "Login"
+      requestBody: { $ref: "#/components/requestBodies/SessionCreate" }
+      responses:
+        "200":
+          description: "Token and user info"
+          content:
+            "application/json":
+              schema:
+                type: "object"
+                required:
+                  - token
+                  - user
+                properties:
+                  token:
+                    type: "string"
+                  user: { $ref: "#/components/schemas/UserCurrent" }
+              example:
+                token: "b82abfd6-6d8d-4896-80a0-d7b504924477-8c79405c-dff4-41c1-8af3-00b01c165409"
+                user:
+                  displayName: "Foo Bar"
+                  email: "foo@bar.com"
+                  id: 23
+    get:
+      operationId: "getSession"
+      tags: ["account"]
+      description: "Get info about current session"
+      summary: "Current session info"
+      responses:
+        "200":
+          description: "Info about current user"
+          content:
+            "application/json":
+              schema:
+                type: "object"
+                properties:
+                  user: { $ref: "#/components/schemas/UserCurrent" }
+              example:
+                user:
+                  displayName: "Foo Bar"
+                  email: "foo@bar.com"
+                  id: 23
+
+  /cards/{cardId}:
+    parameters:
+      - $ref: "#/components/parameters/cardId"
+    get:
+      operationId: "getCard"
+      tags: ["cards"]
+      description: "Get card content by ID"
+      summary: "Get card"
+      responses:
+        "200":
+          description: "Card content"
+          content:
+            "application/json":
+              schema:
+                required: [card]
+                properties:
+                  card: { $ref: "#/components/schemas/Card" }
+        "404":
+          description: "Card not found"
+
+    put:
+      operationId: "updateCard"
+      tags: ["cards"]
+      description: "Update card title or/and content"
+      summary: "Update card"
+      requestBody: { $ref: "#/components/requestBodies/CardEdit" }
+      responses:
+        "200":
+          description: "Updated card"
+          content:
+            "application/json":
+              schema:
+                required: [card]
+                properties:
+                  card: { $ref: "#/components/schemas/Card" }
+    delete:
+      operationId: "deleteCard"
+      tags: ["cards"]
+      description: "Delete card (What about archiving?)"
+      summary: "Delete card"
+      deprecated: false
+      responses:
+        "202":
+          description: "Deleted card content"
+          content:
+            "application/json":
+              schema:
+                required: [card]
+                properties:
+                  card: { $ref: "#/components/schemas/Card" }
+        "403":
+          description: "Can`t be deleted"
+          content:
+            "application/json":
+              schema:
+                required: [error]
+                properties:
+                  error:
+                    type: string
+
+components:
+  schemas:
+    UserCurrent:
+      type: "object"
+      required:
+        - "email"
+        - "id"
+      properties:
+        displayName:
+          type: "string"
+        email:
+          type: "string"
+        id:
+          type: "integer"
+          format: "int32"
+
+    UserExternal:
+      type: "object"
+      required:
+        - "id"
+      properties:
+        displayName:
+          type: "string"
+        id:
+          type: "integer"
+          format: "int32"
+
+    Card:
+      type: "object"
+      required:
+        - id
+        - authorId
+        - title
+        - content
+        - usefulFor
+        - meta
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        authorId:
+          type: "integer"
+          format: "int32"
+        title:
+          type: "string"
+        content:
+          type: "object"
+        createdAt:
+          type: "string"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          format: "date-time"
+        usefulFor:
+          type: "integer"
+          format: "int64"
+        meta: { $ref: "#/components/schemas/CardMeta" }
+      example:
+        id: 401
+        authorId: 1
+        title: "How to install PostgreSQL on macOS"
+        content:
+          document:
+            nodes:
+              - leaves:
+                  - object: "leaf"
+                    text: "Start work with that command"
+        createdAt: "2019-07-03T09:30:11"
+        updatedAt: "2019-07-10T14:36:04"
+        usefulFor: 502
+        meta:
+          isUseful: true
+          canEdit: false
+
+    CardMeta:
+      type: "object"
+      required:
+        - isUseful
+        - canEdit
+      properties:
+        isUseful:
+          type: "boolean"
+        canEdit:
+          type: "boolean"
+
+  parameters:
+    userId:
+      name: "userId"
+      in: "path"
+      required: true
+      schema:
+        type: "integer"
+        format: "uint32"
+
+    cardId:
+      name: "cardId"
+      in: "path"
+      required: true
+      schema:
+        type: "integer"
+        format: "uint32"
+
+  requestBodies:
+    AccountCreate:
+      content:
+        "application/json":
+          schema:
+            type: "object"
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: "string"
+              password:
+                type: "string"
+          example:
+            email: "foo@bar.com"
+            password: "JusTs1mpl3P@ssw0rD"
+
+    SessionCreate:
+      content:
+        "application/json":
+          schema:
+            type: "object"
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: "string"
+              password:
+                type: "string"
+          example:
+            email: "foo@bar.com"
+            password: "JusTs1mpl3P@ssw0rD"
+
+    CardEdit:
+      content:
+        "application/json":
+          schema:
+            type: "object"
+            properties:
+              content: { type: "object" }
+              title: { type: "string" }

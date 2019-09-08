@@ -5,10 +5,10 @@ use actix_web::{FromRequest, HttpRequest, HttpResponse, ResponseError};
 use failure::*;
 use futures::prelude::*;
 
-use app_state::AppState;
-use handlers::account::session_fetch::AccountSessionFetch;
-use models::User;
-use prelude::ResultExt;
+use crate::app_state::AppState;
+use crate::handlers::account::session_fetch::AccountSessionFetch;
+use crate::models::User;
+use crate::prelude::ResultExt;
 
 /// Describe error that shows to user
 #[derive(Serialize, Deserialize, Default, Debug)]

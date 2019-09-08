@@ -4,14 +4,16 @@ use actix_web::*;
 
 pub mod account;
 pub mod cards;
+pub mod search;
 pub mod users;
 
-use app_state::AppState;
+use crate::app_state::AppState;
 
 #[inline]
 pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
     scope
         .nested("/account", account::scope)
         .nested("/cards", cards::scope)
+        .nested("/search", search::scope)
         .nested("/users", users::scope)
 }

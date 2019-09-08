@@ -1,4 +1,4 @@
-pub use actix::prelude::*;
+pub use actix_base::prelude::*;
 pub use actix_web::*;
 pub use diesel::prelude::*;
 pub use failure::*;
@@ -35,3 +35,5 @@ impl<T, E, R> ResultExt<T, R> for Result<T, E> {
         self.map_err(|_| err)
     }
 }
+
+pub type FutRes = FutureResponse<HttpResponse>;

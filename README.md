@@ -1,111 +1,56 @@
 # HowToCards
 
+## Requirements
+
+- [Stable rust](https://rustup.rs)
+- Postgresql 11, requires [`libpq`](https://postgrespro.ru/docs/postgresql/9.6/libpq)
+
 ## Installation
 
-Install `diesel_cli`
+### Ubuntu
 
 ```sh
-apt install gcc # ubuntu
+curl https://sh.rustup.rs -sSf | sh
+sudo apt install gcc
+sudo apt install postgresql postgresql-contrib libpq-dev
+```
 
+### Docker
+Using makefile
+```sh
+make docker-init
+```
+or manual
+```sh
+docker-compose up -d
+docker exec -i howtocards_backend bash -c 'cd /app && diesel migration run'
+```
+
+### Diesel CLI
+
+```sh
 cargo install diesel_cli --no-default-features --features postgres
 ```
 
+## Build and run
 
-## REST API
+```sh
+# Build production binary
+cargo build --release
 
-### Authentication
-
-You should create token.<br/>
-Send token in `Authorization` header.<br/>
-
-Example:
-```
-Authorization: bearer 0dsi9fjs9dfj89s8djf
+# Development
+cargo install cargo-watch
+cargo watch -x run
 ```
 
-Where `0dsi9fjs9dfj89s8djf` is your token.
+## After pull, checkout, or db change
 
-If route requires authentication, and request not provides it:
-
-`400 Bad Request` is returns.
-
-```json
-{
-  "ok": false,
-  "error": "{ERROR_KIND}"
-}
+```sh
+diesel migration run
 ```
 
-Where `ERROR_KIND` is:
-- `invalid_token`
-- `unknown_token`
-- `missing_header`
+To revert migration run
 
-### `POST /account`
-
-Register new account.
-
-**Receives**:
-
-```json
-{
-  "email": "string",
-  "password": "string"
-}
-```
-
-If account registered successfully returns `200 OK`.<br/>
-Otherwise returns `400 Bad Request`. <br/>
-
-
-### `POST /account/session`
-
-Login with credentials.
-
-**Receieve**:
-
-```json
-{
-  "email": "string",
-  "password": "string"
-}
-```
-
-
-**Response**:
-
-```json
-{
-  "token": "string"
-}
-```
-
-**Errors**:
-
-`400 Bad Request`
-
-```json
-{
-  "ok": false,
-  "error": "{ERROR_KIND}"
-}
-```
-
-`{ERROR_KIND}` can be:
-- `email_not_found`
-- `invalid_password`
-
-
-### `GET /account/session`
-
-Get info about current session.
-
-**authentication required**
-
-**Response**:
-
-```json
-{
-  "email": "string"
-}
+```sh
+diesel migration revert
 ```

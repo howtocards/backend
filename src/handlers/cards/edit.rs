@@ -1,15 +1,13 @@
 //! Edit existing card
 
-use actix::prelude::*;
+use actix_base::prelude::*;
 use actix_web::*;
-use diesel;
-use diesel::prelude::*;
+use serde_json::Value;
 
-use app_state::DbExecutor;
-use layer::ErrorAnswer;
-use models::*;
-use prelude::*;
-use time;
+use crate::app_state::DbExecutor;
+use crate::layer::ErrorAnswer;
+use crate::models::*;
+use crate::prelude::*;
 
 #[derive(Fail, Debug)]
 pub enum CardEditError {
@@ -32,7 +30,8 @@ impl ResponseError for CardEditError {
             CardEditError::NotFound => HttpResponse::NotFound(),
             CardEditError::IncorrectForm => HttpResponse::BadRequest(),
             CardEditError::NoRights => HttpResponse::Forbidden(),
-        }.json(ErrorAnswer::new(format!("{}", self)))
+        }
+        .json(ErrorAnswer::new(format!("{}", self)))
     }
 }
 
@@ -41,7 +40,7 @@ pub struct CardEdit {
     /// User id who requested edit of card
     pub requester_id: i32,
     pub title: Option<String>,
-    pub content: Option<String>,
+    pub content: Option<Value>,
 }
 
 impl Message for CardEdit {
@@ -52,27 +51,22 @@ impl Handler<CardEdit> for DbExecutor {
     type Result = Result<Card, CardEditError>;
 
     fn handle(&mut self, msg: CardEdit, _ctx: &mut Self::Context) -> Self::Result {
-        use diesel::RunQueryDsl;
-        use schema::cards::dsl::*;
-
-        let target = cards.filter(id.eq(msg.card_id as i32));
-
-        let found = target
-            .get_result::<Card>(&self.conn)
-            .or_err(CardEditError::NotFound)?;
+        let found = Card::find_by_id(&self.conn, msg.card_id as i32, msg.requester_id)
+            .ok_or(CardEditError::NotFound)?;
 
         if found.author_id != msg.requester_id {
             Err(CardEditError::NoRights)?;
         }
 
-        let update = diesel::update(target).set((
-            updated_at.eq(Some(time::now())),
-            title.eq(msg.title.unwrap_or(found.title)),
-            content.eq(msg.content.unwrap_or(found.content)),
-        ));
+        let new_content = msg.content.unwrap_or(found.content);
 
-        Ok(update
-            .get_result::<Card>(&self.conn)
-            .or_err(CardEditError::IncorrectForm)?)
+        Card::update(
+            &self.conn,
+            msg.card_id as i32,
+            msg.requester_id,
+            msg.title.unwrap_or(found.title),
+            new_content,
+        )
+        .ok_or(CardEditError::IncorrectForm)
     }
 }

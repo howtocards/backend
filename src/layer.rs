@@ -26,8 +26,8 @@ impl<T> SuccessAnswer<T> {
 
 macro_rules! impl_response_error_for {
     ($struct:ident as $response_status:ident) => {
+        use crate::layer as lay;
         use actix_web;
-        use layer as lay;
         impl actix_web::error::ResponseError for $struct {
             fn error_response(&self) -> actix_web::HttpResponse {
                 actix_web::HttpResponse::$response_status()
@@ -39,16 +39,16 @@ macro_rules! impl_response_error_for {
 
 macro_rules! answer_success {
     ($response:ident, $value:expr) => {{
+        use crate::layer::SuccessAnswer;
         use actix_web::HttpResponse;
-        use layer::SuccessAnswer;
         HttpResponse::$response().json(SuccessAnswer::new($value))
     }};
 }
 
 macro_rules! answer_error {
     ($response:ident, $value:expr) => {{
+        use crate::layer::ErrorAnswer;
         use actix_web::HttpResponse;
-        use layer::ErrorAnswer;
         HttpResponse::$response().json(ErrorAnswer::new($value))
     }};
 }

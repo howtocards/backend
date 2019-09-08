@@ -1,0 +1,14 @@
+[Unit]
+Description=The Howtocards Backend
+
+[Service]
+Environment=RUST_LOG=info
+User=www
+WorkingDirectory=/home/www/backend
+ExecStart=/home/www/backend/target/release/howtocards_server
+Restart=on-failure
+RestartSec=55
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

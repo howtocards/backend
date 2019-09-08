@@ -1,7 +1,7 @@
-use actix::prelude::*;
+use actix_base::prelude::*;
 
-use app_state::DbExecutor;
-use models::*;
+use crate::app_state::DbExecutor;
+use crate::models::*;
 
 pub struct GetUser {
     pub user_id: i32,
