@@ -22,7 +22,7 @@ jobs:
         - docker tag howtocards-backend howtocards/backend:$TRAVIS_COMMIT
         - docker push howtocards/backend:$TRAVIS_COMMIT
     - stage: test
-      if: os = mac
+      if: os = osx
       script:
         - cargo test --release --verbose --all
         - cargo build --release --verbose --all
