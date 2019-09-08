@@ -1,23 +1,30 @@
 language: rust
 rust:
   - stable
-  - beta
-  - nightly
 
 os:
   - linux
   - osx
 
-matrix:
-  allow_failures:
-    - rust: nightly
-  fast_finish: true
+services:
+  - docker
 
 cache: cargo
 
-script:
-  - cargo build --release --verbose --all
-  - cargo test --release --verbose --all
+jobs:
+  include:
+    - stage: test
+      script:
+        - cargo test --release --verbose --all
+        - cargo build --release --verbose --all
+    - stage: build docker image
+      if: os = linux
+      script:
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker build -t howtocards-backend .
+        - docker images
+        - docker tag howtocards-backend howtocards/backend:$TRAVIS_COMMIT
+        - docker push howtocards/backend:$TRAVIS_COMMIT
 
 addons:
   homebrew:
