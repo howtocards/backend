@@ -2,10 +2,18 @@
 
 ## Requirements
 
-- [Stable rust](https://rustup.rs)
-- Postgresql 11, requires [`libpq`](https://postgrespro.ru/docs/postgresql/9.6/libpq)
+- [Stable rust 1.37](https://rustup.rs)
+- Postgresql 11.5, requires [`libpq`](https://postgrespro.ru/docs/postgresql/9.6/libpq)
 
 ## Installation
+
+### Configuration
+
+```sh
+cp .env.sample .env
+# Edit and review .env file
+# Do not forget to create user and database in local postgres
+```
 
 ### Ubuntu
 
@@ -16,11 +24,15 @@ sudo apt install postgresql postgresql-contrib libpq-dev
 ```
 
 ### Docker
+
 Using makefile
+
 ```sh
 make docker-init
 ```
+
 or manual
+
 ```sh
 docker-compose up -d
 docker exec -i howtocards_backend bash -c 'cd /app && diesel migration run'
