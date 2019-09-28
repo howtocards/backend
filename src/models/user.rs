@@ -8,6 +8,7 @@ pub struct User {
     pub email: String,
     pub password: String,
     pub display_name: Option<String>,
+    pub gravatar_email: Option<String>,
 }
 
 impl User {
@@ -35,11 +36,17 @@ impl User {
     }
 
     pub fn encodable_settings(self) -> UserSettings {
-        let User { display_name, .. } = self;
+        let User {
+            display_name,
+            email,
+            gravatar_email,
+            ..
+        } = self;
 
         UserSettings {
             display_name,
-            gravatar_email: None,
+            gravatar_email,
+            current_email: Some(email),
         }
     }
 
@@ -75,11 +82,19 @@ impl User {
             .ok()
     }
 
-    pub fn update(conn: &PgConnection, user_id: i32, display_name: String) -> Option<User> {
+    pub fn update(
+        conn: &PgConnection,
+        user_id: i32,
+        display_name: String,
+        gravatar_email: String,
+    ) -> Option<User> {
         let target = users::table.filter(users::id.eq(user_id));
 
         diesel::update(target)
-            .set(users::display_name.eq(Some(display_name)))
+            .set((
+                users::display_name.eq(display_name),
+                users::gravatar_email.eq(gravatar_email),
+            ))
             .returning(users::all_columns)
             .get_result(conn)
             .ok()

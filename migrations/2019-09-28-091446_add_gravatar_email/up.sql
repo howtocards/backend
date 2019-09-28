@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "gravatar_email" VARCHAR DEFAULT NULL;
