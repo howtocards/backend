@@ -25,6 +25,7 @@ pub struct EncodableUserPublic {
 pub struct UserSettings {
     pub display_name: Option<String>,
     pub gravatar_email: Option<String>,
+    pub current_email: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

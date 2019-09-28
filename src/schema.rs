@@ -32,6 +32,7 @@ table! {
         email -> Varchar,
         password -> Varchar,
         display_name -> Nullable<Varchar>,
+        gravatar_email -> Nullable<Varchar>,
     }
 }
 

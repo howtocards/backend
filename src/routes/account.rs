@@ -35,7 +35,8 @@ pub fn create(
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct Update {
-    display_name: Option<String>,
+    display_name: String,
+    gravatar_email: String,
 }
 
 #[derive(Serialize)]
@@ -54,6 +55,7 @@ fn update(
         .send(AccountUpdate {
             requester_id: auth.user.id,
             display_name: update.display_name.clone(),
+            gravatar_email: update.gravatar_email.clone(),
         })
         .from_err()
         .and_then(|res| match res {
