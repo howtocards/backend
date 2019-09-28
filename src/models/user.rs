@@ -2,7 +2,7 @@ use crate::schema::users;
 use crate::views::{EncodableUserPrivate, EncodableUserPublic, UserSettings};
 use diesel::prelude::*;
 
-#[derive(Queryable, Associations, Identifiable, Debug)]
+#[derive(Queryable, Associations, Identifiable, Debug, Clone)]
 pub struct User {
     pub id: i32,
     pub email: String,
@@ -12,12 +12,33 @@ pub struct User {
 }
 
 impl User {
+    fn avatar_url(&self) -> String {
+        let email = self
+            .gravatar_email
+            .clone()
+            .and_then(|email| {
+                if email.trim().len() == 0 {
+                    None
+                } else {
+                    Some(email)
+                }
+            })
+            .unwrap_or_else(|| self.email.clone());
+
+        crate::gravatar::create_avatar_url(email)
+    }
+
     /// Converts this User model into an public for serialization
     pub fn encodable_public(self) -> EncodableUserPublic {
         let User {
             id, display_name, ..
-        } = self;
-        EncodableUserPublic { id, display_name }
+        } = self.clone();
+
+        EncodableUserPublic {
+            id,
+            display_name,
+            avatar: self.avatar_url(),
+        }
     }
 
     /// Converts this User model into an private for serialization
@@ -27,11 +48,13 @@ impl User {
             email,
             id,
             ..
-        } = self;
+        } = self.clone();
+
         EncodableUserPrivate {
             display_name,
             email,
             id,
+            avatar: self.avatar_url(),
         }
     }
 

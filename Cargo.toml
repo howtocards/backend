@@ -29,3 +29,4 @@ chrono = { version = "0.4.6", features = ["serde"] }
 num_cpus = "1.10.0"
 ammonia = "2.0.0"
 maplit = "1.0.1"
+md5 = "0.6.1"

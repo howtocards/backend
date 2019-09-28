@@ -8,6 +8,7 @@ pub struct EncodableUserPrivate {
     pub display_name: Option<String>,
     pub email: String,
     pub id: i32,
+    pub avatar: String,
 }
 
 /// Serialization for User model
@@ -17,6 +18,7 @@ pub struct EncodableUserPrivate {
 pub struct EncodableUserPublic {
     pub display_name: Option<String>,
     pub id: i32,
+    pub avatar: String,
 }
 
 /// User settings to communicate with frontend
