@@ -19,6 +19,7 @@ mod app_state;
 mod auth;
 mod auth_token;
 mod consts;
+mod gravatar;
 mod hasher;
 mod prelude;
 mod time;
