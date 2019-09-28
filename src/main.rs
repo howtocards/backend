@@ -45,7 +45,7 @@ enum StartErr {
     #[fail(display = "expected DATABASE_URL env var")]
     DbExpected,
 
-    #[fail(display = "expected .env file exists")]
+    #[fail(display = "check if .env file exists and it's correct")]
     DotEnvFail,
 }
 
