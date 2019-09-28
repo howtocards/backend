@@ -37,6 +37,7 @@ pub fn create(
 struct Update {
     display_name: String,
     gravatar_email: String,
+    username: String,
 }
 
 #[derive(Serialize)]
@@ -56,6 +57,7 @@ fn update(
             requester_id: auth.user.id,
             display_name: update.display_name.clone(),
             gravatar_email: update.gravatar_email.clone(),
+            username: update.username.clone(),
         })
         .from_err()
         .and_then(|res| match res {

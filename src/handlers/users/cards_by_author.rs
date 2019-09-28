@@ -4,7 +4,7 @@ use crate::app_state::DbExecutor;
 use crate::models::*;
 
 pub struct GetCardsByAuthor {
-    pub author_id: i32,
+    pub author_username: String,
 }
 
 impl Message for GetCardsByAuthor {
@@ -15,6 +15,10 @@ impl Handler<GetCardsByAuthor> for DbExecutor {
     type Result = Option<Vec<Card>>;
 
     fn handle(&mut self, msg: GetCardsByAuthor, _ctx: &mut Self::Context) -> Self::Result {
-        Some(Card::find_all_by_author(&self.conn, msg.author_id))
+        if let Some(user) = User::find_by_username(&self.conn, msg.author_username) {
+            Some(Card::find_all_by_author(&self.conn, user.id))
+        } else {
+            None
+        }
     }
 }

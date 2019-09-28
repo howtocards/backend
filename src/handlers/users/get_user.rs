@@ -4,7 +4,7 @@ use crate::app_state::DbExecutor;
 use crate::models::*;
 
 pub struct GetUser {
-    pub user_id: i32,
+    pub username: String,
 }
 
 impl Message for GetUser {
@@ -15,6 +15,6 @@ impl Handler<GetUser> for DbExecutor {
     type Result = Option<User>;
 
     fn handle(&mut self, msg: GetUser, _ctx: &mut Self::Context) -> Self::Result {
-        User::find_by_id(&self.conn, msg.user_id)
+        User::find_by_username(&self.conn, msg.username)
     }
 }

@@ -1,6 +1,7 @@
 //! Create account
 use actix_base::prelude::*;
 use actix_web::*;
+use uuid::Uuid;
 
 use crate::app_state::DbExecutor;
 use crate::consts;
@@ -38,6 +39,7 @@ impl Handler<AccountCreate> for DbExecutor {
         let new_account = UserNew {
             email: msg.email,
             password: hasher::hash_password(&msg.password, consts::SALT),
+            username: format!("{}", Uuid::new_v4()),
         };
 
         User::create(&self.conn, new_account).ok_or(AccountCreateError::EmailExists)

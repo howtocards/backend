@@ -5,6 +5,8 @@
 extern crate serde_derive;
 #[macro_use]
 extern crate diesel;
+#[macro_use]
+extern crate lazy_static;
 // #[macro_use]
 extern crate actix_base;
 extern crate failure;
@@ -23,6 +25,7 @@ mod gravatar;
 mod hasher;
 mod prelude;
 mod time;
+mod validators;
 #[macro_use]
 mod layer;
 mod handlers;

@@ -9,6 +9,7 @@ pub struct User {
     pub password: String,
     pub display_name: Option<String>,
     pub gravatar_email: Option<String>,
+    pub username: String,
 }
 
 impl User {
@@ -31,13 +32,17 @@ impl User {
     /// Converts this User model into an public for serialization
     pub fn encodable_public(self) -> EncodableUserPublic {
         let User {
-            id, display_name, ..
+            id,
+            display_name,
+            username,
+            ..
         } = self.clone();
 
         EncodableUserPublic {
             id,
             display_name,
             avatar: self.avatar_url(),
+            username,
         }
     }
 
@@ -47,6 +52,7 @@ impl User {
             display_name,
             email,
             id,
+            username,
             ..
         } = self.clone();
 
@@ -55,6 +61,7 @@ impl User {
             email,
             id,
             avatar: self.avatar_url(),
+            username,
         }
     }
 
@@ -63,6 +70,7 @@ impl User {
             display_name,
             email,
             gravatar_email,
+            username,
             ..
         } = self;
 
@@ -70,7 +78,15 @@ impl User {
             display_name,
             gravatar_email,
             current_email: Some(email),
+            username,
         }
+    }
+
+    pub fn find_by_username(conn: &PgConnection, username: String) -> Option<Self> {
+        users::table
+            .filter(users::username.eq(username))
+            .get_result(conn)
+            .ok()
     }
 
     pub fn find_by_id(conn: &PgConnection, user_id: i32) -> Option<Self> {
@@ -86,7 +102,7 @@ impl User {
             .ok()
     }
 
-    pub fn find_by_credentials(conn: &PgConnection, credentials: UserNew) -> Option<Self> {
+    pub fn find_by_credentials(conn: &PgConnection, credentials: Credentials) -> Option<Self> {
         users::table
             .filter(users::email.eq(credentials.email))
             .filter(users::password.eq(credentials.password))
@@ -110,13 +126,15 @@ impl User {
         user_id: i32,
         display_name: String,
         gravatar_email: String,
+        username: String,
     ) -> Option<User> {
         let target = users::table.filter(users::id.eq(user_id));
 
         diesel::update(target)
             .set((
-                users::display_name.eq(display_name),
-                users::gravatar_email.eq(gravatar_email),
+                users::display_name.eq(display_name.to_option()),
+                users::gravatar_email.eq(gravatar_email.to_option()),
+                users::username.eq(username),
             ))
             .returning(users::all_columns)
             .get_result(conn)
@@ -130,4 +148,27 @@ impl User {
 pub struct UserNew {
     pub email: String,
     pub password: String,
+    pub username: String,
+}
+
+#[derive(Deserialize, Insertable, Queryable)]
+#[table_name = "users"]
+#[serde(rename_all = "camelCase")]
+pub struct Credentials {
+    pub email: String,
+    pub password: String,
+}
+
+trait ToOption: 'static + Sized {
+    fn to_option(self) -> Option<Self>;
+}
+
+impl ToOption for String {
+    fn to_option(self) -> Option<Self> {
+        if self.is_empty() {
+            None
+        } else {
+            Some(self)
+        }
+    }
 }

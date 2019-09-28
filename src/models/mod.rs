@@ -1,7 +1,7 @@
 pub use self::card::{Card, CardNew};
 pub use self::token::Token;
 pub use self::useful_mark::UsefulMark;
-pub use self::user::{User, UserNew};
+pub use self::user::{User, UserNew, Credentials};
 
 pub mod card;
 pub mod token;

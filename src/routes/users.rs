@@ -10,7 +10,7 @@ type FutRes = FutureResponse<HttpResponse>;
 
 #[derive(Deserialize)]
 pub struct UserPath {
-    user_id: u32,
+    username: String,
 }
 
 #[derive(Fail, Debug)]
@@ -18,7 +18,7 @@ enum GetUserInfoError {
     #[fail(display = "user_not_found")]
     NotFound,
 }
-
+/// GET /users/{username}/
 pub fn info(auth: AuthOptional, path: Path<UserPath>, state: State<AppState>) -> FutRes {
     use crate::handlers::users::get_user::*;
 
@@ -52,7 +52,7 @@ pub fn info(auth: AuthOptional, path: Path<UserPath>, state: State<AppState>) ->
     state
         .pg
         .send(GetUser {
-            user_id: path.user_id as i32,
+            username: path.username.clone(),
         })
         .from_err()
         .and_then(|res| match res {
@@ -70,7 +70,7 @@ pub fn info(auth: AuthOptional, path: Path<UserPath>, state: State<AppState>) ->
         .responder()
 }
 
-/// GET /users/{user_id}/cards/useful/
+/// GET /users/{username}/cards/useful/
 pub fn useful(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>) -> FutRes {
     use crate::handlers::users::useful_cards::*;
     #[derive(Serialize)]
@@ -82,7 +82,7 @@ pub fn useful(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>)
     state
         .pg
         .send(GetUsefulCardsForUser {
-            user_id: path.user_id as i32,
+            username: path.username.clone(),
         })
         .from_err()
         .and_then(|res| match res {
@@ -92,7 +92,7 @@ pub fn useful(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>)
         .responder()
 }
 
-/// GET /users/{user_id}/cards/authors/
+/// GET /users/{username}/cards/authors/
 /// Get cards by user
 pub fn authors(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>) -> FutRes {
     use crate::handlers::users::cards_by_author::*;
@@ -105,7 +105,7 @@ pub fn authors(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>
     state
         .pg
         .send(GetCardsByAuthor {
-            author_id: path.user_id as i32,
+            author_username: path.username.clone(),
         })
         .from_err()
         .and_then(|res| match res {
@@ -118,11 +118,13 @@ pub fn authors(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>
 #[inline]
 pub fn scope(scope: Scope<AppState>) -> Scope<AppState> {
     scope
-        .resource("/{user_id}/", |r| {
+        .resource("/{username}/", |r| {
             r.get().with(self::info);
         })
-        .resource("/{user_id}/cards/useful/", |r| {
+        .resource("/{username}/cards/useful/", |r| {
             r.get().with(self::useful);
         })
-        .resource("/{user_id}/cards/authors/", |r| r.get().with(self::authors))
+        .resource("/{username}/cards/authors/", |r| {
+            r.get().with(self::authors)
+        })
 }
