@@ -29,8 +29,10 @@ RUN seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} && \
     apt clean && \
     touch .env
 
+WORKDIR /app
 COPY --from=build /out/diesel /bin/
 COPY --from=build /app/target/release/howtocards_server ./
+COPY --from=build /app/migrations ./
 COPY docker-entrypoint.sh ./entrypoint.sh
 RUN chmod +x entrypoint.sh && chmod +x howtocards_server
 

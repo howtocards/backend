@@ -10,4 +10,4 @@ until PGPASSWORD=${POSTGRES_PASSWORD} psql -h ${DATABASE_HOST} -U ${POSTGRES_USE
 done
 
 >&2 echo "Postgres is up - executing command"
-cd /app && diesel migration run && exec $@
+diesel migration run && exec $@
