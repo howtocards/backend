@@ -30,10 +30,15 @@ RUN seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} && \
     touch .env
 
 WORKDIR /app
+
 COPY --from=build /out/diesel /bin/
 COPY --from=build /app/target/release/howtocards_server ./
-COPY --from=build /app/migrations ./
+
+COPY --from=build /app/src ./src
+COPY --from=build /app/migrations ./migrations
+COPY --from=build /app/diesel.toml ./
 COPY docker-entrypoint.sh ./entrypoint.sh
+
 RUN chmod +x entrypoint.sh && chmod +x howtocards_server
 
 ENTRYPOINT ["/app/entrypoint.sh"]
