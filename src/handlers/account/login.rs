@@ -45,7 +45,7 @@ impl Handler<SessionCreate> for DbExecutor {
     type Result = Result<SessionToken, SessionCreateError>;
 
     fn handle(&mut self, msg: SessionCreate, _: &mut Self::Context) -> Self::Result {
-        let credentials = UserNew {
+        let credentials = Credentials {
             email: msg.email,
             password: hasher::hash_password(&msg.password, consts::SALT),
         };
