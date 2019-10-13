@@ -127,7 +127,7 @@ impl User {
         display_name: String,
         gravatar_email: String,
         username: String,
-    ) -> Option<User> {
+    ) -> Result<User, UpdateError> {
         let target = users::table.filter(users::id.eq(user_id));
 
         diesel::update(target)
@@ -138,7 +138,7 @@ impl User {
             ))
             .returning(users::all_columns)
             .get_result(conn)
-            .ok()
+            .map_err(UpdateError::from)
     }
 }
 
@@ -169,6 +169,27 @@ impl ToOption for String {
             None
         } else {
             Some(self)
+        }
+    }
+}
+
+use diesel::result::DatabaseErrorKind;
+use diesel::result::Error as DieselError;
+
+#[derive(Debug)]
+pub enum UpdateError {
+    UsernameTaken,
+    Unexpected,
+}
+
+impl From<DieselError> for UpdateError {
+    fn from(error: DieselError) -> UpdateError {
+        match error {
+            DieselError::DatabaseError(kind, _) => match kind {
+                DatabaseErrorKind::UniqueViolation => UpdateError::UsernameTaken,
+                _ => UpdateError::Unexpected,
+            },
+            _ => UpdateError::Unexpected,
         }
     }
 }

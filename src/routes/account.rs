@@ -46,6 +46,7 @@ struct SettingsResponse {
     settings: views::UserSettings,
 }
 
+/// PUT /account/settings/
 fn update(
     state: State<AppState>,
     auth: Auth,

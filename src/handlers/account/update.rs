@@ -1,10 +1,9 @@
 //! Update account settings
-use actix_base::prelude::*;
-use actix_web::*;
+use actix_base::{Handler, Message};
+use failure::Fail;
 
 use crate::app_state::DbExecutor;
-use crate::models::*;
-use crate::prelude::*;
+use crate::models::user::{UpdateError, User};
 
 #[derive(Fail, Debug)]
 pub enum AccountUpdateError {
@@ -19,6 +18,9 @@ pub enum AccountUpdateError {
 
     #[fail(display = "username_incorrect")]
     UsernameIncorrect,
+
+    #[fail(display = "username_taken")]
+    UsernameTaken,
 }
 
 impl_response_error_for!(AccountUpdateError as BadRequest);
@@ -52,7 +54,10 @@ impl Handler<AccountUpdate> for DbExecutor {
                 msg.gravatar_email,
                 msg.username,
             )
-            .ok_or(AccountUpdateError::Failed)
+            .map_err(|error| match error {
+                UpdateError::UsernameTaken => AccountUpdateError::UsernameTaken,
+                _ => AccountUpdateError::Failed,
+            })
         }
     }
 }
