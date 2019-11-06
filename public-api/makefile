@@ -14,7 +14,7 @@ docker-down:
 	rm .env || true
 
 docker-shell-backend:
-	docker exec  -it howtocards_backend bash
+	docker exec  -it howtocards-public-api bash
 
 docker-migration:
-	docker exec -i howtocards_backend bash -c 'cd /app && diesel migration run'
+	docker exec -i howtocards-public-api bash -c 'cd /app && diesel migration run'

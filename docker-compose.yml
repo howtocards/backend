@@ -15,11 +15,11 @@ services:
       - 5432:5432
 
   backend:
-    container_name: howtocards_backend
+    container_name: howtocards-public-api
     build:
-      context: .
+      context: public-api
       dockerfile: Dockerfile
-    image: howtocards/backend
+    image: howtocards/public-api
     restart: always
     volumes:
       - ./migrations:/app/migrations
