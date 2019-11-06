@@ -11,10 +11,11 @@ COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
 COPY ./migrations ./migrations
 COPY ./diesel.toml ./diesel.toml
-COPY ./public-api ./public-api
+COPY ./internal-api ./internal-api
 COPY ./db ./db
+COPY ./public-api/Cargo.toml ./public-api/Cargo.toml
 
-RUN cargo test --release --verbose --package howtocards-public-api
+RUN cargo test --release --verbose --package howtocards-internal-api
 
 RUN cargo build --release
 
@@ -29,14 +30,14 @@ RUN seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} && \
 WORKDIR /app
 
 COPY --from=build /out/diesel /bin/
-COPY --from=build /app/target/release/howtocards-public-api ./
+COPY --from=build /app/target/release/howtocards-internal-api ./
 
-COPY --from=build /app/public-api ./public-api
+COPY --from=build /app/internal-api ./internal-api
 COPY --from=build /app/migrations ./migrations
 COPY --from=build /app/diesel.toml ./
 COPY docker-entrypoint.sh ./entrypoint.sh
 
-RUN chmod +x entrypoint.sh && chmod +x howtocards-public-api
+RUN chmod +x entrypoint.sh && chmod +x howtocards-internal-api
 
 ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["/app/howtocards-public-api"]
+CMD ["/app/howtocards-internal-api"]
