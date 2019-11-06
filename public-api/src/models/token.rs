@@ -1,6 +1,6 @@
 use crate::models::User;
-use crate::schema::tokens;
 use diesel::prelude::*;
+use howtocards_db::schema::tokens;
 use uuid::Uuid;
 
 #[derive(Debug, Queryable, Serialize, Insertable, Deserialize, Associations, Identifiable)]

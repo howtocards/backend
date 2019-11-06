@@ -1,12 +1,12 @@
 [package]
 authors = ["Sergey Sova <mail@sergeysova.com>"]
 description = "Howtocards service backend"
+edition = "2018"
 homepage = "https://github.com/howtocards"
 license = "MIT"
 name = "howtocards-public-api"
 repository = "https://github.com/howtocards/backend"
 version = "0.4.1"
-edition = "2018"
 
 [[bin]]
 name = "howtocards-public-api"
@@ -15,20 +15,21 @@ path = "./src/main.rs"
 [dependencies]
 actix_base = { version = "0.7.4", package = "actix" }
 actix-web = "0.7.19"
+ammonia = "2.0.0"
+chrono = { version = "0.4.6", features = ["serde"] }
 diesel = { version = "1.4.2", features = ["postgres", "r2d2", "chrono", "serde_json"] }
 dotenv = "0.14.1"
 env_logger = "0.6.1"
 failure = "0.1.5"
 futures = "0.1.26"
+howtocards-db = { path = "../db" }
+lazy_static = "1.4.0"
+maplit = "1.0.1"
+md5 = "0.6.1"
+num_cpus = "1.10.0"
+regex = "1.3.1"
 serde = "1.0.90"
 serde_derive = "1.0.90"
 serde_json = "1.0.39"
 sha2 = "0.8.0"
 uuid = { version = "0.7.4", features = ["serde", "v4"] }
-chrono = { version = "0.4.6", features = ["serde"] }
-num_cpus = "1.10.0"
-ammonia = "2.0.0"
-maplit = "1.0.1"
-md5 = "0.6.1"
-regex = "1.3.1"
-lazy_static = "1.4.0"

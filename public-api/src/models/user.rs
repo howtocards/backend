@@ -1,6 +1,6 @@
-use crate::schema::users;
 use crate::views::{EncodableUserPrivate, EncodableUserPublic, UserSettings};
 use diesel::prelude::*;
+use howtocards_db::schema::users;
 
 #[derive(Queryable, Associations, Identifiable, Debug, Clone)]
 pub struct User {
@@ -90,7 +90,7 @@ impl User {
     }
 
     pub fn find_by_id(conn: &PgConnection, user_id: i32) -> Option<Self> {
-        use crate::schema::users::dsl::*;
+        use howtocards_db::schema::users::dsl::*;
 
         users.find(user_id).get_result::<Self>(conn).ok()
     }
@@ -111,7 +111,7 @@ impl User {
     }
 
     pub fn find_by_token(conn: &PgConnection, token: String) -> Option<Self> {
-        use crate::schema::tokens;
+        use howtocards_db::schema::tokens;
 
         tokens::table
             .inner_join(users::table)
