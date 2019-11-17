@@ -87,3 +87,4 @@ $RECYCLE.BIN/
 tmp
 *.out
 .idea
+.env
