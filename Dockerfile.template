@@ -10,9 +10,9 @@ COPY ./db ./db
 COPY ./internal-api ./internal-api
 COPY ./public-api ./public-api
 
-RUN cargo test --release --verbose --package howtocards-internal-api
+RUN cargo test --release --verbose --package howtocards-{{CRATE_NAME}}
 
-RUN cargo build --release --package howtocards-internal-api
+RUN cargo build --release --package howtocards-{{CRATE_NAME}}
 
 FROM howtocards/rust-start-tools:1
 
@@ -21,13 +21,13 @@ WORKDIR /app
 RUN touch .env
 
 COPY --from=build /out/diesel /bin/
-COPY --from=build /app/target/release/howtocards-internal-api ./
+COPY --from=build /app/target/release/howtocards-{{CRATE_NAME}} ./
 
 COPY --from=build /app/migrations ./migrations
 COPY --from=build /app/diesel.toml ./
 COPY ./build/entrypoint.sh ./entrypoint.sh
 
-RUN chmod +x docker-entrypoint.sh && chmod +x howtocards-internal-api
+RUN chmod +x docker-entrypoint.sh && chmod +x howtocards-{{CRATE_NAME}}
 
 ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["/app/howtocards-internal-api"]
+CMD ["/app/howtocards-{{CRATE_NAME}}"]

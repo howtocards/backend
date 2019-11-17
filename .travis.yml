@@ -13,46 +13,29 @@ jobs:
   include:
     - stage: build
       script:
-        - docker build -t howtocards/public-api:$TRAVIS_COMMIT -f public-api.Dockerfile .
-        - docker push howtocards/public-api:$TRAVIS_COMMIT
-
-        - docker build -t howtocards/internal-api:$TRAVIS_COMMIT -f internal-api.Dockerfile .
-        - docker push howtocards/internal-api:$TRAVIS_COMMIT
+        - ./build-image.sh public-api
+        - ./build-image.sh internal-api
 
         - docker images
 
     - stage: push latest
       if: branch = master AND type != pull_request
       script:
-        - docker pull howtocards/public-api:$TRAVIS_COMMIT
-        - docker tag howtocards/public-api:$TRAVIS_COMMIT howtocards/public-api:latest
-        - docker push howtocards/public-api:latest
-
-        - docker pull howtocards/internal-api:$TRAVIS_COMMIT
-        - docker tag howtocards/internal-api:$TRAVIS_COMMIT howtocards/internal-api:latest
-        - docker push howtocards/internal-api:latest
+        - ./build-tag.sh public-api latest
+        - ./build-tag.sh internal-api latest
 
     - stage: push nightly
       if: branch = dev AND type != pull_request
       script:
-        - docker pull howtocards/public-api:$TRAVIS_COMMIT
-        - docker tag howtocards/public-api:$TRAVIS_COMMIT howtocards/public-api:nightly
-        - docker push howtocards/public-api:nightly
-
-        - docker pull howtocards/internal-api:$TRAVIS_COMMIT
-        - docker tag howtocards/internal-api:$TRAVIS_COMMIT howtocards/internal-api:nightly
-        - docker push howtocards/internal-api:nightly
+        - ./build-tag.sh public-api nightly
+        - ./build-tag.sh internal-api nightly
 
     - stage: push tag
       if: tag =~ /^howtocards-public-api\/\d+\.\d+\.\d+/
       script:
-        - docker pull howtocards/public-api:$TRAVIS_COMMIT
-        - docker tag howtocards/public-api:$TRAVIS_COMMIT howtocards/public-api:$TRAVIS_TAG
-        - docker push howtocards/public-api:$TRAVIS_TAG
+        - ./build-tag.sh public-api $TRAVIS_TAG
 
     - stage: push tag
       if: tag =~ /^howtocards-internal-api\/\d+\.\d+\.\d+/
       script:
-        - docker pull howtocards/internal-api:$TRAVIS_COMMIT
-        - docker tag howtocards/internal-api:$TRAVIS_COMMIT howtocards/internal-api:$TRAVIS_TAG
-        - docker push howtocards/internal-api:$TRAVIS_TAG
+        - ./build-tag.sh internal-api $TRAVIS_TAG
