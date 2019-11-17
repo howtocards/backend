@@ -31,7 +31,6 @@ mod layer;
 mod handlers;
 mod models;
 pub mod routes;
-pub mod schema;
 mod slate;
 mod views;
 

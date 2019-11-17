@@ -1,9 +1,9 @@
 use crate::models::{Card, User};
-use crate::schema::useful_marks;
 use crate::time;
 use chrono::NaiveDateTime;
 use diesel;
 use diesel::prelude::*;
+use howtocards_db::schema::useful_marks;
 
 #[derive(Debug, Insertable, Queryable, Associations)]
 #[belongs_to(User)]

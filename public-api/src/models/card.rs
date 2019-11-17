@@ -1,12 +1,12 @@
 use chrono::NaiveDateTime;
 
 use crate::models::User;
-use crate::schema::cards;
 use crate::slate::plain_serialize;
 use crate::time;
 use crate::views::CardMeta as CardMetaView;
 use diesel::dsl::sql;
 use diesel::prelude::*;
+use howtocards_db::schema::cards;
 use serde_json::Value;
 
 #[derive(Debug, Deserialize)]
@@ -65,24 +65,24 @@ pub struct Card {
 }
 
 pub type AllColumns = (
-    crate::schema::cards::id,
-    crate::schema::cards::author_id,
-    crate::schema::cards::title,
-    crate::schema::cards::content,
-    crate::schema::cards::created_at,
-    crate::schema::cards::updated_at,
-    crate::schema::cards::useful_for,
+    howtocards_db::schema::cards::id,
+    howtocards_db::schema::cards::author_id,
+    howtocards_db::schema::cards::title,
+    howtocards_db::schema::cards::content,
+    howtocards_db::schema::cards::created_at,
+    howtocards_db::schema::cards::updated_at,
+    howtocards_db::schema::cards::useful_for,
     (
         diesel::expression::SqlLiteral<diesel::sql_types::Bool>,
         diesel::expression::SqlLiteral<diesel::sql_types::Bool>,
     ),
-    crate::schema::cards::content_for_search,
+    howtocards_db::schema::cards::content_for_search,
 );
 
 impl Card {
     #[inline]
     pub fn all_columns(requester_id: i32) -> AllColumns {
-        use crate::schema::cards::dsl::*;
+        use howtocards_db::schema::cards::dsl::*;
 
         (
             id,
@@ -111,7 +111,7 @@ impl Card {
     }
 
     pub fn select_for(requester_id: i32) -> diesel::dsl::Select<cards::table, AllColumns> {
-        use crate::schema::cards::dsl::*;
+        use howtocards_db::schema::cards::dsl::*;
 
         cards.select(Self::all_columns(requester_id))
     }
@@ -131,7 +131,7 @@ impl Card {
     }
 
     pub fn get_useful_for_user(conn: &PgConnection, user_id: i32) -> Vec<Self> {
-        use crate::schema::useful_marks;
+        use howtocards_db::schema::useful_marks;
 
         Self::select_for(user_id)
             .inner_join(useful_marks::table)

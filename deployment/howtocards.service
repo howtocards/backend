@@ -5,7 +5,7 @@ Description=The Howtocards Backend
 Environment=RUST_LOG=info
 User=www
 WorkingDirectory=/home/www/backend
-ExecStart=/home/www/backend/target/release/howtocards_server
+ExecStart=/home/www/backend/target/release/howtocards-public-api
 Restart=on-failure
 RestartSec=55
 TimeoutStopSec=10

@@ -6,9 +6,6 @@ os:
 services:
   - docker
 
-env:
-  - DOCKER_IMAGE=howtocards/backend
-
 before_script:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
@@ -16,24 +13,29 @@ jobs:
   include:
     - stage: build
       script:
-        - docker build -t $DOCKER_IMAGE:$TRAVIS_COMMIT .
+        - ./build-image.sh public-api
+        - ./build-image.sh internal-api
+
         - docker images
-        - docker push $DOCKER_IMAGE:$TRAVIS_COMMIT
+
     - stage: push latest
       if: branch = master AND type != pull_request
       script:
-        - docker pull $DOCKER_IMAGE:$TRAVIS_COMMIT
-        - docker tag $DOCKER_IMAGE:$TRAVIS_COMMIT $DOCKER_IMAGE:latest
-        - docker push $DOCKER_IMAGE:latest
+        - ./build-tag.sh public-api latest
+        - ./build-tag.sh internal-api latest
+
     - stage: push nightly
       if: branch = dev AND type != pull_request
       script:
-        - docker pull $DOCKER_IMAGE:$TRAVIS_COMMIT
-        - docker tag $DOCKER_IMAGE:$TRAVIS_COMMIT $DOCKER_IMAGE:nightly
-        - docker push $DOCKER_IMAGE:nightly
+        - ./build-tag.sh public-api nightly
+        - ./build-tag.sh internal-api nightly
+
     - stage: push tag
-      if: tag =~ /^v\d+\.\d+\.\d+/
+      if: tag =~ /^howtocards-public-api\/\d+\.\d+\.\d+/
       script:
-        - docker pull $DOCKER_IMAGE:$TRAVIS_COMMIT
-        - docker tag $DOCKER_IMAGE:$TRAVIS_COMMIT $DOCKER_IMAGE:$TRAVIS_TAG
-        - docker push $DOCKER_IMAGE:$TRAVIS_TAG
+        - ./build-tag.sh public-api $TRAVIS_TAG
+
+    - stage: push tag
+      if: tag =~ /^howtocards-internal-api\/\d+\.\d+\.\d+/
+      script:
+        - ./build-tag.sh internal-api $TRAVIS_TAG

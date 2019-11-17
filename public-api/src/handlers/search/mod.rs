@@ -5,7 +5,7 @@ use diesel::*;
 
 use crate::app_state::DbExecutor;
 use crate::models::*;
-use crate::schema::cards;
+use howtocards_db::schema::cards;
 
 #[allow(dead_code)]
 pub enum Sort {
