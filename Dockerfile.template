@@ -25,9 +25,9 @@ COPY --from=build /app/target/release/howtocards-{{CRATE_NAME}} ./
 
 COPY --from=build /app/migrations ./migrations
 COPY --from=build /app/diesel.toml ./
-COPY ./build/entrypoint.sh ./entrypoint.sh
+COPY ./docker-entrypoint.sh ./entrypoint.sh
 
-RUN chmod +x docker-entrypoint.sh && chmod +x howtocards-{{CRATE_NAME}}
+RUN chmod +x entrypoint.sh && chmod +x howtocards-{{CRATE_NAME}}
 
 ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["/app/howtocards-{{CRATE_NAME}}"]

@@ -17,7 +17,7 @@ fi
 
 sed "s/{{CRATE_NAME}}/$CRATE_NAME/g" Dockerfile.template > "$CRATE_NAME.Dockerfile"
 
-docker build -t "howtocards/$CRATE_NAME:$TAG" -f "$CRATE_NAME.Dockerfile" ..
+docker build -t "howtocards/$CRATE_NAME:$TAG" -f "$CRATE_NAME.Dockerfile" .
 docker push "howtocards/$CRATE_NAME:$TAG"
 
 rm -f "$CRATE_NAME.Dockerfile"
