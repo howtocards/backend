@@ -3,21 +3,21 @@ language: minimal
 os:
   - linux
 
+env:
+  - CRATE_NAME=public-api
+  - CRATE_NAME=internal-api
+
 services:
   - docker
 
 before_script:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
+script:
+  - ./build-image.sh $CRATE_NAME
+
 jobs:
   include:
-    - stage: build
-      script:
-        - ./build-image.sh public-api
-        - ./build-image.sh internal-api
-
-        - docker images
-
     - stage: push latest
       if: branch = master AND type != pull_request
       script:
@@ -31,11 +31,7 @@ jobs:
         - ./build-tag.sh internal-api nightly
 
     - stage: push tag
-      if: tag =~ /^howtocards-public-api\/\d+\.\d+\.\d+/
+      if: type = tag
       script:
         - ./build-tag.sh public-api $TRAVIS_TAG
-
-    - stage: push tag
-      if: tag =~ /^howtocards-internal-api\/\d+\.\d+\.\d+/
-      script:
         - ./build-tag.sh internal-api $TRAVIS_TAG
