@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 services:
   db:
@@ -15,11 +15,11 @@ services:
       - 5432:5432
 
   backend:
-    container_name: howtocards_backend
+    container_name: howtocards-public-api
     build:
-      context: .
+      context: public-api
       dockerfile: Dockerfile
-    image: howtocards/backend
+    image: howtocards/public-api
     restart: always
     volumes:
       - ./migrations:/app/migrations
@@ -32,6 +32,7 @@ services:
       - db
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}
+      - DATABASE_HOST=db
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}

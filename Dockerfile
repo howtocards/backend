@@ -1,38 +1,39 @@
-ARG RUST_VERSION=1.37.0
+FROM howtocards/rust-builder:1.38 as build
 
-FROM rust:$RUST_VERSION as build
+ARG CRATE_NAME
 
-RUN USER=root cargo new --bin app
 WORKDIR /app
-
-RUN USER=root cargo install diesel_cli --no-default-features --features postgres && \
-    mkdir -p /out && cp $(which diesel) /out/
 
 COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
+COPY ./diesel.toml ./diesel.toml
+COPY ./migrations ./migrations
+COPY ./db ./db
+COPY ./internal-api ./internal-api
+COPY ./public-api ./public-api
 
-RUN cargo test --release --verbose --all
+RUN cargo test --release --verbose --package howtocards-$CRATE_NAME
 
-RUN cargo build --release && \
-    rm src/*.rs
+RUN cargo build --release --package howtocards-$CRATE_NAME
 
-COPY ./ ./
+# ----------------------------------------------------------------
 
-RUN rm ./target/release/deps/howtocards_server* && \
-    cargo build --release
+FROM howtocards/rust-start-tools:1
 
-FROM debian:9-slim
+ARG CRATE_NAME
 
-RUN seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{} && \
-    apt update && \
-    apt -y install libpq-dev postgresql-client && \
-    apt clean && \
-    touch .env
+WORKDIR /app
+
+RUN touch .env
 
 COPY --from=build /out/diesel /bin/
-COPY --from=build /app/target/release/howtocards_server ./
-COPY docker-entrypoint.sh ./entrypoint.sh
-RUN chmod +x entrypoint.sh && chmod +x howtocards_server
+COPY --from=build /app/target/release/howtocards-$CRATE_NAME ./
 
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/howtocards_server"]
+COPY --from=build /app/migrations ./migrations
+COPY --from=build /app/diesel.toml ./
+COPY ./docker-entrypoint.sh ./entrypoint.sh
+
+RUN chmod +x entrypoint.sh && chmod +x howtocards-$CRATE_NAME
+
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["/app/howtocards-$CRATE_NAME"]
