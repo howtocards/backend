@@ -31,7 +31,7 @@ jobs:
         - ./build-tag.sh internal-api nightly
 
     - stage: push tag
-      if: type = tag
+      if: tag
       script:
         - ./build-tag.sh public-api $TRAVIS_TAG
         - ./build-tag.sh internal-api $TRAVIS_TAG
