@@ -5,7 +5,7 @@ edition = "2018"
 license = "MIT"
 name = "howtocards-internal-api"
 repository = "https://github.com/howtocards/backend"
-version = "0.1.0"
+version = "0.4.3"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

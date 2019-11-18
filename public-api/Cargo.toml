@@ -6,7 +6,7 @@ homepage = "https://github.com/howtocards"
 license = "MIT"
 name = "howtocards-public-api"
 repository = "https://github.com/howtocards/backend"
-version = "0.4.1"
+version = "0.4.3"
 
 [[bin]]
 name = "howtocards-public-api"
