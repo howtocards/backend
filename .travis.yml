@@ -36,7 +36,7 @@ jobs:
         - curl -X POST https://app.buddy.works/sergeysova/backend/pipelines/pipeline/173545/trigger-webhook?token=$BUDDY_TOKEN&revision=$TRAVIS_COMMIT
 
     - stage: push tag
-      if: type = tag
+      if: tag
       script:
         - ./build-tag.sh public-api $TRAVIS_TAG
         - ./build-tag.sh internal-api $TRAVIS_TAG
