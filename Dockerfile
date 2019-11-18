@@ -27,13 +27,13 @@ WORKDIR /app
 RUN touch .env
 
 COPY --from=build /out/diesel /bin/
-COPY --from=build /app/target/release/howtocards-$CRATE_NAME ./service
+COPY --from=build /app/target/release/howtocards-$CRATE_NAME ./server
 
 COPY --from=build /app/migrations ./migrations
 COPY --from=build /app/diesel.toml ./
 COPY ./docker-entrypoint.sh ./entrypoint.sh
 
-RUN chmod +x entrypoint.sh && chmod +x howtocards-$CRATE_NAME
+RUN chmod +x entrypoint.sh && chmod +x server
 
 ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["/app/service"]
+CMD ["/app/server"]
