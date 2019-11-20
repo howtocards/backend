@@ -1,0 +1,42 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+
+jobs:
+  public-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Publish Docker
+        uses: elgohr/Publish-Docker-Github-Action@2.8
+        with:
+          name: howtocards/backend/public-api
+          username: sergeysova
+          password: ${{ secrets.GITHUB_TOKEN }}
+          snapshot: true
+          tagging: ${{contains(github.ref, 'refs/tags/v')}}
+          registry: docker.pkg.github.com
+          buildargs: CRATE_NAME=public-api
+
+  internal-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Publish Docker
+        uses: elgohr/Publish-Docker-Github-Action@2.8
+        with:
+          name: howtocards/backend/internal-name
+          username: sergeysova
+          password: ${{ secrets.GITHUB_TOKEN }}
+          snapshot: true
+          tagging: ${{contains(github.ref, 'refs/tags/v')}}
+          registry: docker.pkg.github.com
+          buildargs: CRATE_NAME=internal-name
