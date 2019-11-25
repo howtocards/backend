@@ -1,6 +1,6 @@
 use actix_http::Response;
 use actix_web::{Error, HttpRequest, Responder};
-use futures::future::{ok, FutureResult};
+use futures::future::{ok, Ready};
 use serde::{Deserialize, Serialize};
 use serde_json;
 
@@ -15,14 +15,14 @@ impl<T> Answer<T> {
         Answer { result, ok: true }
     }
 
-    pub fn into_fut(self) -> FutureResult<Self, Error> {
+    pub fn into_fut(self) -> Ready<Result<Self, Error>> {
         ok(self)
     }
 }
 
 impl<T: Serialize> Responder for Answer<T> {
     type Error = Error;
-    type Future = FutureResult<Response, Self::Error>;
+    type Future = Ready<Result<Response, Self::Error>>;
 
     fn respond_to(self, _: &HttpRequest) -> Self::Future {
         ok(Response::build(actix_http::http::StatusCode::OK)

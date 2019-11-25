@@ -1,4 +1,4 @@
-use actix::System;
+use actix_rt::System;
 use actix_web::{middleware, web, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
 use diesel::PgConnection;
@@ -28,8 +28,7 @@ fn main() -> std::io::Result<()> {
             .data(pool.clone())
             .wrap(middleware::Logger::default())
             .service(
-                web::resource("/card/preview")
-                    .route(web::post().to_async(handlers::card_set_preview)),
+                web::resource("/card/preview").route(web::post().to(handlers::card_set_preview)),
             )
     })
     .bind(listen)?
