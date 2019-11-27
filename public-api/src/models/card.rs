@@ -42,7 +42,7 @@ pub struct CardNewForSearch {
 
 #[derive(Serialize, Deserialize, Queryable, Default, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct CardMeta {
+pub struct Permissions {
     pub is_useful: bool,
     pub can_edit: bool,
 }
@@ -59,7 +59,7 @@ pub struct Card {
     pub updated_at: Option<NaiveDateTime>,
     /// Count of users, that added card to its library
     pub useful_for: i64,
-    pub meta: CardMeta,
+    pub permissions: Permissions,
     #[serde(skip)]
     pub content_for_search: String,
     pub tags: Vec<String>,
@@ -74,6 +74,7 @@ pub type AllColumns = (
     howtocards_db::schema::cards::created_at,
     howtocards_db::schema::cards::updated_at,
     howtocards_db::schema::cards::useful_for,
+    // permissions
     (
         diesel::expression::SqlLiteral<diesel::sql_types::Bool>,
         diesel::expression::SqlLiteral<diesel::sql_types::Bool>,
@@ -96,6 +97,7 @@ impl Card {
             created_at,
             updated_at,
             useful_for,
+            // permissions
             (
                 // Card is useful if useful_marks more than one
                 sql(format!(
