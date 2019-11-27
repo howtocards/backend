@@ -1,4 +1,4 @@
-FROM howtocards/rust-builder:1.38 as build
+FROM howtocards/rust-builder:1.39 as build
 
 ARG CRATE_NAME
 
