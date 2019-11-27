@@ -62,6 +62,8 @@ pub struct Card {
     pub meta: CardMeta,
     #[serde(skip)]
     pub content_for_search: String,
+    pub tags: Vec<String>,
+    pub preview_url: Option<String>,
 }
 
 pub type AllColumns = (
@@ -77,6 +79,8 @@ pub type AllColumns = (
         diesel::expression::SqlLiteral<diesel::sql_types::Bool>,
     ),
     howtocards_db::schema::cards::content_for_search,
+    howtocards_db::schema::cards::tags,
+    howtocards_db::schema::cards::preview_url,
 );
 
 impl Card {
@@ -107,6 +111,8 @@ impl Card {
                 .as_str()),
             ),
             content_for_search,
+            tags,
+            preview_url,
         )
     }
 
