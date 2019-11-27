@@ -14,16 +14,13 @@ impl<T> Answer<T> {
     pub fn new(result: T) -> Self {
         Answer { result, ok: true }
     }
-
-    pub fn into_fut(self) -> Ready<Result<Self, Error>> {
-        ok(self)
-    }
 }
 
 impl<T: Serialize> Responder for Answer<T> {
     type Error = Error;
     type Future = Ready<Result<Response, Self::Error>>;
 
+    #[inline]
     fn respond_to(self, _: &HttpRequest) -> Self::Future {
         ok(Response::build(actix_http::http::StatusCode::OK)
             .content_type("application/json; charset=utf-8")

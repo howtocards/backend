@@ -1210,6 +1210,7 @@ name = "howtocards-internal-api"
 version = "0.4.3"
 dependencies = [
  "actix-http 0.3.0-alpha.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "actix-router 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "actix-rt 1.0.0-alpha.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "actix-web 2.0.0-alpha.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "diesel 1.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
