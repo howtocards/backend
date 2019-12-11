@@ -1,18 +1,26 @@
 FROM howtocards/rust-builder:1.39 as build
 
-ARG CRATE_NAME
-
+ENV USER="root"
 WORKDIR /app
 
-COPY ./Cargo.lock ./Cargo.lock
-COPY ./Cargo.toml ./Cargo.toml
+COPY ./Cargo.lock ./Cargo.toml ./
+RUN cargo new public-api --bin --name howtocards-public-api && \
+  cargo new internal-api --bin --name howtocards-internal-api && \
+  cargo new db --lib --name howtocards-db
+COPY ./internal-api/Cargo.toml ./internal-api/Cargo.toml
+COPY ./public-api/Cargo.toml ./public-api/Cargo.toml
+COPY ./db/Cargo.toml ./db/Cargo.toml
+RUN cargo build --release
+
 COPY ./diesel.toml ./diesel.toml
 COPY ./migrations ./migrations
 COPY ./db ./db
 COPY ./internal-api ./internal-api
 COPY ./public-api ./public-api
 
-RUN cargo test --release --verbose --package howtocards-$CRATE_NAME
+ARG CRATE_NAME
+
+# RUN cargo test --release --verbose --package howtocards-$CRATE_NAME
 
 RUN cargo build --release --package howtocards-$CRATE_NAME
 
