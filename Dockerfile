@@ -12,6 +12,8 @@ COPY ./public-api/Cargo.toml ./public-api/Cargo.toml
 COPY ./db/Cargo.toml ./db/Cargo.toml
 RUN cargo build --release
 
+RUN find ./target -type f -name *howtocards* | xargs rm -rf
+
 COPY ./diesel.toml ./diesel.toml
 COPY ./migrations ./migrations
 COPY ./db ./db
