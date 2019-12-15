@@ -224,7 +224,7 @@ impl Card {
             description: self.content_for_search,
             created_at: self.created_at,
             updated_at: self.updated_at,
-            preview: None,
+            preview_url: self.preview_url,
         }
     }
 }

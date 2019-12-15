@@ -41,7 +41,7 @@ pub struct CardMeta {
     pub id: i32,
     pub created_at: Option<NaiveDateTime>,
     pub updated_at: Option<NaiveDateTime>,
-    pub preview: Option<String>,
+    pub preview_url: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
