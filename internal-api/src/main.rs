@@ -26,6 +26,7 @@ fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .data(pool.clone())
+            .data(web::JsonConfig::default().limit(1_048_576))
             .wrap(middleware::Logger::default())
             .service(
                 web::resource("/preview/card/{card_id}")
