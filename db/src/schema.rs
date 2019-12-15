@@ -8,8 +8,8 @@ table! {
         useful_for -> Int8,
         content -> Jsonb,
         content_for_search -> Varchar,
-        tags -> Array<Text>,
         preview_url -> Nullable<Varchar>,
+        tags -> Array<Text>,
     }
 }
 
