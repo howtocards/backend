@@ -117,7 +117,7 @@ fn is_type_code(value: &Value) -> bool {
 
 fn is_code(value: &Value) -> bool {
     match value {
-        Value::String(s) => s == "code",
+        Value::String(s) => s == "code" || s == "code_line" || s == "code_block",
         _ => false,
     }
 }

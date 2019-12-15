@@ -24,13 +24,7 @@ impl DbExecutor {
 pub struct AppState {
     /// Postgres connection actor
     pub pg: Addr<DbExecutor>,
-}
-
-impl AppState {
-    /// Make new state
-    pub fn new(pg: Addr<DbExecutor>) -> AppState {
-        AppState { pg }
-    }
+    pub preview_queue_url: String,
 }
 
 pub type Req = HttpRequest<AppState>;
