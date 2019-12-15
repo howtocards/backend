@@ -1,10 +1,12 @@
 use crate::answer::Answer;
-use actix_web::{web, Error, HttpRequest};
+use actix_web::{web, Error as AWError, HttpRequest};
 use diesel::r2d2::ConnectionManager;
 use diesel::PgConnection;
+use futures::TryFutureExt;
+use failure::Error;
 use serde::{Serialize, Deserialize};
 
-use howtocards_db::schema;
+use howtocards_db::{schema, diesel};
 
 pub type PgPool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
@@ -25,12 +27,40 @@ pub struct Example {
     id: u32,
 }
 
+#[derive(Debug, Serialize)]
+pub enum SetPreviewError {
+    DatabaseFailure,
+}
+
+impl<T, E> Into<Answer<T, E>> for r2d2::Error {
+    fn into(self) -> Answer<T, E> {
+        Answer::unexpected(format!("Database error: {}", self.to_string()))
+    }
+}
+
 pub async fn card_set_preview(
     body: web::Json<SetPreviewBody>,
-    _poll: web::Data<PgPool>,
+    poll: web::Data<PgPool>,
     path: web::Path<CardPath>,
-) -> Result<Answer<Example>, Error> {
-    println!("body: {:#?}", body.0);
-    println!("card_id: {:#?}", path.card_id);
-    Ok(Answer::new(Example { id: path.card_id}))
+) -> Result<Answer<Example, SetPreviewError>, AWError> {
+    let conn = poll.get().expect("failed to connect");
+
+    use schema::cards::dsl::*;
+    use diesel::*;
+
+    let target = cards.filter(id.eq(path.card_id as i32));
+
+    let query = diesel::update(target)
+        .set(
+            preview_url.eq(Some(body.screenshot.to_string()))
+        );
+
+    match query.execute(&conn) {
+        Err(_) => {
+            Ok(Answer::fail(SetPreviewError::DatabaseFailure))
+        },
+        Ok(_) => {
+            Ok(Answer::ok(Example { id: path.card_id }))
+        }
+    }
 }

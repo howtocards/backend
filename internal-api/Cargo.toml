@@ -26,3 +26,4 @@ howtocards-db = { "path" = "../db" }
 r2d2 = "0.8.6"
 dotenv = "0.15.0"
 actix-http = "0.3.0-alpha.1"
+failure = "0.1.6"
