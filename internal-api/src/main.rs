@@ -26,9 +26,11 @@ fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .data(pool.clone())
+            .data(web::JsonConfig::default().limit(1_048_576))
             .wrap(middleware::Logger::default())
             .service(
-                web::resource("/card/preview").route(web::post().to(handlers::card_set_preview)),
+                web::resource("/preview/card/{card_id}")
+                    .route(web::post().to(handlers::card_set_preview)),
             )
     })
     .bind(listen)?

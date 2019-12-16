@@ -1,4 +1,4 @@
 #[macro_use]
-extern crate diesel;
+pub extern crate diesel;
 
 pub mod schema;

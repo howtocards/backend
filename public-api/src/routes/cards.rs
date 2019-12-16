@@ -5,6 +5,7 @@ use serde_json::Value;
 use crate::app_state::AppState;
 use crate::auth::{Auth, AuthOptional};
 use crate::models::*;
+use crate::preview;
 use crate::views::CardMeta as CardMetaView;
 use actix_web::State;
 
@@ -19,6 +20,7 @@ pub struct CardCreateBody {
 
 /// POST /cards
 pub fn create(card_form: Json<CardCreateBody>, auth: Auth, state: State<AppState>) -> FutRes {
+    let queue_url = state.preview_queue_url.clone();
     state
         .pg
         .send(CardNew {
@@ -27,8 +29,12 @@ pub fn create(card_form: Json<CardCreateBody>, auth: Auth, state: State<AppState
             title: card_form.0.title,
         })
         .from_err()
-        .and_then(|res| match res {
-            Ok(created) => Ok(answer_success!(Ok, created)),
+        .and_then(move |res| match res {
+            Ok(created) => {
+                preview::create_for_card(created.id as u32, queue_url.clone())
+                    .unwrap_or_else(|_| {});
+                Ok(answer_success!(Ok, created))
+            }
             Err(err) => Ok(err.error_response()),
         })
         .responder()
@@ -97,6 +103,7 @@ pub fn edit(
     state: State<AppState>,
 ) -> FutRes {
     use crate::handlers::cards::edit::*;
+    let queue_url = state.preview_queue_url.clone();
 
     #[derive(Serialize)]
     #[serde(rename_all = "camelCase")]
@@ -113,8 +120,11 @@ pub fn edit(
             content: edit_form.0.content,
         })
         .from_err()
-        .and_then(|res| match res {
-            Ok(card) => Ok(answer_success!(Ok, R { card })),
+        .and_then(move |res| match res {
+            Ok(card) => {
+                preview::create_for_card(card.id as u32, queue_url.clone()).unwrap_or_else(|_| {});
+                Ok(answer_success!(Ok, R { card }))
+            }
             Err(err) => Ok(err.error_response()),
         })
         .responder()

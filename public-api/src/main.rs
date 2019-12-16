@@ -30,6 +30,7 @@ mod validators;
 mod layer;
 mod handlers;
 mod models;
+mod preview;
 pub mod routes;
 mod slate;
 mod views;
@@ -48,6 +49,9 @@ enum StartErr {
     #[fail(display = "expected DATABASE_URL env var")]
     DbExpected,
 
+    #[fail(display = "expected PREVIEW_QUEUE_URL env var")]
+    PreviewQueueUrl,
+
     #[fail(display = "check if .env file exists and it's correct")]
     DotEnvFail,
 }
@@ -55,13 +59,14 @@ enum StartErr {
 fn run() -> Result<(), failure::Error> {
     dotenv::dotenv().or_err(StartErr::DotEnvFail)?;
     let db_url = env::var("DATABASE_URL").or_err(StartErr::DbExpected)?;
+    let preview_queue_url = env::var("PREVIEW_QUEUE_URL").or_err(StartErr::PreviewQueueUrl)?;
 
-    create_server(db_url)?;
+    create_server(db_url, preview_queue_url)?;
 
     Ok(())
 }
 
-fn create_server(db_url: String) -> Result<(), failure::Error> {
+fn create_server(db_url: String, preview_queue_url: String) -> Result<(), failure::Error> {
     env_logger::init();
     use self::app_state::DbExecutor;
 
@@ -71,7 +76,11 @@ fn create_server(db_url: String) -> Result<(), failure::Error> {
     let pg = SyncArbiter::start(cpus, move || DbExecutor::new(establish_connection(&db_url)));
 
     let server_creator = move || {
-        let state = AppState::new(pg.clone());
+        let state = AppState {
+            pg: pg.clone(),
+            preview_queue_url: preview_queue_url.clone(),
+        };
+
         App::with_state(state)
             .middleware(middleware::Logger::default())
             .middleware(

@@ -1,0 +1,1 @@
+ALTER TABLE "cards" ADD COLUMN "preview_url" VARCHAR DEFAULT NULL;
