@@ -1,4 +1,4 @@
-FROM howtocards/rust-builder:1.39 as build
+FROM docker.pkg.github.com/howtocards/backend/builder:1.39 as build
 
 ENV USER="root"
 WORKDIR /app
@@ -28,7 +28,7 @@ RUN cargo build --release --package howtocards-$CRATE_NAME
 
 # ----------------------------------------------------------------
 
-FROM howtocards/rust-start-tools:1
+FROM docker.pkg.github.com/howtocards/backend/start-tools:1
 
 ARG CRATE_NAME
 
