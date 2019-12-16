@@ -4,7 +4,7 @@
 
 set -e
 
-default_tag=${TRAVIS_COMMIT:-immediate}
+default_tag=${TRAVIS_COMMIT:-dev}
 
 CRATE_NAME=$1
 TAG=${2:-$default_tag}
@@ -15,5 +15,5 @@ if [[ "$CRATE_NAME" == "" ]]; then
   exit 1
 fi
 
-docker build -t "howtocards/$CRATE_NAME:$TAG" --build-arg "CRATE_NAME=$CRATE_NAME" .
-docker push "howtocards/$CRATE_NAME:$TAG"
+docker build -t "docker.pkg.github.com/howtocards/backend/$CRATE_NAME:$TAG" --build-arg "CRATE_NAME=$CRATE_NAME" .
+docker push "docker.pkg.github.com/howtocards/backend/$CRATE_NAME:$TAG"

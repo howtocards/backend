@@ -12,6 +12,6 @@ if [[ "$CRATE_NAME" == "" ]] || [[ "$TAG" == "" ]]; then
   exit 1
 fi
 
-docker pull "howtocards/$CRATE_NAME:$COMMIT"
-docker tag "howtocards/$CRATE_NAME:$COMMIT" "howtocards/$CRATE_NAME:$TAG"
-docker push "howtocards/$CRATE_NAME:$TAG"
+docker pull "docker.pkg.github.com/howtocards/backend/$CRATE_NAME:$COMMIT"
+docker tag "docker.pkg.github.com/howtocards/backend/$CRATE_NAME:$COMMIT" "docker.pkg.github.com/howtocards/backend/$CRATE_NAME:$TAG"
+docker push "docker.pkg.github.com/howtocards/backend/$CRATE_NAME:$TAG"
