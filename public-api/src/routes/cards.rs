@@ -7,7 +7,7 @@ use crate::auth::{Auth, AuthOptional};
 use crate::models::*;
 use crate::preview;
 use crate::views::CardMeta as CardMetaView;
-use actix_web::State;
+use actix_web::{Query, State};
 
 type FutRes = FutureResponse<HttpResponse>;
 
@@ -16,6 +16,11 @@ type FutRes = FutureResponse<HttpResponse>;
 pub struct CardCreateBody {
     content: Value,
     title: String,
+}
+
+#[derive(Deserialize)]
+pub struct CardListQuery {
+    count: Option<u32>,
 }
 
 /// POST /cards
@@ -41,7 +46,7 @@ pub fn create(card_form: Json<CardCreateBody>, auth: Auth, state: State<AppState
 }
 
 /// GET /cards
-pub fn list(auth: AuthOptional, state: State<AppState>) -> FutRes {
+pub fn list(auth: AuthOptional, state: State<AppState>, query: Query<CardListQuery>) -> FutRes {
     use crate::handlers::cards::list::*;
 
     #[derive(Serialize)]
@@ -51,6 +56,7 @@ pub fn list(auth: AuthOptional, state: State<AppState>) -> FutRes {
         .pg
         .send(CardsListFetch {
             requester_id: auth.user.map(|user| user.id),
+            count: query.count.clone(),
         })
         .from_err()
         .and_then(|res| match res {

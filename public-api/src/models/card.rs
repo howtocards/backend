@@ -131,9 +131,10 @@ impl Card {
             .ok()
     }
 
-    pub fn get_latest_cards(conn: &PgConnection, requester_id: i32) -> Vec<Self> {
+    pub fn get_latest_cards(conn: &PgConnection, requester_id: i32, count: u32) -> Vec<Self> {
         Self::select_for(requester_id)
             .order(cards::created_at.desc())
+            .limit(count.into())
             .get_results(conn)
             .unwrap_or_default()
     }
