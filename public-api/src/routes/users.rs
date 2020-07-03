@@ -70,8 +70,18 @@ pub fn info(auth: AuthOptional, path: Path<UserPath>, state: State<AppState>) ->
         .responder()
 }
 
+#[derive(Deserialize)]
+pub struct CardsQuery {
+    count: Option<u32>,
+}
+
 /// GET /users/{username}/cards/useful/
-pub fn useful(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>) -> FutRes {
+pub fn useful(
+    _auth: AuthOptional,
+    path: Path<UserPath>,
+    state: State<AppState>,
+    query: Query<CardsQuery>,
+) -> FutRes {
     use crate::handlers::users::useful_cards::*;
     #[derive(Serialize)]
     #[serde(rename_all = "camelCase")]
@@ -83,6 +93,7 @@ pub fn useful(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>)
         .pg
         .send(GetUsefulCardsForUser {
             username: path.username.clone(),
+            count: query.count.clone(),
         })
         .from_err()
         .and_then(|res| match res {
@@ -94,7 +105,12 @@ pub fn useful(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>)
 
 /// GET /users/{username}/cards/authors/
 /// Get cards by user
-pub fn authors(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>) -> FutRes {
+pub fn authors(
+    _auth: AuthOptional,
+    path: Path<UserPath>,
+    state: State<AppState>,
+    query: Query<CardsQuery>,
+) -> FutRes {
     use crate::handlers::users::cards_by_author::*;
     #[derive(Serialize)]
     #[serde(rename_all = "camelCase")]
@@ -106,6 +122,7 @@ pub fn authors(_auth: AuthOptional, path: Path<UserPath>, state: State<AppState>
         .pg
         .send(GetCardsByAuthor {
             author_username: path.username.clone(),
+            count: query.count.clone(),
         })
         .from_err()
         .and_then(|res| match res {

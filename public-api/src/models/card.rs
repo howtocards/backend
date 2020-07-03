@@ -139,21 +139,23 @@ impl Card {
             .unwrap_or_default()
     }
 
-    pub fn get_useful_for_user(conn: &PgConnection, user_id: i32) -> Vec<Self> {
+    pub fn get_useful_for_user(conn: &PgConnection, user_id: i32, count: u32) -> Vec<Self> {
         use howtocards_db::schema::useful_marks;
 
         Self::select_for(user_id)
             .inner_join(useful_marks::table)
             .order(useful_marks::created_at.desc())
             .filter(useful_marks::user_id.eq(user_id))
+            .limit(count.into())
             .load(conn)
             .unwrap_or_default()
     }
 
-    pub fn find_all_by_author(conn: &PgConnection, author_id: i32) -> Vec<Self> {
+    pub fn find_all_by_author(conn: &PgConnection, author_id: i32, count: u32) -> Vec<Self> {
         Self::select_for(author_id)
             .order(cards::updated_at.desc())
             .filter(cards::author_id.eq(author_id))
+            .limit(count.into())
             .get_results(conn)
             .unwrap_or_default()
     }

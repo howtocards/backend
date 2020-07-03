@@ -17,6 +17,6 @@ pub fn create_for_card(card_id: u32, preview_queue_url: String) -> Result<(), Er
             extra: Default::default(),
         })
         .send()
-        .map(|resp| {})
+        .map(|_| {})
         .map_err(|e| e.into())
 }

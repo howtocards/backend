@@ -1,4 +1,4 @@
-use actix_http::{error::ResponseError, http::StatusCode, Response};
+use actix_http::{http::StatusCode, Response};
 use actix_web::{Error, HttpRequest, Responder};
 use futures::future::{ok, Ready};
 use serde::{Deserialize, Serialize};

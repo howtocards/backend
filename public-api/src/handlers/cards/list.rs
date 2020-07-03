@@ -14,8 +14,8 @@ pub struct CardsListFetch {
     pub count: Option<u32>,
 }
 
-const DEFAULT_COUNT: i32 = 20;
-const MAX_COUNT: i32 = 50;
+const DEFAULT_COUNT: u32 = 20;
+const MAX_COUNT: u32 = 50;
 
 impl Message for CardsListFetch {
     type Result = Option<Vec<Card>>;
