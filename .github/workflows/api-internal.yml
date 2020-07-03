@@ -1,0 +1,25 @@
+name: API Public CI
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+
+jobs:
+  internal-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Publish Docker
+        uses: elgohr/Publish-Docker-Github-Action@2.8
+        with:
+          name: howtocards/backend/internal-api
+          username: sergeysova
+          password: ${{ secrets.GITHUB_TOKEN }}
+          snapshot: true
+          tagging: ${{contains(github.ref, 'refs/tags/v')}}
+          registry: docker.pkg.github.com
+          buildargs: CRATE_NAME=internal-api
