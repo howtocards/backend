@@ -1,4 +1,4 @@
-FROM docker.pkg.github.com/howtocards/backend/builder:1.39 as build
+FROM docker.pkg.github.com/howtocards/backend/builder:1.43 as build
 
 ENV USER="root"
 WORKDIR /app
